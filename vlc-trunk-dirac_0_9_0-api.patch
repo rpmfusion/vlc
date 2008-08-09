@@ -1,0 +1,30 @@
+diff -up vlc-0.8.6d/modules/codec/dirac.c.dirac9 vlc-0.8.6d/modules/codec/dirac.c
+--- vlc-0.8.6d/modules/codec/dirac.c.dirac9	2008-02-04 13:25:12.000000000 +0100
++++ vlc-0.8.6d/modules/codec/dirac.c	2008-02-04 13:39:40.000000000 +0100
+@@ -79,7 +81,6 @@ vlc_module_begin();
+     set_description( _("Dirac video encoder") );
+     set_capability( "encoder", 100 );
+     set_callbacks( OpenEncoder, CloseEncoder );
+-    add_shortcut( "dirac" );
+     add_float( ENC_CFG_PREFIX "quality", 7.0, NULL, ENC_QUALITY_TEXT,
+                ENC_QUALITY_LONGTEXT, VLC_FALSE );
+ 
+@@ -169,7 +170,7 @@ static picture_t *GetNewPicture( decoder
+     p_pic = p_dec->pf_vout_buffer_new( p_dec );
+ 
+     if( p_pic == NULL ) return NULL;
+-    p_pic->b_progressive = !p_sys->p_dirac->src_params.interlace;
++    p_pic->b_progressive = !p_sys->p_dirac->src_params.source_sampling;
+     p_pic->b_top_field_first = p_sys->p_dirac->src_params.topfieldfirst;
+ 
+     p_pic->i_nb_fields = 2;
+@@ -364,7 +365,7 @@ static int OpenEncoder( vlc_object_t *p_
+         p_enc->fmt_in.video.i_frame_rate;
+     p_sys->ctx.src_params.frame_rate.denominator =
+         p_enc->fmt_in.video.i_frame_rate_base;
+-    p_sys->ctx.src_params.interlace = 0;
++    p_sys->ctx.src_params.source_sampling = 0;
+     p_sys->ctx.src_params.topfieldfirst = 0;
+ 
+     var_Get( p_enc, ENC_CFG_PREFIX "quality", &val );
+

@@ -1,0 +1,12 @@
+diff -up vlc-0.8.6f/configure.ac.shared_live555 vlc-0.8.6f/configure.ac
+--- vlc-0.8.6f/configure.ac.shared_live555	2008-05-05 18:24:05.000000000 +0200
++++ vlc-0.8.6f/configure.ac	2008-05-05 18:25:53.000000000 +0200
+@@ -1551,7 +1551,7 @@ if test "${enable_live555}" = "yes"; the
+       ], [
+         AC_CHECK_LIB(liveMedia, main, [
+           # We only have -lliveMedia, do builtins
+-          VLC_ADD_BUILTINS([live555])
++          VLC_ADD_PLUGINS([live555])
+           VLC_ADD_LDFLAGS([live555], [-lliveMedia -lgroupsock -lBasicUsageEnvironment -lUsageEnvironment])
+         ])
+       ])

@@ -1,0 +1,131 @@
+--- vlc-0.8.6c/bindings/mediacontrol-python/setup.py.python_libtool	2007-06-16 16:25:04.000000000 +0200
++++ vlc-0.8.6c/bindings/mediacontrol-python/setup.py	2007-08-15 16:14:29.000000000 +0200
+@@ -13,6 +13,23 @@
+     top_builddir = os.path.join( '..', '..' )
+     os.environ['top_builddir'] = top_builddir
+ 
++# Determine the extra link args. Normally, vlc-config should take care
++# of this and return the right path values, from a development tree or
++# an installed version.
++libtool=False
++linkargs=[]
++d=os.path.join(top_builddir, 'src', '.libs')
++if os.path.exists(d):
++    # We are in a development tree, which was compiled with libtool
++    libtool=True
++    linkargs=[ '-L' + d ]
++else:
++    d=os.path.join(top_builddir, 'src')
++    # We are in a development tree, which was compiled without libtool
++    if os.path.exists(d):
++        linkargs=[ '-L' + d ]
++
++# For out-of-tree compilations
+ try:
+     srcdir=os.environ['srcdir']
+ except KeyError:
+@@ -21,16 +38,6 @@
+ if not srcdir:
+     srcdir = '.'
+ 
+-#if os.sys.platform in ('win32', 'darwin'):
+-    # Do not use PIC version on win32 and Mac OS X
+-if True:
+-    # PIC version seems to be disabled on all platforms
+-    vlclib=os.path.join( top_builddir, 'src', 'libvlc.a' )
+-    picflag=''
+-else:
+-    vlclib=os.path.join( top_builddir, 'src', 'libvlc_pic.a' )
+-    picflag='pic'
+-
+ def get_vlcconfig():
+     vlcconfig=None
+     for n in ( 'vlc-config',
+@@ -58,7 +65,7 @@
+     if vlcconfig is None:
+         return []
+     else:
+-        cflags=os.popen('%s --cflags' % vlcconfig, 'r').readline().rstrip().split()
++        cflags=os.popen('%s --cflags vlc' % vlcconfig, 'r').readline().rstrip().split()
+         return cflags
+ 
+ def get_ldflags():
+@@ -69,11 +76,15 @@
+ 	ldflags = []
+ 	if os.sys.platform == 'darwin':
+ 	    ldflags = "-read_only_relocs warning".split()
+-        ldflags.extend(os.popen('%s --libs vlc %s builtin' % (vlcconfig,
+-							      picflag), 
++        ldflags.extend(os.popen('%s --libs external' % vlcconfig,
+ 				'r').readline().rstrip().split())
+ 	if os.sys.platform == 'darwin':
+ 	    ldflags.append('-lstdc++')
++        if not libtool:
++            # vlc-config is broken and gives a -lvlc-control which
++            # does not exist if libtool is disabled.
++            ldflags.remove('-lvlc-control')
++        return ldflags
+         return ldflags
+ 
+ # To compile in a local vlc tree
+@@ -81,12 +92,11 @@
+                 sources = [ os.path.join( srcdir, 'vlcglue.c'),
+                             os.path.join( srcdir, '../../src/control/mediacontrol_init.c')],
+                 include_dirs = [ top_builddir,
+-		                 os.path.join( srcdir, '../../include'),
+-		                 os.path.join( srcdir, '../../', '/usr/win32/include') ],
+-
+-                extra_objects = [ vlclib ],
++                                 os.path.join( srcdir, '..', '..', 'include' ),
++                                 srcdir, '/usr/win32/include' ],
++                extra_objects = [ ],
+                 extra_compile_args = get_cflags(),
+-		extra_link_args = [ '-L' + top_builddir ]  + get_ldflags(),
++		extra_link_args = linkargs + get_ldflags(),
+                 )
+ 
+ setup (name = 'MediaControl',
+@@ -96,12 +106,13 @@
+        license = "GPL", 
+        description = """VLC bindings for python.
+ 
+-This module provides a MediaControl object, which implements an API
+-inspired from the OMG Audio/Video Stream 1.0 specification. Moreover,
+-the module provides a Object type, which gives a low-level access to
+-the vlc objects and their variables.
+-
+-Documentation can be found on the VLC wiki : 
++This module provides bindings for the native libvlc API of the VLC
++video player. Documentation can be found on the VLC wiki :
++http://wiki.videolan.org/index.php/ExternalAPI
++
++This module also provides a MediaControl object, which implements an
++API inspired from the OMG Audio/Video Stream 1.0 specification.
++Documentation can be found on the VLC wiki :
+ http://wiki.videolan.org/index.php/PythonBinding
+ 
+ Example session:
+@@ -128,12 +139,5 @@
+ 
+ # Get status information
+ mc.get_stream_information()
+-
+-# Access lowlevel objets
+-o=vlc.Object(1)
+-o.info()
+-i=o.find_object('input')
+-i.list()
+-i.get('time')
+        """,
+        ext_modules = [ vlclocal ])
+--- vlc-0.8.6c/vlc-config.in.in.python_libtool	2007-08-15 16:19:48.000000000 +0200
++++ vlc-0.8.6c/vlc-config.in.in	2007-08-15 16:25:59.000000000 +0200
+@@ -324,7 +324,7 @@
+   fi
+   if test "${echo_external}" = yes; then
+     for module in `echo "${builtins}"`; do
+-      ldflags="${ldflags} @libdir@/vlc/lib${module}.a"
++      ldflags="${ldflags} `find ${top_builddir} -name \"lib${module}.a\"` "
+     done
+     for module in `echo "${builtins}"`; do
+       register_flags "${module}"
