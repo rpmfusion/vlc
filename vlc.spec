@@ -26,7 +26,7 @@ Name:		vlc
 Version:	0.9.0
 %define release_tag   0.2
 %define _version %{version}-git
-Release:	%{release_tag}.%{vlc_date}git%{?dist}
+Release:	%{release_tag}.%{vlc_date}git%{?dist}.1
 %else
 Version:	0.8.6h
 %define release_tag   1
@@ -776,6 +776,9 @@ fi || :
 
 
 %changelog
+* Sat Aug 09 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.8.6h-1
+- rebuild
+
 * Fri Jun 6 2008 kwizart < kwizart at gmail.com > - 0.8.6h-1
 - Update to 0.8.6h
 - Use hicolor icons
