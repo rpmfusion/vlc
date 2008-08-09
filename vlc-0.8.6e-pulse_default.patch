@@ -1,0 +1,12 @@
+diff -up vlc-0.8.6e/modules/audio_output/pulse.c.pulse_default vlc-0.8.6e/modules/audio_output/pulse.c
+--- vlc-0.8.6e/modules/audio_output/pulse.c.pulse_default	2008-02-26 02:06:44.000000000 +0100
++++ vlc-0.8.6e/modules/audio_output/pulse.c	2008-02-26 02:07:09.000000000 +0100
+@@ -94,7 +94,7 @@ static void uninit(aout_instance_t *p_ao
+ vlc_module_begin();
+     set_shortname( "Pulse Audio" );
+     set_description( _("Pulseaudio audio output") );
+-    set_capability( "audio output", 125 );
++    set_capability( "audio output", 200 );
+     set_category( CAT_AUDIO );
+     set_subcategory( SUBCAT_AUDIO_AOUT );
+     add_shortcut( "pulseaudio" );

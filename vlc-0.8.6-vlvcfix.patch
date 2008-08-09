@@ -1,0 +1,24 @@
+diff -up vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.hpp.vlvcfix vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.hpp
+--- vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.hpp.vlvcfix	2008-05-09 13:32:03.000000000 +0200
++++ vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.hpp	2008-05-09 13:32:39.000000000 +0200
+@@ -207,7 +207,7 @@ namespace wxvlc
+         wxPanel                 *GetBtnPanel( wxPanel *parent );
+         wxPanel                 *GetSendPanel( wxPanel *parent );
+ 
+-        void                    ChatMessage( wxString &message, wxColour &color, bool bShowTimeStamp = true );
++        void                    ChatMessage( wxString &message, const wxColour &color, bool bShowTimeStamp = true );
+ 
+         void                    OnMessage( wxCommandEvent& );
+         void                    OnAddUser( wxCommandEvent &evt );
+diff -up vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.cpp.vlvcfix vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.cpp
+--- vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.cpp.vlvcfix	2008-01-09 21:51:19.000000000 +0100
++++ vlc-0.8.6f/modules/gui/wxwidgets/dialogs/vlvc/vlvc_frame.cpp	2008-05-09 13:34:38.000000000 +0200
+@@ -1262,7 +1262,7 @@ void VlvcFrame::ChangeColorUser( long i_
+  * Description:
+  *              Displays a message in the Chat window
+  *****************************************************************************/
+-void VlvcFrame::ChatMessage( wxString &message, wxColour &color, bool bShowTimeStamp )
++void VlvcFrame::ChatMessage( wxString &message, const wxColour &color, bool bShowTimeStamp )
+ {
+     p_chat_textbox->Freeze();
+     if( bShowTimeStamp )

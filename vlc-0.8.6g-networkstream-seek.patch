@@ -1,0 +1,55 @@
+diff -ur vlc-0.8.6g.save/modules/access/http.c vlc-0.8.6g/modules/access/http.c
+--- vlc-0.8.6g.save/modules/access/http.c	2008-03-28 10:34:11.000000000 -0400
++++ vlc-0.8.6g/modules/access/http.c	2008-06-04 17:17:03.000000000 -0400
+@@ -680,7 +680,40 @@
+     msg_Dbg( p_access, "trying to seek to "I64Fd, i_pos );
+ 
+     Disconnect( p_access );
++    if( p_access->info.i_pos < 0 )
++    {
++        msg_Err( p_access, "seeking too early" );
++        return Seek( p_access, 0);
++    }
++    else
++    {
++        int64_t i_size = p_access->info.i_size;
++        if(i_size > 0)
++        {
++            if( i_size < i_pos )
++            {
++                msg_Err( p_access, "seeking too far" );
++                // Fix me: This replicates the file.c behavior of returning
++                // success even when seeking too far.
++                return Seek( p_access, i_size );
++            }
++            else if ( i_size == i_pos )
++            {
++                // This is the only way I have found to seek to the end, and
++                // still leave the file handle open.
++                int retval = Seek( p_access, i_pos - 1);
++                if ( retval == VLC_SUCCESS ) {
++                  int8_t p_buffer[2];
++                  Read( p_access, p_buffer, 1 );
++                  // Reset EOF
++                  p_access->info.b_eof = VLC_FALSE;
++                }
++                return retval;
++            }
++        }
++    }
+ 
++    p_access->info.i_pos = i_pos;
+     if( Connect( p_access, i_pos ) )
+     {
+         msg_Err( p_access, "seek failed" );
+@@ -710,7 +743,8 @@
+             break;
+         case ACCESS_CAN_FASTSEEK:
+             pb_bool = (vlc_bool_t*)va_arg( args, vlc_bool_t* );
+-            *pb_bool = VLC_FALSE;
++            // http 1.1 should be just as fast as nfs...
++            *pb_bool = p_sys->b_seekable;
+             break;
+         case ACCESS_CAN_PAUSE:
+         case ACCESS_CAN_CONTROL_PACE:
+
