@@ -1,0 +1,12 @@
+diff -up vlc-0.9.0-test3/modules/video_filter/opencv_wrapper.c.fix vlc-0.9.0-test3/modules/video_filter/opencv_wrapper.c
+--- vlc-0.9.0-test3/modules/video_filter/opencv_wrapper.c.fix	2008-08-02 12:36:38.000000000 +0200
++++ vlc-0.9.0-test3/modules/video_filter/opencv_wrapper.c	2008-08-02 12:36:48.000000000 +0200
+@@ -395,7 +395,7 @@ static void End( vout_thread_t *p_vout )
+         p_vout->p_sys->p_opencv = NULL;
+     }
+ 
+-    vout_CloseAndRelease( p_vout->p_sys->p_vout )
++    vout_CloseAndRelease( p_vout->p_sys->p_vout );
+ }
+ 
+ /*****************************************************************************
