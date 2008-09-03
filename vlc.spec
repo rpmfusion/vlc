@@ -7,7 +7,7 @@
 %define with_ffmpeg_compat		1
 %define ffmpeg_date	20080113
 %define with_internal_live555 		0
-%define with_shared_live555 		0
+%define with_shared_live555 		1
 %define live555_date	2008.04.03
 %define vlc_git				0
 %define vlc_date	20080611
@@ -28,8 +28,8 @@ Version:	0.9.0
 %define _version %{version}-git
 Release:	%{release_tag}.%{vlc_date}git%{?dist}
 %else
-Version:	0.8.6h
-%define release_tag   2
+Version:	0.8.6i
+%define release_tag   3
 %define _version %{version}
 Release:	%{release_tag}%{?dist}
 %endif
@@ -63,9 +63,7 @@ Patch16:        vlc-trunk-dirac_0_8_0-api.patch
 Patch17:        vlc-0.8.6c-dts_to_dca_api.patch
 Patch19:        vlc-0.8.6e-pulse.patch
 Patch20:        vlc-0.8.6e-pulse_default.patch
-Patch21:        vlc-0.8.6e-directfb.patch
-Patch50:        vlc-0.8.6h-ffmpeg-compat.patch
-Patch51:        vlc-0.8.6c-ffmpeg_fix_for_compat.patch
+Patch50:        vlc-0.8.6i-ffmpeg-compat.patch
 Patch63:        vlc-trunk-dirac_0_9_0-api.patch
 Patch80:        vlc-0.8.6e-xulrunner.patch
 Patch90:        vlc-0.8.6-vlvc_0.8.patch
@@ -347,12 +345,10 @@ touch -r vlvc_readme-0.8_fr.txt.noutf8 vlvc_readme-0.8_fr.txt
 %patch17 -p1 -b .dts_dca
 %patch19 -p1 -b .pulse
 %patch20 -p1 -b .pulse_default
-%patch21 -p1 -b .directfb
 %endif
 
 %if %{with_ffmpeg_compat}
 %patch50 -p1 -b .compat
-#patch51 -p1 -b .fix_for_compat
 %endif
 
 %if 0%{?fedora} > 8
@@ -460,7 +456,8 @@ mkdir -p temp
 # Fake the ffmpeg installation
 ln -sf %{_includedir}/ffmpeg-compat temp/ffmpeg
 ln -sf %{_includedir}/postproc-compat temp/postproc
-export FFMPEG_CFLAGS="-I%{_builddir}/%{name}-%{_version}/temp"
+export FFMPEG_CFLAGS="-I%{_builddir}/%{name}-%{_version}/temp -I%{_builddir}/%{name}-%{_version}/temp/ffmpeg"
+export POSTPROC_CFLAGS="-I%{_builddir}/%{name}-%{_version}/temp -I%{_builddir}/%{name}-%{_version}/temp/ffmpeg"
 export FFMPEG_LDFLAGS="$(pkg-config --libs libpostproc-compat libavcodec-compat libavutil-compat libavformat-compat)"
 %endif
 
@@ -690,6 +687,7 @@ fi || :
 %{_libdir}/vlc/video_output/libx11_plugin.so
 %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %{_libdir}/vlc/visualization/libgalaktos_plugin.so
+%{_libdir}/vlc/audio_output/libpulse_plugin.so
 %if %vlc_git
 %{_libdir}/vlc/misc/libxosd_plugin.so
 %{_libdir}/vlc/codec/libxvmc_plugin.so
@@ -723,6 +721,7 @@ fi || :
 %exclude %{_libdir}/vlc/video_output/libx11_plugin.so
 %exclude %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %exclude %{_libdir}/vlc/visualization/libgalaktos_plugin.so
+%exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
 %if %vlc_git
 %exclude %{_libdir}/vlc/misc/libxosd_plugin.so
 %exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
@@ -776,8 +775,24 @@ fi || :
 
 
 %changelog
-* Sat Aug 09 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.8.6h-2
-- rebuild
+* Thu Aug 28 2008 kwizart < kwizart at gmail.com > - 0.8.6i-3
+- Import for RPMFusion
+- Switch for live555
+
+* Thu Jun 12 2008 kwizart < kwizart at gmail.com > - 0.8.6i-2
+- Fix compilation with ffmpeg-compat
+
+* Thu Jun 12 2008 kwizart < kwizart at gmail.com > - 0.8.6i-1
+- Update to 0.8.6i
+Security updates:
+ * Fixed integer overflow in WAV demuxer (CVE-2008-2430)
+
+Various bugfixes:
+ * Fixed option to use shared memory within the GLX video output module
+ * Miscellaneous bugfixes in multiple modules and in libvlc
+   (transcode stream output, OSD menu video filter, VCD input,
+    SAP services discovery, http control interface)
+ * Updated Polish translation
 
 * Fri Jun 6 2008 kwizart < kwizart at gmail.com > - 0.8.6h-1
 - Update to 0.8.6h
