@@ -28,9 +28,9 @@ Version:	0.9.0
 %define _version %{version}-git
 Release:	%{release_tag}.%{vlc_date}git%{?dist}
 %else
-Version:	0.8.6i
-%define release_tag   3
-%define _version %{version}
+Version:	0.8.7
+%define release_tag   0.1
+%define _version 0.8.6i
 Release:	%{release_tag}%{?dist}
 %endif
 License:	GPLv2+
@@ -39,7 +39,7 @@ URL:		http://www.videolan.org/
 %if %vlc_git
 Source0:        http://nightlies.videolan.org/build/source/trunk-%{vlc_date}-0057/vlc-snapshot-%{vlc_date}.tar.bz2
 %else
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}.tar.bz2
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{_version}/vlc-%{_version}.tar.bz2
 %endif
 %if %with_intern_ffmpeg
 Source1:	http://rpm.greysector.net/livna/ffmpeg-%{ffmpeg_date}.tar.bz2
@@ -50,7 +50,6 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %if %with_vlvc
 Source3:        https://pfe.epitech.net/frs/download.php/747/vlvc_source-0.8.tgz
 %endif
-Patch1:         vlc-0.8.6h-new_x-content.patch
 Patch3:         vlc-0.8.6-wx28compat.patch
 Patch4:         vlc-0.8.6f-shared_live555.patch
 Patch5:         vlc-0.8.6f-all_plugin.patch
@@ -68,6 +67,9 @@ Patch63:        vlc-trunk-dirac_0_9_0-api.patch
 Patch80:        vlc-0.8.6e-xulrunner.patch
 Patch90:        vlc-0.8.6-vlvc_0.8.patch
 Patch91:        vlc-0.8.6-vlvcfix.patch
+# git-diff tags/vlc-0.8.6i HEAD > vlc-0.8.7-git_head-$(date +%Y%m%d ).patch
+# tar cjvf vlc-0.8.7-git_head-$(date +%Y%m%d ).patch.tar.bz2
+Patch99:        vlc-0.8.7-git_head-20080908.patch.tar.bz2
 Patch100:       vlc-trunk-default_font.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -252,6 +254,10 @@ mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
 It can also be used as a server to stream in unicast or multicast in
 IPv4 or IPv6 on a high-bandwidth network.
 
+!!!BIG FAT WARNING!!!
+This vlc-0.8.7 pre-version is based on vlc-0.8.6-bugfix branch 
+See http://mailman.videolan.org/pipermail/vlc/2008-August/015827.html
+
 
 %description devel
 This package contains development files for VLC Media Player.
@@ -331,7 +337,6 @@ touch -r vlvc_readme-0.8_fr.txt.noutf8 vlvc_readme-0.8_fr.txt
 %if %vlc_git
 %patch100 -p1 -b .default_font
 %else
-%patch1 -p1 -b .new_x-content
 %patch3 -p1 -b .wxGTK28compat
 %patch4 -p1 -b .shared_live555
 %patch5 -p1 -b .all_plugin
@@ -360,7 +365,7 @@ touch -r vlvc_readme-0.8_fr.txt.noutf8 vlvc_readme-0.8_fr.txt
 %patch90 -p1 -b .vlvc
 %patch91 -p1 -b .vlvcfix
 %endif
-
+%patch99 -p1 -b .vlc87
 %endif
 
 %{?_with_clinkcc:
@@ -775,6 +780,15 @@ fi || :
 
 
 %changelog
+* Mon Sep  8 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.1
+- Update to 0.8.6-bugfix
+Security updates:
+ * Fixed overflow in TTA demuxer (CVE-2008-3732)
+ * Fixed overflow in MMS module (CVE-2008-3794)
+ * Fixed overflow in Ogg demuxer
+Various bugfixes:
+ * Fixed support for large URLs in HTTPd scripts
+
 * Thu Aug 28 2008 kwizart < kwizart at gmail.com > - 0.8.6i-3
 - Import for RPMFusion
 - Switch for live555
