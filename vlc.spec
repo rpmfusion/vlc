@@ -19,7 +19,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	0.8.7
-%define release_tag   0.1
+%define release_tag   0.2
 %define _version 0.8.6i
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -41,7 +41,6 @@ Patch5:         vlc-0.8.6f-all_plugin.patch
 Patch7:         vlc-0.8.6f-wx28iccfixes.patch
 Patch9:         vlc-0.8.6c-python_destdir.patch
 Patch10:        vlc-0.8.6c-python_libtool.patch
-Patch11:        vlc-0.8.6g-networkstream-seek.patch
 Patch12:        vlc-0.8.6-font_dejavu.patch
 Patch16:        vlc-trunk-dirac_0_8_0-api.patch
 Patch17:        vlc-0.8.6c-dts_to_dca_api.patch
@@ -307,7 +306,6 @@ touch -r vlvc_readme-0.8_fr.txt.noutf8 vlvc_readme-0.8_fr.txt
 %patch7 -p1 -b .wx28iccfixes
 %patch9 -p1 -b .python_destdir
 %patch10 -p1 -b .python_libtool
-%patch11 -p1 -b .networkstream_seek
 %patch12 -p1 -b .font_dejavu
 %if 0%{?fedora} > 7
 %patch16 -p1 -b .dirac8
@@ -665,7 +663,7 @@ fi || :
 
 
 %changelog
-* Mon Sep  8 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.1
+* Mon Sep  8 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.2
 - Update to 0.8.6-bugfix
 Security updates:
  * Fixed overflow in TTA demuxer (CVE-2008-3732)
@@ -674,6 +672,7 @@ Security updates:
 Various bugfixes:
  * Fixed support for large URLs in HTTPd scripts
 - Drop vlc-git support from this spec file
+- Remove patch11
 
 * Thu Aug 28 2008 kwizart < kwizart at gmail.com > - 0.8.6i-3
 - Import for RPMFusion
