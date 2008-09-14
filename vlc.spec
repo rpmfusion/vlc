@@ -497,6 +497,9 @@ fi || :
 
 
 %changelog
+* Sun Sep 14 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.9.0-0.5.20080802git.2
+- rebuild for new x264
+
 * Sat Aug 09 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.9.0-0.5.20080802git.1
 - rebuild
 
