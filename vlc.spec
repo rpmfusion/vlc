@@ -16,7 +16,7 @@ Version:	0.9.0
 %define release_tag   0.5
 %if %vlc_git
 %define _version %{version}-test3
-Release:	%{release_tag}.%{vlc_date}git%{?dist}.1
+Release:	%{release_tag}.%{vlc_date}git%{?dist}.2
 %else
 %define _version %{version}
 Release:	%{release_tag}%{?dist}
