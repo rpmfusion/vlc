@@ -1,44 +1,45 @@
 # TODO: libdc1394(juju), modularization (vlc-plugin-foo)
+%define _default_patch_fuzz 2
 
-%define with_internal_live555 		1
-%define with_shared_live555 		0
+%define with_internal_live555 		0
 %define live555_date	2008.07.25
-%define vlc_git				1
-%define vlc_date	20080802
+%define vlc_git				0
+%define vlc_date	20080915
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
-%define with_dirac			1
+%define with_dirac			0
+
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	0.9.0
-%define release_tag   0.5
 %if %vlc_git
-%define _version %{version}-test3
-Release:	%{release_tag}.%{vlc_date}git%{?dist}.2
+Version:	1.0.0
+%define _version %{version}-git
+%define release_tag   0.1.%{vlc_date}git
 %else
+Version:	0.9.2
 %define _version %{version}
-Release:	%{release_tag}%{?dist}
+%define release_tag   1
 %endif
+Release:	%{release_tag}.%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
 %if %vlc_git
-Source0:        http://nightlies.videolan.org/build/source/trunk-%{vlc_date}-0012/vlc-snapshot-%{vlc_date}.tar.bz2
+Source0:        http://nightlies.videolan.org/build/source/trunk-%{vlc_date}-0024/vlc-snapshot-%{vlc_date}.tar.bz2
 %else
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}.tar.bz2
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{_version}.tar.bz2
 %endif
 %if %with_internal_live555
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:         vlc-trunk-default_font.patch
-Patch1:         vlc-git-opencvfix.patch
+Patch1:         vlc-0.9.2-pulse_default.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
 %if 0
-BuildRequires:	automake
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -96,17 +97,13 @@ BuildRequires:	lirc-devel
 BuildConflicts: live-devel
 BuildConflicts: live555-devel
 %else
-%if %with_shared_live555
 BuildRequires:	live555-devel >= 0-0.19.2008.04.03
-%else
-BuildRequires:	live-devel >= 0-0.11.2006.08.07
-%endif
 %endif
 BuildRequires:  kernel-headers >= 2.6.20
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
 BuildRequires:  libmusicbrainz-devel
-BuildRequires:  lua-devel
+%{?_with_lua:BuildRequires: lua-devel}
 BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
@@ -160,8 +157,8 @@ Obsoletes: mozilla-vlc < %{version}-%{release}
 
 
 # Now obsoleted as it will be built externally
-Obsoletes: java-vlc < %{version}
-Obsoletes: python-vlc < %{version}
+Obsoletes: java-vlc < 0.9.0
+Obsoletes: python-vlc < 0.9.0
 
 %if 0
 BuildRequires:  libgoom2-devel
@@ -246,7 +243,8 @@ VLC plugins for libdc1394
 %setup -q -D -T -a 2 -n %{name}-%{_version}
 %endif
 %patch0 -p1 -b .default_font
-%patch1 -p1 -b .opencvfix
+%patch1 -p1 -b .pulse_default
+
 
 
 %build
@@ -268,6 +266,7 @@ popd
 	--with-PIC				\
 	--enable-switcher			\
 	--enable-shout				\
+	%{?_with_lua:--enable-lua --enable-lua} \
 	--enable-live555 			\
 	--enable-musicbrainz			\
 %if %with_internal_live555
@@ -497,11 +496,8 @@ fi || :
 
 
 %changelog
-* Sun Sep 14 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.9.0-0.5.20080802git.2
-- rebuild for new x264
-
-* Sat Aug 09 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.9.0-0.5.20080802git.1
-- rebuild
+* Mon Sep 15 2008 kwizart < kwizart at gmail.com > - 0.9.2-1
+- Update to 0.9.2 (final)
 
 * Sat Aug  2 2008 kwizart < kwizart at gmail.com > - 0.9.0-0.5.20080802git
 - Update to 0.9.0-20080802git
