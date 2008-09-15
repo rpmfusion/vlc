@@ -22,7 +22,7 @@ Version:	0.9.2
 %define _version %{version}
 %define release_tag   1
 %endif
-Release:	%{release_tag}.%{?dist}
+Release:	%{release_tag}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
