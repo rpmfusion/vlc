@@ -19,9 +19,8 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	0.8.7
-%define release_tag   0.2
 %define _version 0.8.6i
-Release:	%{release_tag}%{?dist}
+Release:	0.3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -54,7 +53,7 @@ Patch91:        vlc-0.8.6-vlvcfix.patch
 # git-diff tags/vlc-0.8.6i HEAD > vlc-0.8.7-git_head-$(date +%Y%m%d ).patch
 # tar cjvf vlc-0.8.7-git_head-$(date +%Y%m%d ).patch.tar.bz2
 Patch99:        vlc-0.8.7-git_head-20080908.patch.tar.bz2
-Patch100:       vlc-trunk-default_font.patch
+Patch100:       vlc-0.8.7-rpmfusion2_head.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 
@@ -327,7 +326,8 @@ touch -r vlvc_readme-0.8_fr.txt.noutf8 vlvc_readme-0.8_fr.txt
 %patch90 -p1 -b .vlvc
 %patch91 -p1 -b .vlvcfix
 %endif
-%patch99 -p1 -b .vlc87
+%patch99 -p1 -b .vlc87_1
+%patch100 -p1 -b .vlc87_2
 
 %{?_with_clinkcc:
 #hack for clinkcc support - optional feature - under testing.
@@ -663,6 +663,10 @@ fi || :
 
 
 %changelog
+* Mon Sep 15 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.3
+- Update to 20080915 from 0.8.6-bugfix
+- BR live555-devel only
+
 * Mon Sep  8 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.2
 - Update to 0.8.6-bugfix
 Security updates:
