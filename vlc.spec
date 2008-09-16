@@ -20,7 +20,7 @@ Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	0.8.7
 %define _version 0.8.6i
-Release:	0.3%{?dist}
+Release:	0.3%{?dist}.1
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -120,7 +120,9 @@ BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:  libxml2-devel
-BuildRequires:	lirc-devel
+# (BR: on lirc-libs works around some mock funkiness on f8)
+# https://bugzilla.redhat.com/show_bug.cgi?id=462435
+BuildRequires: lirc-devel, lirc-libs
 %if %with_internal_live555
 BuildConflicts: live-devel
 BuildConflicts: live555-devel
