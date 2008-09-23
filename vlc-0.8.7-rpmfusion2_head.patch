@@ -122,6 +122,46 @@ index ecd1ea3..9ce8371 100644
  
      if( p_access->psz_access && !strcmp( p_access->psz_access, "mmsh" ) )
      {
+diff --git a/modules/demux/live555.cpp b/modules/demux/live555.cpp
+index 90040d3..89ff69b 100644
+--- a/modules/demux/live555.cpp
++++ b/modules/demux/live555.cpp
+@@ -110,7 +110,7 @@ vlc_module_begin();
+                   N_("Port to use for tunneling the RTSP/RTP over HTTP."),
+                   VLC_TRUE );
+ #endif
+-        add_integer("rtsp-caching", 4 * DEFAULT_PTS_DELAY / 1000, NULL,
++        add_integer("rtsp-caching", 12 * DEFAULT_PTS_DELAY / 1000, NULL,
+                     CACHING_TEXT, CACHING_LONGTEXT, VLC_TRUE );
+         add_bool(   "rtsp-kasenna", VLC_FALSE, NULL, KASENNA_TEXT,
+                     KASENNA_LONGTEXT, VLC_TRUE );
+@@ -1201,6 +1201,7 @@ static int Control( demux_t *p_demux, int i_query, va_list args )
+ {
+     demux_sys_t *p_sys = p_demux->p_sys;
+     int64_t *pi64;
++    int64_t i_time, i_caching;
+     double  *pf, f;
+     vlc_bool_t *pb, b_bool;
+ 
+@@ -1208,8 +1209,16 @@ static int Control( demux_t *p_demux, int i_query, va_list args )
+     {
+         case DEMUX_GET_TIME:
+             pi64 = (int64_t*)va_arg( args, int64_t * );
+-            *pi64 = p_sys->i_pcr - p_sys->i_pcr_start + p_sys->i_start;
+-            return VLC_SUCCESS;
++            i_time = p_sys->i_pcr - p_sys->i_pcr_start + p_sys->i_start;
++            i_caching = var_GetInteger( p_demux, "rtsp-caching" ) * 1000;
++            if( i_time < i_caching )
++                return VLC_EGENERIC;
++            else
++            {
++                *pi64 = i_time - i_caching;
++                printf("time %zd\n", *pi64);
++                return VLC_SUCCESS;
++            }
+ 
+         case DEMUX_GET_LENGTH:
+             pi64 = (int64_t*)va_arg( args, int64_t * );
 diff --git a/modules/mux/mp4.c b/modules/mux/mp4.c
 index 31e8f2e..85d6513 100644
 --- a/modules/mux/mp4.c

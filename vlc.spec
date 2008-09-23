@@ -20,7 +20,7 @@ Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	0.8.7
 %define _version 0.8.6i
-Release:	0.3%{?dist}.1
+Release:	0.3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -591,6 +591,7 @@ fi || :
 %{_datadir}/icons/hicolor/*/apps/vlc.png
 %{_bindir}/wxvlc
 %{_libdir}/vlc/gui/libwxwidgets_plugin.so
+%{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/access/libscreen_plugin.so
 %{_libdir}/vlc/misc/libsvg_plugin.so
 %{_libdir}/vlc/misc/libnotify_plugin.so
@@ -615,6 +616,7 @@ fi || :
 %exclude %{_libdir}/vlc/gui/libwxwidgets_plugin.so
 %exclude %{_libdir}/vlc/gui/libskins2_plugin.so
 %exclude %{_datadir}/vlc/skins2
+%exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %exclude %{_libdir}/vlc/access/libscreen_plugin.so
 %exclude %{_libdir}/vlc/misc/libsvg_plugin.so
 %exclude %{_libdir}/vlc/misc/libnotify_plugin.so
@@ -665,6 +667,10 @@ fi || :
 
 
 %changelog
+* Tue Sep 23 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.4
+- libaccess is no more in -core
+- More HEAD bugfixes (live555)
+
 * Mon Sep 15 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.3
 - Update to 20080915 from 0.8.6-bugfix
 - BR live555-devel only
