@@ -18,7 +18,7 @@ Version:	1.0.0
 %define _version %{version}-git
 %define release_tag   0.1.%{vlc_date}git
 %else
-Version:	0.9.2
+Version:	0.9.3
 %define _version %{version}
 %define release_tag   1
 %endif
@@ -417,7 +417,9 @@ fi || :
 %{_bindir}/svlc
 %{_bindir}/vlc-wrapper
 %{_libdir}/vlc/gui/libqt4_plugin.so
+%{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/access/libscreen_plugin.so
+%{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %{_libdir}/vlc/misc/libsvg_plugin.so
 %{_libdir}/vlc/misc/libnotify_plugin.so
 %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -445,7 +447,9 @@ fi || :
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/gui/libqt4_plugin.so
+%exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %exclude %{_libdir}/vlc/access/libscreen_plugin.so
+%exclude %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/misc/libsvg_plugin.so
 %exclude %{_libdir}/vlc/misc/libnotify_plugin.so
 %exclude %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -496,6 +500,10 @@ fi || :
 
 
 %changelog
+* Fri Sep 26 2008 kwizart < kwizart at gmail.com > - 0.9.3-1
+- Update to 0.9.3 (final)
+- Few others move from core to main
+
 * Mon Sep 15 2008 kwizart < kwizart at gmail.com > - 0.9.2-1
 - Update to 0.9.2 (final)
 
