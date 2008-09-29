@@ -20,7 +20,7 @@ Version:	1.0.0
 %else
 Version:	0.9.3
 %define _version %{version}
-%define release_tag   2
+%define release_tag   3
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -91,7 +91,9 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
+%if 0%{?fedora} > 8
 BuildRequires:	libv4l-devel
+%endif
 BuildRequires:	libvorbis-devel
 BuildRequires:  libxml2-devel
 BuildRequires:	lirc-devel
@@ -248,6 +250,8 @@ VLC plugins for libdc1394
 %patch1 -p1 -b .pulse_default
 %if 0%{?fedora} > 8
 %patch2 -p1 -b .libv4l2
+touch -r configure.ac.libv4l2 configure.ac
+touch -r configure.libv4l2 configure
 %endif
 
 
@@ -505,6 +509,9 @@ fi || :
 
 
 %changelog
+* Mon Sep 29 2008 kwizart < kwizart at gmail.com > - 0.9.3-3
+- Prevent the needs to re-run autotools
+
 * Mon Sep 29 2008 kwizart < kwizart at gmail.com > - 0.9.3-2
 - Add libv4l2 patch from Hans de Goede
 
