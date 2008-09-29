@@ -20,7 +20,7 @@ Version:	1.0.0
 %else
 Version:	0.9.3
 %define _version %{version}
-%define release_tag   1
+%define release_tag   2
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -36,6 +36,7 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:         vlc-trunk-default_font.patch
 Patch1:         vlc-0.9.2-pulse_default.patch
+Patch2:         vlc-0.9.3-libv4l2.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -90,6 +91,7 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
+BuildRequires:	libv4l-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:  libxml2-devel
 BuildRequires:	lirc-devel
@@ -244,6 +246,9 @@ VLC plugins for libdc1394
 %endif
 %patch0 -p1 -b .default_font
 %patch1 -p1 -b .pulse_default
+%if 0%{?fedora} > 8
+%patch2 -p1 -b .libv4l2
+%endif
 
 
 
@@ -500,6 +505,9 @@ fi || :
 
 
 %changelog
+* Mon Sep 29 2008 kwizart < kwizart at gmail.com > - 0.9.3-2
+- Add libv4l2 patch from Hans de Goede
+
 * Fri Sep 26 2008 kwizart < kwizart at gmail.com > - 0.9.3-1
 - Update to 0.9.3 (final)
 - Few others move from core to main
