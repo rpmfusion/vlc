@@ -18,9 +18,9 @@ Version:	1.0.0
 %define _version %{version}-git
 %define release_tag   0.1.%{vlc_date}git
 %else
-Version:	0.9.3
+Version:	0.9.4
 %define _version %{version}
-%define release_tag   3
+%define release_tag   1
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -509,8 +509,8 @@ fi || :
 
 
 %changelog
-* Mon Sep 29 2008 kwizart < kwizart at gmail.com > - 0.9.3-3
-- Prevent the needs to re-run autotools
+* Wed Oct  8 2008 kwizart < kwizart at gmail.com > - 0.9.4-1
+- Update to 0.9.4
 
 * Mon Sep 29 2008 kwizart < kwizart at gmail.com > - 0.9.3-2
 - Add libv4l2 patch from Hans de Goede
