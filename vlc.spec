@@ -8,7 +8,6 @@
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
-%define with_dirac			0
 
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
@@ -18,7 +17,7 @@ Version:	1.0.0
 %define _version %{version}-git
 %define release_tag   0.1.%{vlc_date}git
 %else
-Version:	0.9.4
+Version:	0.9.5
 %define _version %{version}
 %define release_tag   1
 %endif
@@ -36,7 +35,9 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:         vlc-trunk-default_font.patch
 Patch1:         vlc-0.9.2-pulse_default.patch
-Patch2:         vlc-0.9.3-libv4l2.patch
+Patch2:         vlc-embeddedvideo.patch
+Patch3:         300_all_pic.patch
+Patch4:         310_all_mmx_pic.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -51,11 +52,9 @@ BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
-%if %with_dirac
-BuildRequires:	dirac-devel >= 0.6.0
-%endif
+%{?_with_dirac: BuildRequires: dirac-devel >= 1.0.0}
 %if %with_directfb
-BuildRequires:  directfb-devel
+BuildRequires:  directfb-devel >= 1.2.6
 %endif
 BuildRequires:	faac-devel
 BuildRequires:	faad2-devel
@@ -78,6 +77,7 @@ BuildRequires:	libdvbpsi-devel
 BuildRequires:	libdvdnav-devel
 BuildRequires:  libebml-devel
 BuildRequires:	libid3tag-devel
+%{?_with_kate:  BuildRequires: libkate-devel}
 BuildRequires:	libmad-devel
 BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
@@ -91,7 +91,7 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
-%if 0%{?fedora} > 8
+%if 0%{?fedora} > 9
 BuildRequires:	libv4l-devel
 %endif
 BuildRequires:	libvorbis-devel
@@ -112,10 +112,9 @@ BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
 BuildRequires:	openslp-devel
+BuildRequires:  preload
 BuildRequires:  qt4-devel
 BuildRequires:  schroedinger-devel
-#Workaround for ^^
-BuildRequires:  liboil-devel
 BuildRequires:	SDL_image-devel
 BuildRequires:	speex-devel >= 1.1.5
 %ifarch %{ix86} x86_64
@@ -128,6 +127,7 @@ BuildRequires:	x264-devel >= 0-0.8.20061028
 BuildRequires:	xosd-devel
 BuildRequires:	xvidcore-devel
 BuildRequires:	zlib-devel
+BuildRequires:  zvbi-devel
 
 # X-libs
 BuildRequires:	libXt-devel
@@ -194,6 +194,11 @@ mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
 It can also be used as a server to stream in unicast or multicast in
 IPv4 or IPv6 on a high-bandwidth network.
 
+Non-default rpmbuild options:
+--with dirac:   Enable dirac codec support
+--with kate:    Enable kate codec support
+--with lua:     Enable lua support
+
 
 %description devel
 This package contains development files for VLC Media Player.
@@ -223,12 +228,20 @@ IPv4 or IPv6 on a high-bandwidth network.
 %endif
 
 %package core
-Summary:	VLC Media Player without Xorg
+Summary:	VLC Media Player core
 Group:		Applications/Multimedia
-Provides:       vlc-nox = %{version}-%{release}
 
 %description core
-VLC Media Player without X.org for server
+VLC Media Player core components
+
+%package nox
+Summary:	VLC Media Player without Xorg
+Group:		Applications/Multimedia
+Requires:       vlc-core = %{version}-%{release}
+
+%description nox
+VLC Media Player with framebuffer support for X-less server.
+
 
 %if %with_dc1394
 %package plugins-dc1394
@@ -248,12 +261,14 @@ VLC plugins for libdc1394
 %endif
 %patch0 -p1 -b .default_font
 %patch1 -p1 -b .pulse_default
-%if 0%{?fedora} > 8
-%patch2 -p1 -b .libv4l2
-touch -r configure.ac.libv4l2 configure.ac
-touch -r configure.libv4l2 configure
-%endif
+%patch2 -p1 -b .embedded
+#http://trac.videolan.org/vlc/ticket/1383
+%patch3 -p1 -b .dmo_pic
+sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
+%patch4 -p1 -b .mmx_pic
 
+chmod -x modules/gui/qt4/qt4*
+#./bootstrap
 
 
 %build
@@ -272,12 +287,11 @@ popd
 	--disable-dependency-tracking		\
 	--disable-rpath				\
 	--enable-release			\
-	--with-PIC				\
+	--with-tuning=no			\
 	--enable-switcher			\
 	--enable-shout				\
 	%{?_with_lua:--enable-lua --enable-lua} \
 	--enable-live555 			\
-	--enable-musicbrainz			\
 %if %with_internal_live555
 	--with-live555-tree=live		\
 %endif
@@ -290,7 +304,7 @@ popd
 	--enable-pvr				\
 	--enable-gnomevfs			\
 	--enable-cddax				\
-%if 0%{?fedora} < 9
+%if 0%{?fedora} < 8
 	--disable-swscale			\
 	--enable-imgresample			\
 %endif
@@ -303,9 +317,7 @@ popd
 	--enable-speex				\
 	--enable-tarkin				\
 	--enable-theora				\
-%if %with_dirac
-	--enable-dirac				\
-%endif
+	%{?_with_dirac:--enable-dirac}		\
 	--enable-svg				\
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
@@ -384,6 +396,9 @@ ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
   $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
 ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
   $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
+
+#Clear execstak
+execstack -c $RPM_BUILD_ROOT%{_bindir}/vlc
 
 
 %find_lang %{name}
@@ -472,6 +487,10 @@ fi || :
 %ifarch %{ix86} x86_64
 %exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
 %exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
+%exclude %{_libdir}/vlc/video_output/libsvgalib_plugin.so
+%endif
+%if %with_directfb
+%exclude %{_libdir}/vlc/video_output/libdirectfb_plugin.so
 %endif
 %exclude %{_libdir}/vlc/gui/libskins2_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
@@ -483,6 +502,11 @@ fi || :
 %endif
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc.1*
+
+%files nox
+%defattr(-,root,root,-)
+%{_libdir}/vlc/video_output/libdirectfb_plugin.so
+%{_libdir}/vlc/video_output/libsvgalib_plugin.so
 
 %if %with_dc1394
 %files plugins-dc1394
@@ -509,6 +533,13 @@ fi || :
 
 
 %changelog
+* Fri Oct 24 2008 kwizart < kwizart at gmail.com > - 0.9.5-1
+- Update to 0.9.5
+- Use non-default rpmbuild options for dirac kate lua
+- Split core/nox (nox bundles directfb/svgalib)
+- Fix Selinux denials (patches from gentoo).
+- Fix spurious perms on qt4 sources.
+
 * Wed Oct  8 2008 kwizart < kwizart at gmail.com > - 0.9.4-1
 - Update to 0.9.4
 
