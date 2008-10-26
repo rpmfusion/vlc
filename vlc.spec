@@ -112,7 +112,7 @@ BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
 BuildRequires:	openslp-devel
-BuildRequires:  preload
+BuildRequires:  prelink
 BuildRequires:  qt4-devel
 BuildRequires:  schroedinger-devel
 BuildRequires:	SDL_image-devel
