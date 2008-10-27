@@ -19,7 +19,7 @@ Version:	1.0.0
 %else
 Version:	0.9.5
 %define _version %{version}
-%define release_tag   1
+%define release_tag   2
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -506,7 +506,9 @@ fi || :
 %files nox
 %defattr(-,root,root,-)
 %{_libdir}/vlc/video_output/libdirectfb_plugin.so
+%ifarch %{ix86} x86_64
 %{_libdir}/vlc/video_output/libsvgalib_plugin.so
+%endif
 
 %if %with_dc1394
 %files plugins-dc1394
@@ -533,6 +535,9 @@ fi || :
 
 
 %changelog
+* Mon Oct 27 2008 kwizart < kwizart at gmail.com > - 0.9.5-2
+- Fix ppc/ppc64 build
+
 * Fri Oct 24 2008 kwizart < kwizart at gmail.com > - 0.9.5-1
 - Update to 0.9.5
 - Use non-default rpmbuild options for dirac kate lua
