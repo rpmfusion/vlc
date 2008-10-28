@@ -19,7 +19,7 @@ Version:	1.0.0
 %else
 Version:	0.9.5
 %define _version %{version}
-%define release_tag   2
+%define release_tag   3
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -535,6 +535,9 @@ fi || :
 
 
 %changelog
+* Tue Oct 28 2008 kwizart < kwizart at gmail.com > - 0.9.5-3
+- Rebuild for dependency
+
 * Mon Oct 27 2008 kwizart < kwizart at gmail.com > - 0.9.5-2
 - Fix ppc/ppc64 build
 
