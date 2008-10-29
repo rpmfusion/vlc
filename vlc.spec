@@ -20,7 +20,7 @@ Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	0.8.7
 %define _version 0.8.6i
-Release:	0.4%{?dist}
+Release:	0.5%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -52,8 +52,7 @@ Patch90:        vlc-0.8.6-vlvc_0.8.patch
 Patch91:        vlc-0.8.6-vlvcfix.patch
 # git-diff tags/vlc-0.8.6i HEAD > vlc-0.8.7-git_head-$(date +%Y%m%d ).patch
 # tar cjvf vlc-0.8.7-git_head-$(date +%Y%m%d ).patch.tar.bz2
-Patch99:        vlc-0.8.7-git_head-20080908.patch.tar.bz2
-Patch100:       vlc-0.8.7-rpmfusion2_head.patch
+Patch99:        vlc-0.8.7-git_head-20081029.patch.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 
@@ -120,9 +119,7 @@ BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:  libxml2-devel
-# (BR: on lirc-libs works around some mock funkiness on f8)
-# https://bugzilla.redhat.com/show_bug.cgi?id=462435
-BuildRequires: lirc-devel, lirc-libs
+BuildRequires:	lirc-devel
 %if %with_internal_live555
 BuildConflicts: live-devel
 BuildConflicts: live555-devel
@@ -328,8 +325,8 @@ touch -r vlvc_readme-0.8_fr.txt.noutf8 vlvc_readme-0.8_fr.txt
 %patch90 -p1 -b .vlvc
 %patch91 -p1 -b .vlvcfix
 %endif
-%patch99 -p1 -b .vlc87_1
-%patch100 -p1 -b .vlc87_2
+%patch99 -p1 -b .vlc87
+
 
 %{?_with_clinkcc:
 #hack for clinkcc support - optional feature - under testing.
@@ -593,6 +590,7 @@ fi || :
 %{_libdir}/vlc/gui/libwxwidgets_plugin.so
 %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/access/libscreen_plugin.so
+%{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %{_libdir}/vlc/misc/libsvg_plugin.so
 %{_libdir}/vlc/misc/libnotify_plugin.so
 %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -618,6 +616,7 @@ fi || :
 %exclude %{_datadir}/vlc/skins2
 %exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %exclude %{_libdir}/vlc/access/libscreen_plugin.so
+%exclude %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/misc/libsvg_plugin.so
 %exclude %{_libdir}/vlc/misc/libnotify_plugin.so
 %exclude %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -667,6 +666,10 @@ fi || :
 
 
 %changelog
+* Wed Oct 29 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.5
+- More security fixes
+- Few others move from core to main
+
 * Tue Sep 23 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.4
 - libaccess is no more in -core
 - More HEAD bugfixes (live555)
