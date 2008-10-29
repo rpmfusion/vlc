@@ -54,7 +54,7 @@ BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
 %{?_with_dirac: BuildRequires: dirac-devel >= 1.0.0}
 %if %with_directfb
-BuildRequires:  directfb-devel >= 1.2.6
+BuildRequires:  directfb-devel
 %endif
 BuildRequires:	faac-devel
 BuildRequires:	faad2-devel
