@@ -1,98 +1,72 @@
-# TODO: libdc1394(juju), java-vlc, modularization (vlc-plugin-foo)
-# Patches needed: wxGTK28 - libdc1394-2.0.1
-%{!?python_sitearch: %define python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
+# TODO: libdc1394(juju), modularization (vlc-plugin-foo)
+%define _default_patch_fuzz 2
 
-
-%define with_intern_ffmpeg		0
-%define with_ffmpeg_compat		1
-%define ffmpeg_date	20080113
 %define with_internal_live555 		0
-%define live555_date	2008.04.03
+%define live555_date	2008.07.25
+%define vlc_git				0
+%define vlc_date	20080915
 %define with_mozilla	 		1
-%define with_python_vlc			1
 %define with_dc1394			0
 %define with_directfb			1
-%define with_dirac			1
-%define with_vlvc			1
 
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	0.8.7
-%define _version 0.8.6i
-Release:	0.4%{?dist}
+%if %vlc_git
+Version:	1.0.0
+%define _version %{version}-git
+%define release_tag   0.1.%{vlc_date}git
+%else
+Version:	0.9.5
+%define _version %{version}
+%define release_tag   3
+%endif
+Release:	%{release_tag}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{_version}/vlc-%{_version}.tar.bz2
-%if %with_intern_ffmpeg
-Source1:	http://rpm.greysector.net/livna/ffmpeg-%{ffmpeg_date}.tar.bz2
+%if %vlc_git
+Source0:        http://nightlies.videolan.org/build/source/trunk-%{vlc_date}-0024/vlc-snapshot-%{vlc_date}.tar.bz2
+%else
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{_version}.tar.bz2
 %endif
 %if %with_internal_live555
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
-%if %with_vlvc
-Source3:        https://pfe.epitech.net/frs/download.php/747/vlvc_source-0.8.tgz
-%endif
-Patch3:         vlc-0.8.6-wx28compat.patch
-Patch4:         vlc-0.8.6f-shared_live555.patch
-Patch5:         vlc-0.8.6f-all_plugin.patch
-Patch7:         vlc-0.8.6f-wx28iccfixes.patch
-Patch9:         vlc-0.8.6c-python_destdir.patch
-Patch10:        vlc-0.8.6c-python_libtool.patch
-Patch12:        vlc-0.8.6-font_dejavu.patch
-Patch16:        vlc-trunk-dirac_0_8_0-api.patch
-Patch17:        vlc-0.8.6c-dts_to_dca_api.patch
-Patch19:        vlc-0.8.6e-pulse.patch
-Patch20:        vlc-0.8.6e-pulse_default.patch
-Patch50:        vlc-0.8.6i-ffmpeg-compat.patch
-Patch63:        vlc-trunk-dirac_0_9_0-api.patch
-Patch80:        vlc-0.8.6e-xulrunner.patch
-Patch90:        vlc-0.8.6-vlvc_0.8.patch
-Patch91:        vlc-0.8.6-vlvcfix.patch
-# git-diff tags/vlc-0.8.6i HEAD > vlc-0.8.7-git_head-$(date +%Y%m%d ).patch
-# tar cjvf vlc-0.8.7-git_head-$(date +%Y%m%d ).patch.tar.bz2
-Patch99:        vlc-0.8.7-git_head-20080908.patch.tar.bz2
-Patch100:       vlc-0.8.7-rpmfusion2_head.patch
+Patch0:         vlc-trunk-default_font.patch
+Patch1:         vlc-0.9.2-pulse_default.patch
+Patch2:         vlc-embeddedvideo.patch
+Patch3:         300_all_pic.patch
+Patch4:         310_all_mmx_pic.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-
-BuildRequires:	automake
-BuildRequires:	gettext-devel
 BuildRequires:	desktop-file-utils
+%if 0
+BuildRequires:	gettext-devel
 BuildRequires:	libtool
+%endif
 
 BuildRequires:	a52dec-devel
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
-%{?_with_amr:BuildRequires: amrnb-devel amrwb-devel}
 BuildRequires:	avahi-devel
 BuildRequires:  cdparanoia-devel
-%{?_with_clinkcc:BuildRequires:  clinkcc}
-%if %with_dirac
-BuildRequires:	dirac-devel >= 0.6.0
-%endif
+BuildRequires:  dbus-devel
+%{?_with_dirac: BuildRequires: dirac-devel >= 1.0.0}
 %if %with_directfb
-BuildRequires:  directfb-devel
-%endif
-%if 0%{?fedora} < 9
-BuildRequires:	esound-devel
-BuildRequires:	arts-devel
+BuildRequires:  directfb-devel >= 1.2.6
 %endif
 BuildRequires:	faac-devel
 BuildRequires:	faad2-devel
+BuildRequires:	ffmpeg-devel >= 0.4.9-0
 BuildRequires:	flac-devel
+BuildRequires:  fluidsynth-devel
 BuildRequires:	fribidi-devel
-# Broken with 0.8.6x
-#BuildRequires:  Glide3-devel
-#BuildRequires:  Glide3-libGL
 BuildRequires:  gnome-vfs2-devel
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
-BuildRequires:  gtk2-devel
 BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:	lame-devel
 BuildRequires:  libavc1394-devel
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
@@ -103,14 +77,13 @@ BuildRequires:	libdvbpsi-devel
 BuildRequires:	libdvdnav-devel
 BuildRequires:  libebml-devel
 BuildRequires:	libid3tag-devel
+%{?_with_kate:  BuildRequires: libkate-devel}
 BuildRequires:	libmad-devel
 BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:  libnotify-devel
-BuildRequires:  libopendaap-devel
-BuildRequires:	libpng-devel
 BuildRequires:	librsvg2-devel >= 2.5.0
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
@@ -118,6 +91,9 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
+%if 0%{?fedora} > 9
+BuildRequires:	libv4l-devel
+%endif
 BuildRequires:	libvorbis-devel
 BuildRequires:  libxml2-devel
 BuildRequires:	lirc-devel
@@ -130,24 +106,28 @@ BuildRequires:	live555-devel >= 0-0.19.2008.04.03
 BuildRequires:  kernel-headers >= 2.6.20
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
+BuildRequires:  libmusicbrainz-devel
+%{?_with_lua:BuildRequires: lua-devel}
 BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
+BuildRequires:  opencv-devel
 BuildRequires:	openslp-devel
-%if %with_python_vlc
-BuildRequires:	python-devel
-%endif
+BuildRequires:  prelink
+BuildRequires:  qt4-devel
+BuildRequires:  schroedinger-devel
 BuildRequires:	SDL_image-devel
 BuildRequires:	speex-devel >= 1.1.5
 %ifarch %{ix86} x86_64
 BuildRequires:  svgalib-devel
 %endif
+BuildRequires:  taglib-devel
 BuildRequires:	twolame-devel
 BuildRequires:	vcdimager-devel >= 0.7.21
-BuildRequires:	wxGTK-devel >= 2.6
 BuildRequires:	x264-devel >= 0-0.8.20061028
 BuildRequires:	xosd-devel
 BuildRequires:	xvidcore-devel
 BuildRequires:	zlib-devel
+BuildRequires:  zvbi-devel
 
 # X-libs
 BuildRequires:	libXt-devel
@@ -156,6 +136,10 @@ BuildRequires:  libXxf86vm-devel
 BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  libXpm-devel
+%ifarch %{ix86} x86_64
+BuildRequires:  libXvMC-devel
+%endif
+BuildRequires:  xorg-x11-proto-devel
 
 %if 0%{?fedora} > 6
 BuildRequires:  libsmbclient-devel
@@ -175,25 +159,15 @@ BuildRequires:  nspr-devel
 Obsoletes: mozilla-vlc < %{version}-%{release}
 %endif
 
-%if %with_intern_ffmpeg
-## Static version already bundle it
-BuildConflicts:	ffmpeg-devel
-%else
-%if %{with_ffmpeg_compat}
-BuildRequires:	ffmpeg-compat-devel >= 0.4.9-0
-%else
-BuildRequires:	ffmpeg-devel >= 0.4.9-0
-%endif
-%endif
-
 
 # Now obsoleted as it will be built externally
-Obsoletes: java-vlc < %{version}
+Obsoletes: java-vlc < 0.9.0
+Obsoletes: python-vlc < 0.9.0
 
-#Not in repos
-#BuildRequires:  libgoom2-devel
-#BuildRequires:  libggi-devel
-
+%if 0
+BuildRequires:  libgoom2-devel
+BuildRequires:  libggi-devel
+%endif
 
 %if %with_dc1394
 BuildRequires:  compat-libdc1394-devel
@@ -201,6 +175,7 @@ BuildRequires:  compat-libraw1394-devel
 %else
 BuildRequires:  libraw1394-devel
 %endif
+
 
 Requires: vlc-core = %{version}-%{release}
 Requires: dejavu-fonts
@@ -219,9 +194,10 @@ mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
 It can also be used as a server to stream in unicast or multicast in
 IPv4 or IPv6 on a high-bandwidth network.
 
-!!!BIG FAT WARNING!!!
-This vlc-0.8.7 pre-version is based on vlc-0.8.6-bugfix branch 
-See http://mailman.videolan.org/pipermail/vlc/2008-August/015827.html
+Non-default rpmbuild options:
+--with dirac:   Enable dirac codec support
+--with kate:    Enable kate codec support
+--with lua:     Enable lua support
 
 
 %description devel
@@ -232,17 +208,6 @@ for various audio and video formats (MPEG-1, MPEG-2, MPEG-4, DivX,
 mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
 It can also be used as a server to stream in unicast or multicast in
 IPv4 or IPv6 on a high-bandwidth network.
-
-%if %with_python_vlc
-%package -n python-vlc
-Summary:	VLC Media Player binding for Python
-Group:		Applications/Multimedia	
-Requires:	%{name}-core = %{version}-%{release}
-
-%description -n python-vlc
-VLC Media Player binding for Python
-%endif
-
 
 %if %with_mozilla
 %package -n mozilla-vlc
@@ -263,12 +228,20 @@ IPv4 or IPv6 on a high-bandwidth network.
 %endif
 
 %package core
-Summary:	VLC Media Player without Xorg
+Summary:	VLC Media Player core
 Group:		Applications/Multimedia
-Provides:       vlc-nox = %{version}-%{release}
 
 %description core
-VLC Media Player without X.org for server
+VLC Media Player core components
+
+%package nox
+Summary:	VLC Media Player without Xorg
+Group:		Applications/Multimedia
+Requires:       vlc-core = %{version}-%{release}
+
+%description nox
+VLC Media Player with framebuffer support for X-less server.
+
 
 %if %with_dc1394
 %package plugins-dc1394
@@ -283,117 +256,22 @@ VLC plugins for libdc1394
 
 %prep
 %setup -q -n %{name}-%{_version}
-%if %with_intern_ffmpeg
-%setup -q -D -T -a 1 -n %{name}-%{_version}
-%endif
 %if %with_internal_live555
 %setup -q -D -T -a 2 -n %{name}-%{_version}
 %endif
-%if %with_vlvc
-%setup -q -D -T -a 3 -n %{name}-%{_version}
-find vlvc_source-0.8 -type f -exec chmod 644 {} ";"
-cp -pR vlvc_source-0.8/* .
-cp -p vlvc_readme-0.8_fr.txt vlvc_readme-0.8_fr.txt.noutf8
-iconv -f ISO-8859-1 -t UTF-8 vlvc_readme-0.8_fr.txt.noutf8 > vlvc_readme-0.8_fr.txt
-touch -r vlvc_readme-0.8_fr.txt.noutf8 vlvc_readme-0.8_fr.txt
-%endif
+%patch0 -p1 -b .default_font
+%patch1 -p1 -b .pulse_default
+%patch2 -p1 -b .embedded
+#http://trac.videolan.org/vlc/ticket/1383
+%patch3 -p1 -b .dmo_pic
+sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
+%patch4 -p1 -b .mmx_pic
 
-
-%patch3 -p1 -b .wxGTK28compat
-%patch4 -p1 -b .shared_live555
-%patch5 -p1 -b .all_plugin
-%patch7 -p1 -b .wx28iccfixes
-%patch9 -p1 -b .python_destdir
-%patch10 -p1 -b .python_libtool
-%patch12 -p1 -b .font_dejavu
-%if 0%{?fedora} > 7
-%patch16 -p1 -b .dirac8
-%patch17 -p1 -b .dts_dca
-%patch19 -p1 -b .pulse
-%patch20 -p1 -b .pulse_default
-%endif
-
-%if %{with_ffmpeg_compat}
-%patch50 -p1 -b .compat
-%endif
-
-%if 0%{?fedora} > 8
-%patch63 -p1 -b .dirac9
-%patch80 -p1 -b .libxul
-%endif
-
-%if %with_vlvc
-%patch90 -p1 -b .vlvc
-%patch91 -p1 -b .vlvcfix
-%endif
-%patch99 -p1 -b .vlc87_1
-%patch100 -p1 -b .vlc87_2
-
-%{?_with_clinkcc:
-#hack for clinkcc support - optional feature - under testing.
-mkdir -p clinkcc/{lib/unix,include}
-cp -pR %{_includedir}/cybergarage clinkcc/include
-cp -pR %{_libdir}/libclink.a clinkcc/lib/unix
-sed -i -e 's|MediaServer.h|media/server/MediaServer.h|' configure.ac configure
-}
-
-# Fix perms issues
-chmod 644 mozilla/control/*
-chmod 644 src/control/log.c
-sed -i 's/\r//'  mozilla/control/* 
-
-
-sh bootstrap
+chmod -x modules/gui/qt4/qt4*
+#./bootstrap
 
 
 %build
-%if %with_intern_ffmpeg
-export CFLAGS="%{optflags}"
-# Build bundeled ffmpeg first
-pushd ffmpeg-%{ffmpeg_date}
-./configure \
-%ifarch x86_64
-	--extra-cflags="-fPIC -DPIC" \
-%else
-	--extra-cflags="-fPIC -DPIC -fomit-frame-pointer" \
-%endif
-	--disable-static \
-	--enable-pthreads \
-	--enable-shared \
-	--disable-ffmpeg \
-	--disable-ffserver \
-	--disable-vhook \
-	--disable-ffplay \
-	--disable-optimizations \
-	--disable-strip \
-	--disable-protocols \
-	--enable-liba52 \
-	--enable-libmp3lame \
-	--enable-libfaac \
-	--enable-libfaad \
-	--enable-libgsm \
-	--enable-libtheora \
-	--enable-libvorbis \
-	--enable-libx264 \
-	--enable-libxvid \
-	--enable-pp \
-	--enable-gpl \
-%{?_with_amr:--enable-libamr-nb --enable-libamr-wb }
-
-# Watch http://trac.videolan.org/vlc/ticket/865
-# Planned to be enabled for 0.9.x
-
-	make %{?_smp_mflags}
-
-# Hack for PKG_CONFIG_PATH
-for pc in theora vorbis vorbisenc ogg ;do 
-  ln -s %{_libdir}/pkgconfig/${pc}.pc
-done
-
-popd
-%endif
-
-
 %if %with_internal_live555
 # Then bundled live555 - not needed
 pushd live
@@ -405,55 +283,31 @@ popd
 %endif
 
 
-# Altivec compiler flags aren't set properly (0.8.2)
-%ifarch ppc ppc64
-export CFLAGS="$CFLAGS -maltivec -mabi=altivec"
-%endif
-
-%if %{with_ffmpeg_compat}
-mkdir -p temp
-# Fake the ffmpeg installation
-ln -sf %{_includedir}/ffmpeg-compat temp/ffmpeg
-ln -sf %{_includedir}/postproc-compat temp/postproc
-export FFMPEG_CFLAGS="-I%{_builddir}/%{name}-%{_version}/temp -I%{_builddir}/%{name}-%{_version}/temp/ffmpeg"
-export POSTPROC_CFLAGS="-I%{_builddir}/%{name}-%{_version}/temp -I%{_builddir}/%{name}-%{_version}/temp/ffmpeg"
-export FFMPEG_LDFLAGS="$(pkg-config --libs libpostproc-compat libavcodec-compat libavutil-compat libavformat-compat)"
-%endif
-
 %configure \
 	--disable-dependency-tracking		\
 	--disable-rpath				\
-	--enable-shout				\
 	--enable-release			\
+	--with-tuning=no			\
+	--enable-switcher			\
+	--enable-shout				\
+	%{?_with_lua:--enable-lua --enable-lua} \
 	--enable-live555 			\
 %if %with_internal_live555
 	--with-live555-tree=live		\
 %endif
 %if %with_dc1394
 	--enable-dc1394				\
-%endif
 	--enable-dv				\
-	--enable-ffmpeg --with-ffmpeg-mp3lame --with-ffmpeg-faac \
-%if %with_intern_ffmpeg
- 	--with-ffmpeg-tree=ffmpeg-%{ffmpeg_date} \
-%{?_with_amr:--enable-libamr-nb --enable-libamr-wb } \
-	--with-ffmpeg-faac --with-ffmpeg-vorbis \
-	--with-ffmpeg-theora --with-ffmpeg-ogg --with-ffmpeg-zlib \
-	--with-ffmpeg-a52 --with-ffmpeg-x264 \
 %endif
-	--enable-libtool 			\
-	--with-gnu-ld				\
-	--with-PIC				\
-	--disable-static			\
-	--enable-shared				\
- 	--disable-pth				\
-	--enable-dvdread			\
+	--enable-opencv				\
 	--enable-v4l				\
 	--enable-pvr				\
-	--enable-libcdio			\
-	--enable-cddax 				\
-	--enable-vcdx				\
-	--enable-dvb				\
+	--enable-gnomevfs			\
+	--enable-cddax				\
+%if 0%{?fedora} < 8
+	--disable-swscale			\
+	--enable-imgresample			\
+%endif
 	--enable-faad				\
 	--enable-twolame			\
 	--enable-real				\
@@ -463,13 +317,12 @@ export FFMPEG_LDFLAGS="$(pkg-config --libs libpostproc-compat libavcodec-compat 
 	--enable-speex				\
 	--enable-tarkin				\
 	--enable-theora				\
-%if %with_dirac
-	--enable-dirac				\
-%endif
+	%{?_with_dirac:--enable-dirac}		\
 	--enable-svg				\
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
 	--enable-svgalib			\
+	--enable-xvmc				\
 %endif
 %if %with_directfb
 	--enable-directfb			\
@@ -481,41 +334,32 @@ export FFMPEG_LDFLAGS="$(pkg-config --libs libpostproc-compat libavcodec-compat 
 	--enable-arts				\
 %endif
 	--enable-jack				\
-%{?_with_clinkcc:--enable-cyberlink --with-cyberlink-tree=clinkcc }	\
-	--enable-upnp				\
 %if 0%{?fedora} > 7
         --enable-portaudio                      \
 	--enable-pulse				\
 %endif
 	--enable-ncurses			\
 	--enable-xosd				\
+	--enable-fbosd				\
 	--enable-galaktos			\
-	--enable-slp				\
 	--enable-lirc				\
-	--disable-corba				\
-%if %with_vlvc
-	--enable-vlvc				\
-%endif
-%if %with_python_vlc
-	--enable-mediacontrol-python-bindings	\
-%endif
 %ifarch %{ix86}
 	--enable-loader				\
-%endif
+%else
 	--without-contrib			\
+%endif
 %if %with_mozilla 
 	--enable-mozilla			\
 %endif
-	--with-x264-tree=%{_includedir}
 
 
+# remove rpath from libtool
+sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
+%if 0
 # clean unused-direct-shlib-dependencies
 sed -i -e 's! -shared ! -Wl,--as-needed\0!g' libtool
-
-%if %{with_ffmpeg_compat}
-sed -i -e 's|cflags="${cflags} -I/usr/include/ffmpeg-compat"|cflags="${cflags} -I%{_includedir}/ffmpeg-compat -I%{_includedir}/postproc-compat/"|' vlc-config
-%else
-sed -i -e 's|cflags="${cflags} -I/usr/include/ffmpeg"|cflags="${cflags} -I%{_includedir}/ffmpeg -I%{_includedir}/postproc/"|' vlc-config
 %endif
 
 
@@ -546,10 +390,15 @@ desktop-file-install --vendor livna			\
 	--mode 644					\
 	$RPM_BUILD_ROOT%{_datadir}/applications/vlc.desktop
 
-%if %with_python_vlc
-# Fix python shebang
-sed -i -e 's|"""Wrapper|#!/usr/bin/python\n"""Wrapper|' $RPM_BUILD_ROOT%{_bindir}/vlcwrapper.py
-%endif
+# Remove installed fonts for skin2 - needs
+rm -rf $RPM_BUILD_ROOT%{_datadir}/vlc/skin2/fonts/*.ttf
+ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
+  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
+ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
+  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
+
+#Clear execstak
+execstack -c $RPM_BUILD_ROOT%{_bindir}/vlc
 
 
 %find_lang %{name}
@@ -582,15 +431,19 @@ fi || :
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING ChangeLog MAINTAINERS NEWS README THANKS
 %doc %{_docdir}/vlc/*
-%if %with_vlvc
-%doc vlvc_readme-0.8_en.txt vlvc_readme-0.8_fr.txt
-%endif
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc.png
-%{_bindir}/wxvlc
-%{_libdir}/vlc/gui/libwxwidgets_plugin.so
+%{_datadir}/vlc/skins2/
+%{_bindir}/cvlc
+%{_bindir}/nvlc
+%{_bindir}/qvlc
+%{_bindir}/rvlc
+%{_bindir}/svlc
+%{_bindir}/vlc-wrapper
+%{_libdir}/vlc/gui/libqt4_plugin.so
 %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/access/libscreen_plugin.so
+%{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %{_libdir}/vlc/misc/libsvg_plugin.so
 %{_libdir}/vlc/misc/libnotify_plugin.so
 %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -600,22 +453,27 @@ fi || :
 %{_libdir}/vlc/video_output/libx11_plugin.so
 %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %{_libdir}/vlc/visualization/libgalaktos_plugin.so
-%{_libdir}/vlc/audio_output/libpulse_plugin.so
-%{_libdir}/vlc/visualization/libxosd_plugin.so
+%{_libdir}/vlc/misc/libxosd_plugin.so
+%ifarch %{ix86} x86_64
+%{_libdir}/vlc/codec/libxvmc_plugin.so
+%{_libdir}/vlc/video_output/libxvmc_plugin.so
+%endif
 %{_libdir}/vlc/gui/libskins2_plugin.so
-%{_datadir}/vlc/skins2/
+%{_libdir}/vlc/video_filter/libopencv_example_plugin.so
+%{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
+%{_libdir}/vlc/video_filter/libpanoramix_plugin.so
+%{_libdir}/vlc/audio_output/libpulse_plugin.so
 
 %files core -f %{name}.lang
 %defattr(-,root,root,-)
 %{_bindir}/vlc
+%exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
-%{_bindir}/svlc
-%exclude %{_libdir}/vlc/gui/libwxwidgets_plugin.so
-%exclude %{_libdir}/vlc/gui/libskins2_plugin.so
-%exclude %{_datadir}/vlc/skins2
+%exclude %{_libdir}/vlc/gui/libqt4_plugin.so
 %exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %exclude %{_libdir}/vlc/access/libscreen_plugin.so
+%exclude %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/misc/libsvg_plugin.so
 %exclude %{_libdir}/vlc/misc/libnotify_plugin.so
 %exclude %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -625,13 +483,32 @@ fi || :
 %exclude %{_libdir}/vlc/video_output/libx11_plugin.so
 %exclude %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %exclude %{_libdir}/vlc/visualization/libgalaktos_plugin.so
+%exclude %{_libdir}/vlc/misc/libxosd_plugin.so
+%ifarch %{ix86} x86_64
+%exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
+%exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
+%exclude %{_libdir}/vlc/video_output/libsvgalib_plugin.so
+%endif
+%if %with_directfb
+%exclude %{_libdir}/vlc/video_output/libdirectfb_plugin.so
+%endif
+%exclude %{_libdir}/vlc/gui/libskins2_plugin.so
+%exclude %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
+%exclude %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
+%exclude %{_libdir}/vlc/video_filter/libpanoramix_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
-%exclude %{_libdir}/vlc/visualization/libxosd_plugin.so
 %if %with_dc1394
 %exclude %{_libdir}/vlc/access/libdc1394_plugin.so
 %endif
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc.1*
+
+%files nox
+%defattr(-,root,root,-)
+%{_libdir}/vlc/video_output/libdirectfb_plugin.so
+%ifarch %{ix86} x86_64
+%{_libdir}/vlc/video_output/libsvgalib_plugin.so
+%endif
 
 %if %with_dc1394
 %files plugins-dc1394
@@ -646,7 +523,8 @@ fi || :
 %{_includedir}/vlc/*
 %{_mandir}/man1/vlc-config.1*
 %{_libdir}/*.so
-%{_bindir}/vlc-config
+%{_libdir}/pkgconfig/vlc-plugin.pc
+%{_libdir}/pkgconfig/libvlc.pc
 
 %if %with_mozilla
 %files -n mozilla-vlc
@@ -654,54 +532,48 @@ fi || :
 %{_libdir}/mozilla/plugins/libvlcplugin.so
 %endif
 
-%if %with_python_vlc
-%files -n python-vlc
-%defattr(-,root,root,-)
-%{python_sitearch}/*
-%{_bindir}/vlcwrapper.py
-%exclude %{_bindir}/vlcwrapper.py?
-%endif
-
 
 
 %changelog
-* Tue Sep 23 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.4
-- libaccess_gnomevfs_plugin is no more in -core
-- More HEAD bugfixes (live555)
+* Tue Oct 28 2008 kwizart < kwizart at gmail.com > - 0.9.5-3
+- Rebuild for dependency
 
-* Mon Sep 15 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.3
-- Update to 20080915 from 0.8.6-bugfix
-- BR live555-devel only
+* Mon Oct 27 2008 kwizart < kwizart at gmail.com > - 0.9.5-2
+- Fix ppc/ppc64 build
 
-* Mon Sep  8 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.2
-- Update to 0.8.6-bugfix
-Security updates:
- * Fixed overflow in TTA demuxer (CVE-2008-3732)
- * Fixed overflow in MMS module (CVE-2008-3794)
- * Fixed overflow in Ogg demuxer
-Various bugfixes:
- * Fixed support for large URLs in HTTPd scripts
-- Drop vlc-git support from this spec file
-- Remove patch11
+* Fri Oct 24 2008 kwizart < kwizart at gmail.com > - 0.9.5-1
+- Update to 0.9.5
+- Use non-default rpmbuild options for dirac kate lua
+- Split core/nox (nox bundles directfb/svgalib)
+- Fix Selinux denials (patches from gentoo).
+- Fix spurious perms on qt4 sources.
 
-* Thu Aug 28 2008 kwizart < kwizart at gmail.com > - 0.8.6i-3
-- Import for RPMFusion
-- Switch for live555
+* Wed Oct  8 2008 kwizart < kwizart at gmail.com > - 0.9.4-1
+- Update to 0.9.4
 
-* Thu Jun 12 2008 kwizart < kwizart at gmail.com > - 0.8.6i-2
-- Fix compilation with ffmpeg-compat
+* Mon Sep 29 2008 kwizart < kwizart at gmail.com > - 0.9.3-2
+- Add libv4l2 patch from Hans de Goede
 
-* Thu Jun 12 2008 kwizart < kwizart at gmail.com > - 0.8.6i-1
-- Update to 0.8.6i
-Security updates:
- * Fixed integer overflow in WAV demuxer (CVE-2008-2430)
+* Fri Sep 26 2008 kwizart < kwizart at gmail.com > - 0.9.3-1
+- Update to 0.9.3 (final)
+- Few others move from core to main
 
-Various bugfixes:
- * Fixed option to use shared memory within the GLX video output module
- * Miscellaneous bugfixes in multiple modules and in libvlc
-   (transcode stream output, OSD menu video filter, VCD input,
-    SAP services discovery, http control interface)
- * Updated Polish translation
+* Mon Sep 15 2008 kwizart < kwizart at gmail.com > - 0.9.2-1
+- Update to 0.9.2 (final)
+
+* Sat Aug  2 2008 kwizart < kwizart at gmail.com > - 0.9.0-0.5.20080802git
+- Update to 0.9.0-20080802git
+
+* Sun Jul 13 2008 kwizart < kwizart at gmail.com > - 0.9.0-0.4.20080713git
+- Update to 0.9.0-20080713git
+
+* Thu Jul  3 2008 kwizart < kwizart at gmail.com > - 0.9.0-0.3.20080703git
+- Update to 0.9.0-20080703git
+  http://mailman.videolan.org/pipermail/vlc-devel/2008-July/045911.html
+- Conditionalize xvmc to exclude ppc
+
+* Thu Jun 12 2008 kwizart < kwizart at gmail.com > - 0.8.6h-2
+- Fix libdvdnav (only) use.
 
 * Fri Jun 6 2008 kwizart < kwizart at gmail.com > - 0.8.6h-1
 - Update to 0.8.6h

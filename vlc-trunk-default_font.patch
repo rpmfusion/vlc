@@ -1,0 +1,12 @@
+diff -up vlc-0.9.0-svn/modules/misc/freetype.c.default_font vlc-0.9.0-svn/modules/misc/freetype.c
+--- vlc-0.9.0-svn/modules/misc/freetype.c.default_font	2007-11-21 22:58:06.000000000 +0100
++++ vlc-0.9.0-svn/modules/misc/freetype.c	2007-11-21 23:00:54.000000000 +0100
+@@ -61,7 +61,7 @@
+ #define DEFAULT_FONT "" /* Default font found at run-time */
+ #define FC_DEFAULT_FONT "Arial"
+ #else
+-#define DEFAULT_FONT "/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf"
++#define DEFAULT_FONT "/usr/share/fonts/dejavu/DejaVuSerif-Bold.ttf"
+ #define FC_DEFAULT_FONT "Serif Bold"
+ #endif
+ 
