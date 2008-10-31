@@ -20,7 +20,7 @@ Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	0.8.7
 %define _version 0.8.6i
-Release:	0.7%{?dist}
+Release:	0.8%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -599,6 +599,9 @@ fi || :
 %{_libdir}/vlc/video_output/libx11_plugin.so
 %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %{_libdir}/vlc/visualization/libgalaktos_plugin.so
+%if 0%{?fedora} < 9
+%{_libdir}/vlc/audio_output/libarts_plugin.so
+%endif
 %{_libdir}/vlc/audio_output/libpulse_plugin.so
 %{_libdir}/vlc/visualization/libxosd_plugin.so
 %{_libdir}/vlc/gui/libskins2_plugin.so
@@ -624,6 +627,9 @@ fi || :
 %exclude %{_libdir}/vlc/video_output/libx11_plugin.so
 %exclude %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %exclude %{_libdir}/vlc/visualization/libgalaktos_plugin.so
+%if 0%{?fedora} < 9
+%exclude %{_libdir}/vlc/audio_output/libarts_plugin.so
+%endif
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
 %exclude %{_libdir}/vlc/visualization/libxosd_plugin.so
 %if %with_dc1394
@@ -664,6 +670,9 @@ fi || :
 
 
 %changelog
+* Fri Oct 31 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.8
+- Move arts module to main
+
 * Thu Oct 30 2008 kwizart < kwizart at gmail.com > - 0.8.7-0.7
 - Bump
 
