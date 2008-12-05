@@ -17,7 +17,7 @@ Version:	1.0.0
 %define _version %{version}-git
 %define release_tag   0.1.%{vlc_date}git
 %else
-Version:	0.9.6
+Version:	0.9.8a
 %define _version %{version}
 %define release_tag   1
 %endif
@@ -35,9 +35,10 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:         vlc-trunk-default_font.patch
 Patch1:         vlc-0.9.2-pulse_default.patch
-Patch2:         vlc-embeddedvideo.patch
+Patch2:         vlc-0.9.8a-embeddedvideo.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
+Patch5:         vlc-pulse0071.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -178,8 +179,11 @@ BuildRequires:  libraw1394-devel
 
 
 Requires: vlc-core = %{version}-%{release}
+%if 0%{?fedora} > 10
+Requires: dejavu-fonts-sans
+%else
 Requires: dejavu-fonts
-
+%endif
 
 %package devel
 Summary:	Development package for %{name}
@@ -266,6 +270,7 @@ VLC plugins for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
+%patch5 -p1 -b .pulse0071
 
 chmod -x modules/gui/qt4/qt4*
 #./bootstrap
@@ -400,6 +405,8 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
 #Clear execstak
 execstack -c $RPM_BUILD_ROOT%{_bindir}/vlc
 
+#Fix unowned directories
+rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 
 %find_lang %{name}
 
@@ -430,7 +437,6 @@ fi || :
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING ChangeLog MAINTAINERS NEWS README THANKS
-%doc %{_docdir}/vlc/*
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc.png
 %{_datadir}/vlc/skins2/
@@ -535,6 +541,15 @@ fi || :
 
 
 %changelog
+* Fri Dec  5 2008 kwizart < kwizart at gmail.com > - 0.9.8a-1
+- Update to 0.9.8a
+Security update:
+ * Fixed buffer overflow in Real demuxer (SA-0811, CVE-2008-5276)
+- Add pulse0071 Patch
+- Fix RPM Fusion bugs:
+  https://bugzilla.rpmfusion.org/show_bug.cgi?id=201
+  https://bugzilla.rpmfusion.org/show_bug.cgi?id=155
+
 * Thu Nov  6 2008 kwizart < kwizart at gmail.com > - 0.9.6-1
 - Update to 0.9.6
 
