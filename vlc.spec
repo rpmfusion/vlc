@@ -265,7 +265,7 @@ VLC plugins for libdc1394
 %endif
 %patch0 -p1 -b .default_font
 %patch1 -p1 -b .pulse_default
-#patch2 -p1 -b .embedded
+%patch2 -p1 -b .embedded
 #http://trac.videolan.org/vlc/ticket/1383
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
