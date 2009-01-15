@@ -5,7 +5,7 @@
 %define live555_date	2008.07.25
 %define vlc_git				0
 %define vlc_date	20080915
-%define with_mozilla	 		1
+%define with_mozilla	 		0
 %define with_dc1394			0
 %define with_directfb			1
 
@@ -19,7 +19,7 @@ Version:	1.0.0
 %else
 Version:	0.9.8a
 %define _version %{version}
-%define release_tag   1
+%define release_tag   2
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -541,6 +541,10 @@ fi || :
 
 
 %changelog
+* Thu Jan 15 2008 kwizart < kwizart at gmail.com > - 0.9.8a-2
+- Disable mozilla-vlc because of libxul 1.9.1 WIP
+- Rebuild for libcdio
+
 * Fri Dec  5 2008 kwizart < kwizart at gmail.com > - 0.9.8a-1
 - Update to 0.9.8a
 Security update:
