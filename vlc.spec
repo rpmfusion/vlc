@@ -541,7 +541,7 @@ fi || :
 
 
 %changelog
-* Thu Jan 15 2008 kwizart < kwizart at gmail.com > - 0.9.8a-2
+* Thu Jan 15 2009 kwizart < kwizart at gmail.com > - 0.9.8a-2
 - Disable mozilla-vlc because of libxul 1.9.1 WIP
 - Rebuild for libcdio
 
