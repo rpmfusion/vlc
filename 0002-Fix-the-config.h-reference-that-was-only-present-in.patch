@@ -1,0 +1,39 @@
+From 2554044286d3697dcf1679f6e34413b9e7988066 Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet (kwizart) <kwizart@gmail.com>
+Date: Fri, 16 Jan 2009 02:56:30 +0100
+Subject: [PATCH] Fix the config.h reference that was only present in npwin.cpp
+
+---
+ projects/mozilla/support/npmac.cpp |    2 ++
+ projects/mozilla/support/npunix.c  |    2 ++
+ 2 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/projects/mozilla/support/npmac.cpp b/projects/mozilla/support/npmac.cpp
+index 394c4c9..d5901bf 100644
+--- a/projects/mozilla/support/npmac.cpp
++++ b/projects/mozilla/support/npmac.cpp
+@@ -4,6 +4,8 @@
+ //
+ //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ 
++#include "config.h"
++
+ #include <string.h>
+ 
+ #include <Processes.h>
+diff --git a/projects/mozilla/support/npunix.c b/projects/mozilla/support/npunix.c
+index 573f1f9..59de292 100644
+--- a/projects/mozilla/support/npunix.c
++++ b/projects/mozilla/support/npunix.c
+@@ -38,6 +38,8 @@
+  *----------------------------------------------------------------------
+  */
+ 
++#include "config.h"
++
+ #define XP_UNIX 1
+ #define OJI 1
+ 
+-- 
+1.6.0.6
+

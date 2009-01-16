@@ -1,0 +1,77 @@
+From b7fc1a472af08965e62df22eeb740d67970c78e1 Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet (kwizart) <kwizart@gmail.com>
+Date: Tue, 13 Jan 2009 18:51:01 +0100
+Subject: [PATCH] Mozilla SDK libxul 1.9.1 - preliminary support
+
+According to https://bugzilla.mozilla.org/show_bug.cgi?id=455458
+npupp.h has been renamed to npfunctions.h with libxul 1.9.1
+---
+ configure.ac                       |    1 +
+ projects/mozilla/support/npmac.cpp |    4 ++++
+ projects/mozilla/support/npunix.c  |    4 ++++
+ projects/mozilla/support/npwin.cpp |    4 ++++
+ 4 files changed, 13 insertions(+), 0 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index ec2284e..5bd1e9a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -5509,6 +5509,7 @@ then
+     AS_IF( [test $found = 1],[
+         CPPFLAGS="${CPPFLAGS_save} ${MOZILLA_CFLAGS}"
+         MOZILLA_REQUIRED_HEADERS=1
++        AC_CHECK_HEADERS([npfunctions.h])
+         AC_CHECK_HEADERS(npapi.h,,MOZILLA_REQUIRED_HEADERS=0)
+         AC_CHECK_HEADERS(npruntime.h,,MOZILLA_REQUIRED_HEADERS=0,
+           [#if HAVE_NPAPI_H
+diff --git a/projects/mozilla/support/npmac.cpp b/projects/mozilla/support/npmac.cpp
+index ccc3945..394c4c9 100644
+--- a/projects/mozilla/support/npmac.cpp
++++ b/projects/mozilla/support/npmac.cpp
+@@ -54,7 +54,11 @@
+ #undef XP_UNIX
+ #endif
+ 
++#ifdef HAVE_NPFUNCTIONS_H
++#include "npfunctions.h"
++#else
+ #include "npupp.h"
++#endif
+ 
+ #ifdef __MWERKS__
+ #ifndef powerc
+diff --git a/projects/mozilla/support/npunix.c b/projects/mozilla/support/npunix.c
+index 26c6736..573f1f9 100644
+--- a/projects/mozilla/support/npunix.c
++++ b/projects/mozilla/support/npunix.c
+@@ -43,7 +43,11 @@
+ 
+ #include <stdio.h>
+ #include <npapi.h>
++#ifdef HAVE_NPFUNCTIONS_H
++#include <npfunctions.h>
++#else
+ #include <npupp.h>
++#endif
+ 
+ /*
+  * Define PLUGIN_TRACE to have the wrapper functions print
+diff --git a/projects/mozilla/support/npwin.cpp b/projects/mozilla/support/npwin.cpp
+index c277f84..d9a0a9c 100644
+--- a/projects/mozilla/support/npwin.cpp
++++ b/projects/mozilla/support/npwin.cpp
+@@ -42,7 +42,11 @@
+ #endif
+ 
+ #include "npapi.h"
++#ifdef HAVE_NPFUNCTIONS_H
++#include "npfunctions.h"
++#else
+ #include "npupp.h"
++#endif
+ 
+ //\\// DEFINE
+ #define NP_EXPORT
+-- 
+1.6.0.6
+

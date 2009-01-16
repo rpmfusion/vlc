@@ -5,7 +5,7 @@
 %define live555_date	2008.07.25
 %define vlc_git				0
 %define vlc_date	20080915
-%define with_mozilla	 		0
+%define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
 
@@ -19,7 +19,7 @@ Version:	1.0.0
 %else
 Version:	0.9.8a
 %define _version %{version}
-%define release_tag   2
+%define release_tag   3
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -39,10 +39,14 @@ Patch2:         vlc-0.9.8a-embeddedvideo.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-pulse0071.patch
+Patch6:         0001-Mozilla-SDK-libxul-1.9.1-preliminary-support.patch
+Patch7:         0002-Fix-the-config.h-reference-that-was-only-present-in.patch
+Patch8:         vlc-backport-postproc_unif.patch
+Patch9:         vlc-0.9.9-git2009011313.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
-%if 0
+%if 1
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -271,9 +275,16 @@ VLC plugins for libdc1394
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
 %patch5 -p1 -b .pulse0071
+%patch6 -p1 -b .libxul191
+%patch7 -p1 -b .config_h
+%patch8 -p1 -b .postproc
+%patch9 -p1 -b .vlc099
 
-chmod -x modules/gui/qt4/qt4*
+#chmod -x modules/gui/qt4/qt4*
 #./bootstrap
+autoreconf
+libtoolize
+
 
 
 %build
@@ -287,7 +298,7 @@ pushd live
 popd
 %endif
 
-
+export MOZILLA_CFLAGS="$(pkg-config --cflags libxul) -DHAVE_NPFUNCTIONS_H"
 %configure \
 	--disable-dependency-tracking		\
 	--disable-rpath				\
@@ -541,6 +552,11 @@ fi || :
 
 
 %changelog
+* Fri Jan 16 2009 kwizart < kwizart at gmail.com > - 0.9.8a-3
+- Add libxul 1.9.1 prelimary support
+- backport postproc fixes
+- Add pending 0.9-bugfix git branch
+
 * Thu Jan 15 2009 kwizart < kwizart at gmail.com > - 0.9.8a-2
 - Disable mozilla-vlc because of libxul 1.9.1 WIP
 - Rebuild for libcdio

@@ -1,0 +1,316 @@
+diff --git a/include/vlc_vout.h b/include/vlc_vout.h
+index 74e0db1..dde9495 100644
+--- a/include/vlc_vout.h
++++ b/include/vlc_vout.h
+@@ -100,6 +100,9 @@ struct picture_t
+     bool            b_progressive;          /**< is it a progressive frame ? */
+     unsigned int    i_nb_fields;                  /**< # of displayed fields */
+     bool            b_top_field_first;             /**< which field is first */
++    uint8_t        *p_q;                           /**< quantification table */
++    int             i_qstride;                    /**< quantification stride */
++    int             i_qtype;                       /**< quantification style */
+     /**@}*/
+ 
+     /** The picture heap we are attached to */
+@@ -158,6 +161,17 @@ static inline void picture_Release( picture_t *p_picture )
+ }
+ 
+ /**
++ * Cleanup quantization matrix data and set to 0
++ */
++static inline void picture_CleanupQuant( picture_t *p_pic )
++{
++    free( p_pic->p_q );
++    p_pic->p_q = NULL;
++    p_pic->i_qstride = 0;
++    p_pic->i_qtype = 0;
++}
++
++/**
+  * This function will copy all picture dynamic properties.
+  */
+ static inline void picture_CopyProperties( picture_t *p_dst, const picture_t *p_src )
+@@ -168,6 +182,8 @@ static inline void picture_CopyProperties( picture_t *p_dst, const picture_t *p_
+     p_dst->b_progressive = p_src->b_progressive;
+     p_dst->i_nb_fields = p_src->i_nb_fields;
+     p_dst->b_top_field_first = p_src->b_top_field_first;
++
++    /* FIXME: copy ->p_q and ->p_qstride */
+ }
+ 
+ /**
+@@ -240,6 +256,11 @@ struct picture_heap_t
+ #define DISPLAYED_PICTURE       5            /* been displayed but is linked */
+ #define DESTROYED_PICTURE       6              /* allocated but no more used */
+ 
++/* Quantification type */
++#define QTYPE_MPEG1            0
++#define QTYPE_MPEG2            1
++#define QTYPE_H264             2
++
+ /*****************************************************************************
+  * Shortcuts to access image components
+  *****************************************************************************/
+diff --git a/modules/codec/avcodec/video.c b/modules/codec/avcodec/video.c
+index 2baffa8..38d63d6 100644
+--- a/modules/codec/avcodec/video.c
++++ b/modules/codec/avcodec/video.c
+@@ -643,6 +643,7 @@ picture_t *DecodeVideo( decoder_t *p_dec, block_t **pp_block )
+         /* Send decoded frame to vout */
+         if( p_sys->i_pts )
+         {
++            int i;
+             p_pic->date = p_sys->i_pts;
+ 
+             ffmpeg_NextPts( p_dec, p_block->i_rate );
+@@ -658,6 +659,24 @@ picture_t *DecodeVideo( decoder_t *p_dec, block_t **pp_block )
+             p_pic->b_progressive = !p_sys->p_ff_pic->interlaced_frame;
+             p_pic->b_top_field_first = p_sys->p_ff_pic->top_field_first;
+ 
++            p_pic->i_qstride = p_sys->p_ff_pic->qstride;
++            int i_mb_h = ( p_pic->format.i_height + 15 ) / 16;
++            p_pic->p_q = malloc( p_pic->i_qstride * i_mb_h );
++            memcpy( p_pic->p_q, p_sys->p_ff_pic->qscale_table,
++                    p_pic->i_qstride * i_mb_h );
++            switch( p_sys->p_ff_pic->qscale_type )
++            {
++                case FF_QSCALE_TYPE_MPEG1:
++                    p_pic->i_qtype = QTYPE_MPEG1;
++                    break;
++                case FF_QSCALE_TYPE_MPEG2:
++                    p_pic->i_qtype = QTYPE_MPEG2;
++                    break;
++                case FF_QSCALE_TYPE_H264:
++                    p_pic->i_qtype = QTYPE_H264;
++                    break;
++            }
++
+             return p_pic;
+         }
+         else
+diff --git a/modules/gui/qt4/menus.cpp b/modules/gui/qt4/menus.cpp
+index cb1a988..3c3f2fd 100644
+--- a/modules/gui/qt4/menus.cpp
++++ b/modules/gui/qt4/menus.cpp
+@@ -198,14 +198,24 @@ static int VideoAutoMenuBuilder( vlc_object_t *p_object,
+ 
+     if( p_object )
+     {
+-        vlc_object_t *p_dec_obj = ( vlc_object_t * )vlc_object_find( p_object,
+-                VLC_OBJECT_DECODER,
+-                FIND_PARENT );
+-        if( p_dec_obj )
++        /* p_object is the vout, so the decoder is our parent and the
++         * postproc filter one of the decoder's children */
++        vlc_object_t *p_dec = (vlc_object_t *)
++                              vlc_object_find( p_object, VLC_OBJECT_DECODER,
++                                               FIND_PARENT );
++        if( p_dec )
+         {
+-            vlc_object_t *p_object = p_dec_obj;
+-            PUSH_VAR( "ffmpeg-pp-q" );
+-            vlc_object_release( p_dec_obj );
++            vlc_object_t *p_pp = (vlc_object_t *)
++                                 vlc_object_find_name( p_dec, "postproc",
++                                                       FIND_CHILD );
++            if( p_pp )
++            {
++                p_object = p_pp;
++                PUSH_VAR( "postproc-q" );
++                vlc_object_release( p_pp );
++            }
++
++            vlc_object_release( p_dec );
+         }
+     }
+     return VLC_SUCCESS;
+@@ -510,7 +520,7 @@ QMenu *QVLCMenu::VideoMenu( intf_thread_t *p_intf, QMenu *current )
+         ACT_ADD( current, "directx-wallpaper", qtr( "DirectX Wallpaper" ) );
+ #endif
+         ACT_ADD( current, "video-snapshot", qtr( "Sna&pshot" ) );
+-        /* ACT_ADD( current, "ffmpeg-pp-q", qtr( "Decoder" ) ); */
++        ACT_ADD( current, "postproc-q", qtr( "Post processing" ) );
+     }
+ 
+     p_input = THEMIM->getInput();
+@@ -1059,7 +1069,8 @@ void QVLCMenu::UpdateItem( intf_thread_t *p_intf, QMenu *menu,
+ 
+     /* Check the type of the object variable */
+     if( !strcmp( psz_var, "audio-es" )
+-     || !strcmp( psz_var, "video-es" ) )
++     || !strcmp( psz_var, "video-es" )
++     || !strcmp( psz_var, "postproc-q" ) )
+         i_type = VLC_VAR_INTEGER | VLC_VAR_HASCHOICE;
+     else
+         i_type = var_Type( p_object, psz_var );
+diff --git a/modules/stream_out/mosaic_bridge.c b/modules/stream_out/mosaic_bridge.c
+index a28986c..c619b7f 100644
+--- a/modules/stream_out/mosaic_bridge.c
++++ b/modules/stream_out/mosaic_bridge.c
+@@ -90,6 +90,7 @@ static void ReleasePicture( picture_t *p_pic )
+     }
+     else
+     {
++        free( p_pic->p_q );
+         free( p_pic->p_data_orig );
+         free( p_pic );
+     }
+diff --git a/modules/stream_out/transcode.c b/modules/stream_out/transcode.c
+index 7290b60..6dc6232 100644
+--- a/modules/stream_out/transcode.c
++++ b/modules/stream_out/transcode.c
+@@ -2269,6 +2269,7 @@ static void video_del_buffer( vlc_object_t *p_this, picture_t *p_pic )
+     VLC_UNUSED(p_this);
+     if( p_pic )
+     {
++        free( p_pic->p_q );
+         free( p_pic->p_data_orig );
+         free( p_pic->p_sys );
+         free( p_pic );
+@@ -2280,6 +2281,7 @@ static void video_del_buffer_decoder( decoder_t *p_decoder, picture_t *p_pic )
+     VLC_UNUSED(p_decoder);
+     p_pic->i_refcount = 0;
+     p_pic->i_status = DESTROYED_PICTURE;
++    picture_CleanupQuant( p_pic );
+ }
+ 
+ static void video_del_buffer_filter( filter_t *p_filter, picture_t *p_pic )
+@@ -2287,6 +2289,7 @@ static void video_del_buffer_filter( filter_t *p_filter, picture_t *p_pic )
+     VLC_UNUSED(p_filter);
+     p_pic->i_refcount = 0;
+     p_pic->i_status = DESTROYED_PICTURE;
++    picture_CleanupQuant( p_pic );
+ }
+ 
+ static void video_link_picture_decoder( decoder_t *p_dec, picture_t *p_pic )
+diff --git a/modules/video_filter/postproc.c b/modules/video_filter/postproc.c
+index e05d773..2e1237d 100644
+--- a/modules/video_filter/postproc.c
++++ b/modules/video_filter/postproc.c
+@@ -102,6 +102,8 @@ struct filter_sys_t
+     pp_context_t *pp_context; /* Never changes after init */
+     pp_mode_t    *pp_mode; /* Set to NULL if post processing is disabled */
+ 
++    bool b_had_matrix; /* Set to true if previous pic had a quant matrix (used to prevent spamming warning messages */
++
+     vlc_mutex_t lock; /* Lock when using or changing pp_mode */
+ };
+ 
+@@ -139,6 +141,7 @@ static int OpenPostproc( vlc_object_t *p_this )
+     {
+         case VLC_FOURCC('I','4','4','4'):
+         case VLC_FOURCC('J','4','4','4'):
++        /* case VLC_FOURCC('Y','U','V','A'): FIXME Should work but alpha plane needs to be copied manually and I'm kind of feeling too lazy to write the code to do that ATM (i_pitch vs i_visible_pitch...). */
+             i_flags |= PP_FORMAT_444;
+             break;
+         case VLC_FOURCC('I','4','2','2'):
+@@ -152,7 +155,6 @@ static int OpenPostproc( vlc_object_t *p_this )
+         case VLC_FOURCC('I','Y','U','V'):
+         case VLC_FOURCC('J','4','2','0'):
+         case VLC_FOURCC('Y','V','1','2'):
+-        /* case VLC_FOURCC('Y','U','V','A'): FIXME Should work but alpha plane needs to be copied manually and I'm kind of feeling too lazy to write the code to do that ATM (i_pitch vs i_visible_pitch...). */
+             i_flags |= PP_FORMAT_420;
+             break;
+         default:
+@@ -238,6 +240,7 @@ static int OpenPostproc( vlc_object_t *p_this )
+     vlc_mutex_init( &p_sys->lock );
+ 
+     p_filter->pf_video_filter = PostprocPict;
++    p_sys->b_had_matrix = true;
+ 
+     return VLC_SUCCESS;
+ }
+@@ -293,13 +296,22 @@ static picture_t *PostprocPict( filter_t *p_filter, picture_t *p_pic )
+         i_dst_stride[i_plane] = p_outpic->p[i_plane].i_pitch;
+     }
+ 
++    if( !p_pic->p_q && p_sys->b_had_matrix )
++    {
++        msg_Warn( p_filter, "Quantification table was not set by video decoder. Postprocessing won't look good." );
++        p_sys->b_had_matrix = false;
++    }
++    else if( p_pic->p_q )
++    {
++        p_sys->b_had_matrix = true;
++    }
++
+     pp_postprocess( src, i_src_stride, dst, i_dst_stride,
+                     p_filter->fmt_in.video.i_width,
+                     p_filter->fmt_in.video.i_height,
+-                    NULL /* FIXME ? works by selecting a default table. But maybe setting our own might help improve post processing quality ... */,
+-                    0 /* FIXME */,
++                    p_pic->p_q, p_pic->i_qstride,
+                     p_sys->pp_mode, p_sys->pp_context,
+-                    PP_PICT_TYPE_QP2 /* FIXME ? This should be set only for mpeg2 type codecs if I understand correctly. */ );
++                    p_pic->i_qtype == QTYPE_MPEG2 ? PP_PICT_TYPE_QP2 : 0 );
+     vlc_mutex_unlock( &p_sys->lock );
+ 
+     return CopyInfoAndRelease( p_outpic, p_pic );
+diff --git a/src/input/decoder.c b/src/input/decoder.c
+index 0e30948..4977ddd 100644
+--- a/src/input/decoder.c
++++ b/src/input/decoder.c
+@@ -712,6 +712,7 @@ static void VoutDisplayedPicture( vout_thread_t *p_vout, picture_t *p_pic )
+     else
+     {
+         p_pic->i_status = DESTROYED_PICTURE;
++        picture_CleanupQuant( p_pic );
+         p_vout->i_heap_size--;
+     }
+ 
+diff --git a/src/video_output/video_output.c b/src/video_output/video_output.c
+index b41aad2..a616d9c 100644
+--- a/src/video_output/video_output.c
++++ b/src/video_output/video_output.c
+@@ -1327,6 +1327,7 @@ static void DropPicture( vout_thread_t *p_vout, picture_t *p_picture )
+         /* Destroy the picture without displaying it */
+         p_picture->i_status = DESTROYED_PICTURE;
+         p_vout->i_heap_size--;
++        picture_CleanupQuant( p_picture );
+     }
+     vlc_mutex_unlock( &p_vout->picture_lock );
+ }
+diff --git a/src/video_output/vout_pictures.c b/src/video_output/vout_pictures.c
+index 6c2e807..d90a3fb 100644
+--- a/src/video_output/vout_pictures.c
++++ b/src/video_output/vout_pictures.c
+@@ -262,6 +262,7 @@ void vout_DestroyPicture( vout_thread_t *p_vout, picture_t *p_pic )
+ 
+     p_pic->i_status = DESTROYED_PICTURE;
+     p_vout->i_heap_size--;
++    picture_CleanupQuant( p_pic );
+ 
+     vlc_mutex_unlock( &p_vout->picture_lock );
+ }
+@@ -294,6 +295,7 @@ void vout_UnlinkPicture( vout_thread_t *p_vout, picture_t *p_pic )
+     {
+         p_pic->i_status = DESTROYED_PICTURE;
+         p_vout->i_heap_size--;
++        picture_CleanupQuant( p_pic );
+     }
+ 
+     vlc_mutex_unlock( &p_vout->picture_lock );
+@@ -683,6 +685,10 @@ int __vout_InitPicture( vlc_object_t *p_this, picture_t *p_pic,
+     p_pic->pf_unlock = 0;
+     p_pic->i_refcount = 0;
+ 
++    p_pic->p_q = NULL;
++    p_pic->i_qstride = 0;
++    p_pic->i_qtype = 0;
++
+     vout_InitFormat( &p_pic->format, i_chroma, i_width, i_height, i_aspect );
+ 
+     /* Make sure the real dimensions are a multiple of 16 */
+@@ -1042,6 +1048,7 @@ void picture_Delete( picture_t *p_picture )
+ {
+     assert( p_picture && p_picture->i_refcount == 0 );
+ 
++    free( p_picture->p_q );
+     free( p_picture->p_data_orig );
+     free( p_picture->p_sys );
+     free( p_picture );
+@@ -1094,4 +1101,3 @@ void plane_CopyPixels( plane_t *p_dst, const plane_t *p_src )
+  *
+  *****************************************************************************/
+ 
+-
