@@ -280,7 +280,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch8 -p1 -b .postproc
 %patch9 -p1 -b .vlc099
 
-#chmod -x modules/gui/qt4/qt4*
+chmod -x modules/gui/qt4/qt4*
 #./bootstrap
 autoreconf
 libtoolize
@@ -298,7 +298,7 @@ pushd live
 popd
 %endif
 
-export MOZILLA_CFLAGS="$(pkg-config --cflags libxul) -DHAVE_NPFUNCTIONS_H"
+
 %configure \
 	--disable-dependency-tracking		\
 	--disable-rpath				\
