@@ -282,7 +282,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 chmod -x modules/gui/qt4/qt4*
 #./bootstrap
-autoreconf
+autoreconf -f -i
 libtoolize
 
 
