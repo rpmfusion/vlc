@@ -112,7 +112,7 @@ BuildRequires:  kernel-headers >= 2.6.20
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
 BuildRequires:  libmusicbrainz-devel
-%{?_with_lua:BuildRequires: lua-devel}
+BuildRequires:  lua-devel
 BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
@@ -205,7 +205,6 @@ IPv4 or IPv6 on a high-bandwidth network.
 Non-default rpmbuild options:
 --with dirac:   Enable dirac codec support
 --with kate:    Enable kate codec support
---with lua:     Enable lua support
 
 
 %description devel
@@ -306,7 +305,7 @@ popd
 	--with-tuning=no			\
 	--enable-switcher			\
 	--enable-shout				\
-	%{?_with_lua:--enable-lua --enable-lua} \
+	--enable-lua                            \
 	--enable-live555 			\
 %if %with_internal_live555
 	--with-live555-tree=live		\
@@ -556,6 +555,7 @@ fi || :
 - Add libxul 1.9.1 prelimary support
 - backport postproc fixes
 - Add pending 0.9-bugfix git branch
+- Add lua support by default
 
 * Thu Jan 15 2009 kwizart < kwizart at gmail.com > - 0.9.8a-2
 - Disable mozilla-vlc because of libxul 1.9.1 WIP
