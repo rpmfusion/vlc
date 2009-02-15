@@ -22,7 +22,7 @@ Version:	0.9.9
 %define _version %{version}
 %define release_tag   0.1rc
 %endif
-Release:	%{release_tag}%{?dist}
+Release:	%{release_tag}%{?dist}.1
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -45,7 +45,7 @@ Patch8:         vlc-backport-postproc_unif.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
-%if 1
+%if 0
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -280,8 +280,6 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 chmod -x modules/gui/qt4/qt4*
 #./bootstrap
-autoreconf -f -i
-libtoolize
 %endif
 
 
