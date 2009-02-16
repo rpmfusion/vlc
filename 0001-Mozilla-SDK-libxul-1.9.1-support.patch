@@ -1,16 +1,3 @@
-diff --git a/configure.ac b/configure.ac
-index 96df16a..83dbb1d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -5523,7 +5523,7 @@ then
-            #endif
-           ])
-         if test "${MOZILLA_REQUIRED_HEADERS}" = "0"; then
--            AC_MSG_ERROR([Please install the Firefox development tools; mozilla-config.h, plugin/npapi.h and plugin/npruntime.h were not found.])
-+            AC_MSG_ERROR([Please install the Xulrunner development tools; npapi.h and pruntime.h were not found.])
-         fi
-         MOZILLA_REQUIRED_HEADERS=
-         mozilla=:
 diff --git a/projects/mozilla/support/npmac.cpp b/projects/mozilla/support/npmac.cpp
 index ccc3945..1b38392 100644
 --- a/projects/mozilla/support/npmac.cpp
