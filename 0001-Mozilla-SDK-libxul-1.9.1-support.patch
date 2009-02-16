@@ -1,0 +1,52 @@
+diff --git a/projects/mozilla/support/npunix.c b/projects/mozilla/support/npunix.c
+index 26c6736..b27b20d 100644
+--- a/projects/mozilla/support/npunix.c
++++ b/projects/mozilla/support/npunix.c
+@@ -43,7 +43,11 @@
+ 
+ #include <stdio.h>
+ #include <npapi.h>
++#if (((NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR) < 20)
+ #include <npupp.h>
++#else
++#include <npfunctions.h>
++#endif
+ 
+ /*
+  * Define PLUGIN_TRACE to have the wrapper functions print
+@@ -685,6 +689,7 @@ NP_Initialize(NPNetscapeFuncs* nsTable, NPPluginFuncs* pluginFuncs)
+          */
+         pluginFuncs->version    = (NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR;
+         pluginFuncs->size       = sizeof(NPPluginFuncs);
++#if (((NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR) < 20)
+         pluginFuncs->newp       = NewNPP_NewProc(Private_New);
+         pluginFuncs->destroy    = NewNPP_DestroyProc(Private_Destroy);
+         pluginFuncs->setwindow  = NewNPP_SetWindowProc(Private_SetWindow);
+@@ -697,9 +702,27 @@ NP_Initialize(NPNetscapeFuncs* nsTable, NPPluginFuncs* pluginFuncs)
+         pluginFuncs->event      = NULL;
+         pluginFuncs->getvalue   = NewNPP_GetValueProc(Private_GetValue);
+         pluginFuncs->setvalue   = NewNPP_SetValueProc(Private_SetValue);
++#else
++        pluginFuncs->newp       = (NPP_NewProcPtr)(Private_New);
++        pluginFuncs->destroy    = (NPP_DestroyProcPtr)(Private_Destroy);
++        pluginFuncs->setwindow  = (NPP_SetWindowProcPtr)(Private_SetWindow);
++        pluginFuncs->newstream  = (NPP_NewStreamProcPtr)(Private_NewStream);
++        pluginFuncs->destroystream = (NPP_DestroyStreamProcPtr)(Private_DestroyStream);
++        pluginFuncs->asfile     = (NPP_StreamAsFileProcPtr)(Private_StreamAsFile);
++        pluginFuncs->writeready = (NPP_WriteReadyProcPtr)(Private_WriteReady);
++        pluginFuncs->write      = (NPP_WriteProcPtr)(Private_Write);
++        pluginFuncs->print      = (NPP_PrintProcPtr)(Private_Print);
++        pluginFuncs->event      = NULL;
++        pluginFuncs->getvalue   = (NPP_GetValueProcPtr)(Private_GetValue);
++        pluginFuncs->setvalue   = (NPP_SetValueProcPtr)(Private_SetValue);
++#endif
+         if( navMinorVers >= NPVERS_HAS_NOTIFICATION )
+         {
++#if (((NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR) < 20)
+             pluginFuncs->urlnotify = NewNPP_URLNotifyProc(Private_URLNotify);
++#else
++            pluginFuncs->urlnotify = (NPP_URLNotifyProcPtr)(Private_URLNotify);
++#endif
+         }
+ #ifdef OJI
+         if( navMinorVers >= NPVERS_HAS_LIVECONNECT )
