@@ -20,9 +20,9 @@ Version:	1.0.0
 %else
 Version:	0.9.9
 %define _version %{version}
-%define release_tag   0.1rc
+%define release_tag   0.3rc
 %endif
-Release:	%{release_tag}%{?dist}.2
+Release:	%{release_tag}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -183,7 +183,7 @@ BuildRequires:  compat-libraw1394-devel
 
 Requires: vlc-core = %{version}-%{release}
 %if 0%{?fedora} > 10
-Requires: dejavu-fonts-sans
+Requires: dejavu-sans-fonts
 %else
 Requires: dejavu-fonts
 %endif
@@ -547,6 +547,9 @@ fi || :
 
 
 %changelog
+* Fri Feb 27 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.3rc
+- Rename the Required font package.
+
 * Fri Feb 13 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.1rc
 - Update to 0.9.9rc
 - Move Xless binaries to the -core subpackage
