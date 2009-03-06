@@ -4,7 +4,7 @@
 %define with_internal_live555 		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_rc          -rc
+%define vlc_rc          -rc2
 %define vlc_date	20090210
 %define with_mozilla	 		1
 %define with_dc1394			0
@@ -20,7 +20,7 @@ Version:	1.0.0
 %else
 Version:	0.9.9
 %define _version %{version}
-%define release_tag   0.3rc
+%define release_tag   0.4rc2
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -547,6 +547,9 @@ fi || :
 
 
 %changelog
+* Fri Mar  6 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.4rc2
+- Update to 0.9.9-rc2
+
 * Fri Feb 27 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.3rc
 - Rename the Required font package.
 
