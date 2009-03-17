@@ -20,7 +20,7 @@ Version:	1.0.0
 %else
 Version:	0.9.9
 %define _version %{version}
-%define release_tag   0.4rc2
+%define release_tag   0.5rc2
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -43,7 +43,7 @@ Patch5:         vlc-pulse0071.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
-%if 0
+%if 1
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -54,7 +54,7 @@ BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
-%{?_with_dirac: BuildRequires: dirac-devel >= 1.0.0}
+%{?_with_dirac: BuildRequires: dirac-devel >= 0.10.0 }
 %if %with_directfb
 BuildRequires:  directfb-devel
 %endif
@@ -86,7 +86,7 @@ BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:  libnotify-devel
-BuildRequires:	librsvg2-devel >= 2.5.0
+BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
 BuildRequires:	libtar-devel
@@ -97,7 +97,11 @@ BuildRequires:  libupnp-devel
 BuildRequires:	libv4l-devel
 %endif
 BuildRequires:	libvorbis-devel
-BuildRequires:  libxml2-devel
+%if 0%{?fedora} < 11
+BuildRequires:  libxml2 < 2.7.3
+BuildRequires:  libxml2-devel < 2.7.3
+BuildRequires:  libxml2-static < 2.7.3
+%endif
 BuildRequires:	lirc-devel
 %if %with_internal_live555
 BuildConflicts: live-devel
@@ -275,7 +279,13 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch5 -p1 -b .pulse0071
 
 chmod -x modules/gui/qt4/qt4*
-#./bootstrap
+./bootstrap
+%endif
+
+%if 0%{?fedora} > 10
+%else
+cp -p %{_bindir}/xml2-config .
+sed -i.libxml2_static -e 's|-lxml2|-static -lxml2 -shared -L%{_libdir} -lc |g' xml2-config configure.ac configure
 %endif
 
 
@@ -359,6 +369,7 @@ popd
 %if %with_mozilla 
 	--enable-mozilla			\
 %endif
+        --with-xml2-config-path=`pwd`
 
 
 # remove rpath from libtool
@@ -543,6 +554,9 @@ fi || :
 
 
 %changelog
+* Tue Mar 16 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.5rc2
+- Use libxml2-static 2.6.2 from the Fedora GA repository
+
 * Fri Mar  6 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.4rc2
 - Update to 0.9.9-rc2
 - Add lua support by default
