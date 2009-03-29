@@ -22,7 +22,7 @@ Version:	0.9.9
 %define _version %{version}
 %define release_tag   0.4rc2
 %endif
-Release:	%{release_tag}%{?dist}
+Release:	%{release_tag}%{?dist}.1
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -547,6 +547,9 @@ fi || :
 
 
 %changelog
+* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 0.9.9-0.4rc2.1
+- rebuild for new F11 features
+
 * Fri Mar  6 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.4rc2
 - Update to 0.9.9-rc2
 
