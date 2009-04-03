@@ -4,7 +4,7 @@
 %define with_internal_live555 		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_rc          -rc2
+#define vlc_rc          -rc2
 %define vlc_date	20090210
 %define with_mozilla	 		1
 %define with_dc1394			0
@@ -20,7 +20,7 @@ Version:	1.0.0
 %else
 Version:	0.9.9
 %define _version %{version}
-%define release_tag   0.5rc2
+%define release_tag   1
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -40,6 +40,7 @@ Patch2:         vlc-0.9.8a-embeddedvideo.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-pulse0071.patch
+Patch6:         vlc-0.9.9-fix_playlist.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -69,6 +70,7 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
+BuildRequires:  libass-devel
 BuildRequires:  libavc1394-devel
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
@@ -97,11 +99,7 @@ BuildRequires:  libupnp-devel
 BuildRequires:	libv4l-devel
 %endif
 BuildRequires:	libvorbis-devel
-%if 0%{?fedora} < 11
-BuildRequires:  libxml2 < 2.7.3
-BuildRequires:  libxml2-devel < 2.7.3
-BuildRequires:  libxml2-static < 2.7.3
-%endif
+BuildRequires:  libxml2-devel
 BuildRequires:	lirc-devel
 %if %with_internal_live555
 BuildConflicts: live-devel
@@ -118,6 +116,7 @@ BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
 BuildRequires:	openslp-devel
+BuildRequires:  pcre-devel
 BuildRequires:  prelink
 BuildRequires:  qt4-devel
 BuildRequires:  schroedinger-devel
@@ -277,16 +276,13 @@ VLC plugins for libdc1394
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
 %patch5 -p1 -b .pulse0071
+%patch6 -p1 -b .pl
 
 chmod -x modules/gui/qt4/qt4*
-./bootstrap
+
+#./bootstrap
 %endif
 
-%if 0%{?fedora} > 10
-%else
-cp -p %{_bindir}/xml2-config .
-sed -i.libxml2_static -e 's|-lxml2|-static -lxml2 -shared -L%{_libdir} -lc |g' xml2-config configure.ac configure
-%endif
 
 
 %build
@@ -336,6 +332,8 @@ popd
 	--enable-tarkin				\
 	--enable-theora				\
 	%{?_with_dirac:--enable-dirac}		\
+	--enable-libass				\
+	--enable-asademux			\
 	--enable-svg				\
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
@@ -554,6 +552,11 @@ fi || :
 
 
 %changelog
+* Fri Apr  3 2009 kwizart < kwizart at gmail.com > - 0.9.9-1
+- Update to 0.9.9 final
+- backport playlist patch
+- Enable subtitles decoding
+
 * Tue Mar 16 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.5rc2
 - Use libxml2-static 2.6.2 from the Fedora GA repository
 
