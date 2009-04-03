@@ -4,7 +4,8 @@
 %define with_internal_live555 		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_date	20080915
+#define vlc_rc          -rc2
+%define vlc_date	20090210
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
@@ -17,7 +18,7 @@ Version:	1.0.0
 %define _version %{version}-git
 %define release_tag   0.1.%{vlc_date}git
 %else
-Version:	0.9.8a
+Version:	0.9.9
 %define _version %{version}
 %define release_tag   1
 %endif
@@ -28,7 +29,7 @@ URL:		http://www.videolan.org/
 %if %vlc_git
 Source0:        http://nightlies.videolan.org/build/source/trunk-%{vlc_date}-0024/vlc-snapshot-%{vlc_date}.tar.bz2
 %else
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{_version}.tar.bz2
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{_version}%{?vlc_rc}.tar.bz2
 %endif
 %if %with_internal_live555
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
@@ -39,6 +40,7 @@ Patch2:         vlc-0.9.8a-embeddedvideo.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-pulse0071.patch
+Patch6:         vlc-0.9.9-fix_playlist.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -53,7 +55,7 @@ BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
-%{?_with_dirac: BuildRequires: dirac-devel >= 1.0.0}
+%{?_with_dirac: BuildRequires: dirac-devel >= 0.10.0 }
 %if %with_directfb
 BuildRequires:  directfb-devel
 %endif
@@ -68,6 +70,7 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
+BuildRequires:  libass-devel
 BuildRequires:  libavc1394-devel
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
@@ -85,7 +88,7 @@ BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:  libnotify-devel
-BuildRequires:	librsvg2-devel >= 2.5.0
+BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
 BuildRequires:	libtar-devel
@@ -108,11 +111,12 @@ BuildRequires:  kernel-headers >= 2.6.20
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
 BuildRequires:  libmusicbrainz-devel
-%{?_with_lua:BuildRequires: lua-devel}
+BuildRequires:  lua-devel
 BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
 BuildRequires:	openslp-devel
+BuildRequires:  pcre-devel
 BuildRequires:  prelink
 BuildRequires:  qt4-devel
 BuildRequires:  schroedinger-devel
@@ -173,14 +177,14 @@ BuildRequires:  libggi-devel
 %if %with_dc1394
 BuildRequires:  compat-libdc1394-devel
 BuildRequires:  compat-libraw1394-devel
-%else
-BuildRequires:  libraw1394-devel
+#else
+#BuildRequires:  libraw1394-devel
 %endif
 
 
 Requires: vlc-core = %{version}-%{release}
 %if 0%{?fedora} > 10
-Requires: dejavu-fonts-sans
+Requires: dejavu-sans-fonts
 %else
 Requires: dejavu-fonts
 %endif
@@ -201,7 +205,6 @@ IPv4 or IPv6 on a high-bandwidth network.
 Non-default rpmbuild options:
 --with dirac:   Enable dirac codec support
 --with kate:    Enable kate codec support
---with lua:     Enable lua support
 
 
 %description devel
@@ -259,11 +262,13 @@ VLC plugins for libdc1394
 %endif
 
 %prep
-%setup -q -n %{name}-%{_version}
+%setup -q -n %{name}-%{_version}%{?vlc_rc}
 %if %with_internal_live555
-%setup -q -D -T -a 2 -n %{name}-%{_version}
+%setup -q -D -T -a 2 -n %{name}-%{_version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .default_font
+%if %vlc_git
+%else
 %patch1 -p1 -b .pulse_default
 %patch2 -p1 -b .embedded
 #http://trac.videolan.org/vlc/ticket/1383
@@ -271,9 +276,13 @@ VLC plugins for libdc1394
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
 %patch5 -p1 -b .pulse0071
+%patch6 -p1 -b .pl
 
 chmod -x modules/gui/qt4/qt4*
+
 #./bootstrap
+%endif
+
 
 
 %build
@@ -295,7 +304,7 @@ popd
 	--with-tuning=no			\
 	--enable-switcher			\
 	--enable-shout				\
-	%{?_with_lua:--enable-lua --enable-lua} \
+	--enable-lua                            \
 	--enable-live555 			\
 %if %with_internal_live555
 	--with-live555-tree=live		\
@@ -323,6 +332,8 @@ popd
 	--enable-tarkin				\
 	--enable-theora				\
 	%{?_with_dirac:--enable-dirac}		\
+	--enable-libass				\
+	--enable-asademux			\
 	--enable-svg				\
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
@@ -370,7 +381,6 @@ sed -i -e 's! -shared ! -Wl,--as-needed\0!g' libtool
 
 
 make %{?_smp_mflags}
-
 
 
 %install
@@ -440,12 +450,8 @@ fi || :
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc.png
 %{_datadir}/vlc/skins2/
-%{_bindir}/cvlc
-%{_bindir}/nvlc
 %{_bindir}/qvlc
-%{_bindir}/rvlc
 %{_bindir}/svlc
-%{_bindir}/vlc-wrapper
 %{_libdir}/vlc/gui/libqt4_plugin.so
 %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/access/libscreen_plugin.so
@@ -473,6 +479,10 @@ fi || :
 %files core -f %{name}.lang
 %defattr(-,root,root,-)
 %{_bindir}/vlc
+%{_bindir}/cvlc
+%{_bindir}/nvlc
+%{_bindir}/rvlc
+%{_bindir}/vlc-wrapper
 %exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
@@ -507,7 +517,7 @@ fi || :
 %exclude %{_libdir}/vlc/access/libdc1394_plugin.so
 %endif
 %{_libdir}/vlc/
-%{_mandir}/man1/vlc.1*
+%{_mandir}/man1/vlc*.1*
 
 %files nox
 %defattr(-,root,root,-)
@@ -541,6 +551,18 @@ fi || :
 
 
 %changelog
+* Fri Apr  3 2009 kwizart < kwizart at gmail.com > - 0.9.9-1
+- Update to 0.9.9 final
+- backport playlist patch
+- Enable subtitles decoding
+
+* Tue Mar 16 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.5rc2
+- Use libxml2-static 2.6.2 from the Fedora GA repository
+
+* Fri Mar  6 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.4rc2
+- Update to 0.9.9-rc2
+- Add lua support by default
+
 * Fri Dec  5 2008 kwizart < kwizart at gmail.com > - 0.9.8a-1
 - Update to 0.9.8a
 Security update:
