@@ -4,8 +4,7 @@
 %define with_internal_live555 		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_rc          -rc2
-%define vlc_date	20090210
+%define vlc_rc          -pre1
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
@@ -13,38 +12,24 @@
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-%if %vlc_git
 Version:	1.0.0
-%define _version %{version}-git
-%define release_tag   0.1.%{vlc_date}git
-%else
-Version:	0.9.9
-%define _version %{version}
-%define release_tag   0.4rc2
-%endif
-Release:	%{release_tag}%{?dist}.1
+Release:	0.1pre1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
-%if %vlc_git
-Source0:        http://nightlies.videolan.org/build/source/trunk-%{vlc_date}-0024/vlc-snapshot-%{vlc_date}.tar.bz2
-%else
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{_version}%{?vlc_rc}.tar.bz2
-%endif
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.bz2
 %if %with_internal_live555
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:         vlc-trunk-default_font.patch
-Patch1:         vlc-0.9.2-pulse_default.patch
-Patch2:         vlc-0.9.8a-embeddedvideo.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-pulse0071.patch
-Patch6:         0001-Mozilla-SDK-libxul-1.9.1-support.patch
-Patch8:         vlc-backport-postproc_unif.patch
+Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
+BuildRequires:  gettext
+
 %if 0
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
@@ -87,22 +72,30 @@ BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
+BuildRequires:	libmtp-devel
 BuildRequires:  libnotify-devel
-BuildRequires:	librsvg2-devel >= 2.5.0
+BuildRequires:  libproxy-devel
+BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
+BuildRequires:  libsmbclient-devel
 BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
-%if 0%{?fedora} > 9
+%if 0%{?fedora} > 8
 BuildRequires:	libv4l-devel
 %endif
 BuildRequires:	libvorbis-devel
+%if 0%{?fedora} < 11
+BuildRequires:  libxml2 < 2.7.3
+BuildRequires:  libxml2-devel < 2.7.3
+BuildRequires:  libxml2-static < 2.7.3
+%else
 BuildRequires:  libxml2-devel
+%endif
 BuildRequires:	lirc-devel
 %if %with_internal_live555
-BuildConflicts: live-devel
 BuildConflicts: live555-devel
 %else
 BuildRequires:	live555-devel >= 0-0.19.2008.04.03
@@ -112,11 +105,14 @@ BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
 BuildRequires:  libmusicbrainz-devel
 BuildRequires:  lua-devel
+BuildRequires:  minizip-devel
 BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
 BuildRequires:	openslp-devel
 BuildRequires:  prelink
+BuildRequires:  pulseaudio-libs-devel >= 0.9.8
+BuildRequires:  portaudio-devel
 BuildRequires:  qt4-devel
 BuildRequires:  schroedinger-devel
 BuildRequires:	SDL_image-devel
@@ -143,18 +139,9 @@ BuildRequires:  libXpm-devel
 %ifarch %{ix86} x86_64
 BuildRequires:  libXvMC-devel
 %endif
+BuildRequires:  xcb-util-devel
 BuildRequires:  xorg-x11-proto-devel
 
-%if 0%{?fedora} > 6
-BuildRequires:  libsmbclient-devel
-%else 
-BuildRequires:  samba-common
-%endif
-
-%if 0%{?fedora} > 7
-BuildRequires:  pulseaudio-libs-devel >= 0.9.8
-BuildRequires:  portaudio-devel
-%endif
 
 %if %with_mozilla
 BuildRequires:  gecko-devel
@@ -164,20 +151,9 @@ Obsoletes: mozilla-vlc < %{version}-%{release}
 %endif
 
 
-# Now obsoleted as it will be built externally
-Obsoletes: java-vlc < 0.9.0
-Obsoletes: python-vlc < 0.9.0
-
-%if 0
-BuildRequires:  libgoom2-devel
-BuildRequires:  libggi-devel
-%endif
-
 %if %with_dc1394
 BuildRequires:  compat-libdc1394-devel
 BuildRequires:  compat-libraw1394-devel
-#else
-#BuildRequires:  libraw1394-devel
 %endif
 
 
@@ -261,25 +237,24 @@ VLC plugins for libdc1394
 %endif
 
 %prep
-%setup -q -n %{name}-%{_version}%{?vlc_rc}
+%setup -q -n %{name}-%{version}%{?vlc_rc}
 %if %with_internal_live555
-%setup -q -D -T -a 2 -n %{name}-%{_version}%{?vlc_rc}
+%setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .default_font
-%if %vlc_git
-%else
-%patch1 -p1 -b .pulse_default
-%patch2 -p1 -b .embedded
 #http://trac.videolan.org/vlc/ticket/1383
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%patch5 -p1 -b .pulse0071
-%patch6 -p1 -b .libxul191
-%patch8 -p1 -b .postproc
+%if 0%{?fedora} >= 11
+%patch5 -p1 -b .xul191
+%endif
 
-chmod -x modules/gui/qt4/qt4*
+
 #./bootstrap
+
+%if 0%{?fedora} < 11
+export XML2_LIBS="-static -lxml2 -shared -L%{_libdir} -lz -lm"
 %endif
 
 
@@ -301,7 +276,6 @@ popd
 	--enable-release			\
 	--with-tuning=no			\
 	--enable-switcher			\
-	--enable-shout				\
 	--enable-lua                            \
 	--enable-live555 			\
 %if %with_internal_live555
@@ -312,14 +286,9 @@ popd
 	--enable-dv				\
 %endif
 	--enable-opencv				\
-	--enable-v4l				\
 	--enable-pvr				\
 	--enable-gnomevfs			\
 	--enable-cddax				\
-%if 0%{?fedora} < 8
-	--disable-swscale			\
-	--enable-imgresample			\
-%endif
 	--enable-faad				\
 	--enable-twolame			\
 	--enable-real				\
@@ -334,17 +303,13 @@ popd
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
 	--enable-svgalib			\
-	--enable-xvmc				\
+	--disable-xvmc				\
 %endif
 %if %with_directfb
 	--enable-directfb			\
 %endif
 	--enable-aa				\
 	--enable-caca				\
-%if 0%{?fedora} < 9
-        --enable-esd                            \
-	--enable-arts				\
-%endif
 	--enable-jack				\
 %if 0%{?fedora} > 7
         --enable-portaudio                      \
@@ -401,7 +366,7 @@ desktop-file-install --vendor livna			\
 	--mode 644					\
 	$RPM_BUILD_ROOT%{_datadir}/applications/vlc.desktop
 
-# Remove installed fonts for skin2 - needs
+# Remove installed fonts for skin2
 rm -rf $RPM_BUILD_ROOT%{_datadir}/vlc/skin2/fonts/*.ttf
 ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
   $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
@@ -409,7 +374,7 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
   $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
 
 #Clear execstak
-execstack -c $RPM_BUILD_ROOT%{_bindir}/vlc
+#execstack -c $RPM_BUILD_ROOT%{_bindir}/vlc
 
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
@@ -450,7 +415,7 @@ fi || :
 %{_bindir}/svlc
 %{_libdir}/vlc/gui/libqt4_plugin.so
 %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
-%{_libdir}/vlc/access/libscreen_plugin.so
+%{_libdir}/vlc/access/libx11_screen_plugin.so
 %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %{_libdir}/vlc/misc/libsvg_plugin.so
 %{_libdir}/vlc/misc/libnotify_plugin.so
@@ -462,10 +427,10 @@ fi || :
 %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %{_libdir}/vlc/visualization/libgalaktos_plugin.so
 %{_libdir}/vlc/misc/libxosd_plugin.so
-%ifarch %{ix86} x86_64
-%{_libdir}/vlc/codec/libxvmc_plugin.so
-%{_libdir}/vlc/video_output/libxvmc_plugin.so
-%endif
+#ifarch %{ix86} x86_64
+#{_libdir}/vlc/codec/libxvmc_plugin.so
+#{_libdir}/vlc/video_output/libxvmc_plugin.so
+#endif
 %{_libdir}/vlc/gui/libskins2_plugin.so
 %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
@@ -484,7 +449,7 @@ fi || :
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/gui/libqt4_plugin.so
 %exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
-%exclude %{_libdir}/vlc/access/libscreen_plugin.so
+%exclude %{_libdir}/vlc/access/libx11_screen_plugin.so
 %exclude %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/misc/libsvg_plugin.so
 %exclude %{_libdir}/vlc/misc/libnotify_plugin.so
@@ -497,8 +462,8 @@ fi || :
 %exclude %{_libdir}/vlc/visualization/libgalaktos_plugin.so
 %exclude %{_libdir}/vlc/misc/libxosd_plugin.so
 %ifarch %{ix86} x86_64
-%exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
-%exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
+#exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
+#exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
 %exclude %{_libdir}/vlc/video_output/libsvgalib_plugin.so
 %endif
 %if %with_directfb
@@ -547,8 +512,10 @@ fi || :
 
 
 %changelog
-* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 0.9.9-0.4rc2.1
-- rebuild for new F11 features
+* Fri Mar 27 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.1pre1
+- Update to 1.0.0-pre1
+- Add mozilla plugin with xulrunner-1.9.1. Patch from Alexey Gladkov
+- Disable xxmc
 
 * Fri Mar  6 2009 kwizart < kwizart at gmail.com > - 0.9.9-0.4rc2
 - Update to 0.9.9-rc2
