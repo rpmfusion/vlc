@@ -367,7 +367,6 @@ popd
 %if %with_mozilla 
 	--enable-mozilla			\
 %endif
-        --with-xml2-config-path=`pwd`
 
 
 # remove rpath from libtool
