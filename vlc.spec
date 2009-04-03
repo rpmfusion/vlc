@@ -44,7 +44,7 @@ Patch6:         vlc-0.9.9-fix_playlist.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
-%if 1
+%if 0
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
