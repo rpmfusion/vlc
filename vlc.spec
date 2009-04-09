@@ -20,7 +20,7 @@ Version:	1.0.0
 %else
 Version:	0.9.9
 %define _version %{version}
-%define release_tag   1
+%define release_tag   2
 %endif
 Release:	%{release_tag}%{?dist}
 License:	GPLv2+
@@ -41,6 +41,7 @@ Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-pulse0071.patch
 Patch6:         vlc-0.9.9-fix_playlist.patch
+Patch7:         vlc-0.9.9-0.9.10git20090409.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -277,6 +278,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
 %patch5 -p1 -b .pulse0071
 %patch6 -p1 -b .pl
+%patch7 -p1 -b .git10
 
 chmod -x modules/gui/qt4/qt4*
 
@@ -551,6 +553,9 @@ fi || :
 
 
 %changelog
+* Thu Apr  9 2009 kwizart < kwizart at gmail.com > - 0.9.9-2
+- Add Patch vlc-0.9.9-0.9.10git20090409.patch
+
 * Fri Apr  3 2009 kwizart < kwizart at gmail.com > - 0.9.9-1
 - Update to 0.9.9 final
 - backport playlist patch
