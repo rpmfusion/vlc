@@ -1,0 +1,225 @@
+diff -up vlc-1.0.0-pre1/modules/codec/xvmc/xxmc.c.libmpeg2_out vlc-1.0.0-pre1/modules/codec/xvmc/xxmc.c
+--- vlc-1.0.0-pre1/modules/codec/xvmc/xxmc.c.libmpeg2_out	2009-02-15 12:36:51.000000000 +0100
++++ vlc-1.0.0-pre1/modules/codec/xvmc/xxmc.c	2009-04-09 21:39:18.000000000 +0200
+@@ -41,9 +41,9 @@
+ #endif
+ 
+ #include "mpeg2.h"
+-#include "attributes.h"
++//#include "attributes.h"
+ #include "mpeg2_internal.h"
+-#include "xvmc_vld.h"
++//#include "xvmc_vld.h"
+ 
+ /* Aspect ratio (ISO/IEC 13818-2 section 6.3.3, table 6-3) */
+ #define AR_SQUARE_PICTURE       1                           /* square pixels */
+@@ -277,7 +277,7 @@ static picture_t *DecodeBlock( decoder_t
+                     if ( p_sys->b_slice_i )
+                     {
+                         decoder_SynchroNewPicture( p_sys->p_synchro,
+-                            I_CODING_TYPE, 2, 0, 0, p_sys->i_current_rate,
++                            I_CODING_TYPE, 2, 0, 0,
+                             p_sys->p_info->sequence->flags & SEQ_FLAG_LOW_DELAY );
+                         decoder_SynchroDecode( p_sys->p_synchro );
+                         decoder_SynchroEnd( p_sys->p_synchro, I_CODING_TYPE, 0 );
+@@ -396,7 +396,7 @@ static picture_t *DecodeBlock( decoder_t
+                 decoder_SynchroNewPicture( p_sys->p_synchro,
+                         p_sys->p_info->current_picture->flags & PIC_MASK_CODING_TYPE,
+                         p_sys->p_info->current_picture->nb_fields,
+-                        0, 0, p_sys->i_current_rate,
++                        0, 0,
+                         p_sys->p_info->sequence->flags & SEQ_FLAG_LOW_DELAY );
+ 
+                 if( p_sys->b_skip )
+@@ -422,7 +422,7 @@ static picture_t *DecodeBlock( decoder_t
+                     /* Intra-slice refresh. Simulate a blank I picture. */
+                     msg_Dbg( p_dec, "intra-slice refresh stream" );
+                     decoder_SynchroNewPicture( p_sys->p_synchro,
+-                        I_CODING_TYPE, 2, 0, 0, p_sys->i_current_rate,
++                        I_CODING_TYPE, 2, 0, 0,
+                         p_sys->p_info->sequence->flags & SEQ_FLAG_LOW_DELAY );
+                     decoder_SynchroDecode( p_sys->p_synchro );
+                     decoder_SynchroEnd( p_sys->p_synchro, I_CODING_TYPE, 0 );
+@@ -457,7 +457,7 @@ static picture_t *DecodeBlock( decoder_t
+                 decoder_SynchroNewPicture( p_sys->p_synchro,
+                     p_sys->p_info->current_picture->flags & PIC_MASK_CODING_TYPE,
+                     p_sys->p_info->current_picture->nb_fields, i_pts,
+-                    0, p_sys->i_current_rate,
++                    0,
+                     p_sys->p_info->sequence->flags & SEQ_FLAG_LOW_DELAY );
+ 
+                 if ( !(p_sys->b_slice_i
+@@ -486,8 +486,8 @@ static picture_t *DecodeBlock( decoder_t
+                         return NULL;
+                     }
+ 
+-                    p_sys->p_mpeg2dec->ptr_forward_ref_picture = p_sys->p_mpeg2dec->fbuf[2]->id;
+-                    p_sys->p_mpeg2dec->ptr_backward_ref_picture = p_sys->p_mpeg2dec->fbuf[1]->id;
++                    //p_sys->p_mpeg2dec->ptr_forward_ref_picture = p_sys->p_mpeg2dec->fbuf[2]->id;
++                    //p_sys->p_mpeg2dec->ptr_backward_ref_picture = p_sys->p_mpeg2dec->fbuf[1]->id;
+ 
+                     if ((p_sys->p_info->current_picture->flags & PIC_MASK_CODING_TYPE) != B_CODING_TYPE)
+                     {
+@@ -495,9 +495,9 @@ static picture_t *DecodeBlock( decoder_t
+                         //    p_sys->p_mpeg2dec->ptr_forward_ref_picture != picture->backward_reference_frame)
+                         //    p_pic->forward_reference_frame->free (p_pic->forward_reference_frame);
+ 
+-                        p_sys->p_mpeg2dec->ptr_forward_ref_picture =
+-                                    p_sys->p_mpeg2dec->ptr_backward_ref_picture;
+-                        p_sys->p_mpeg2dec->ptr_backward_ref_picture = (void *)p_pic;
++                        //p_sys->p_mpeg2dec->ptr_forward_ref_picture =
++                        //            p_sys->p_mpeg2dec->ptr_backward_ref_picture;
++                        //p_sys->p_mpeg2dec->ptr_backward_ref_picture = (void *)p_pic;
+                     }
+                     mpeg2_set_buf( p_sys->p_mpeg2dec, buf, p_pic );
+                 }
+@@ -595,7 +595,7 @@ static picture_t *DecodeBlock( decoder_t
+                 if( p_sys->b_slice_i )
+                 {
+                     decoder_SynchroNewPicture( p_sys->p_synchro,
+-                        I_CODING_TYPE, 2, 0, 0, p_sys->i_current_rate,
++                        I_CODING_TYPE, 2, 0, 0,
+                         p_sys->p_info->sequence->flags & SEQ_FLAG_LOW_DELAY );
+                     decoder_SynchroDecode( p_sys->p_synchro );
+                     decoder_SynchroEnd( p_sys->p_synchro, I_CODING_TYPE, 0 );
+@@ -644,7 +644,7 @@ static double get_aspect_ratio( decoder_
+     {
+         /* these hardcoded values are defined on mpeg2 standard for
+         * aspect ratio. other values are reserved or forbidden.  */
+-        switch( p_sys->p_mpeg2dec->decoder.aspect_ratio_information )
++        /*switch( p_sys->p_mpeg2dec->decoder.aspect_ratio_information )
+         {
+             case 2:
+                 ratio = 4.0/3.0;
+@@ -656,16 +656,16 @@ static double get_aspect_ratio( decoder_
+                 ratio = 2.11/1.0;
+                 break;
+             case 1:
+-                default:
++                default:*/
+                 ratio = (double)p_sys->p_mpeg2dec->decoder.width/(double)p_sys->p_mpeg2dec->decoder.height;
+-            break;
+-        }
++        /*    break;
++        }*/
+     }
+     else
+     {
+         /* mpeg1 constants refer to pixel aspect ratio */
+         ratio = (double)p_sys->p_mpeg2dec->decoder.width/(double)p_sys->p_mpeg2dec->decoder.height;
+-        ratio /= mpeg1_pel_ratio[p_sys->p_mpeg2dec->decoder.aspect_ratio_information];
++        /* ratio /= mpeg1_pel_ratio[p_sys->p_mpeg2dec->decoder.aspect_ratio_information]; */
+     }
+     return ratio;
+ }
+@@ -730,8 +730,8 @@ static picture_t *GetNewPicture( decoder
+                                        p_dec->fmt_out.video.i_height,
+                                        p_dec->fmt_out.video.i_aspect,
+                                        format, flags);
+-#endif
+     mpeg2_xxmc_choose_coding( p_dec, &p_sys->p_mpeg2dec->decoder, p_pic,
+                               get_aspect_ratio(p_dec), 0 );
++#endif
+     return p_pic;
+ }
+diff -up vlc-1.0.0-pre1/modules/video_output/x11/xcommon.c.libmpeg2_out vlc-1.0.0-pre1/modules/video_output/x11/xcommon.c
+--- vlc-1.0.0-pre1/modules/video_output/x11/xcommon.c.libmpeg2_out	2009-03-17 21:06:54.000000000 +0100
++++ vlc-1.0.0-pre1/modules/video_output/x11/xcommon.c	2009-04-10 01:19:01.000000000 +0200
+@@ -116,16 +116,7 @@ static void DestroyWindow  ( vout_thread
+ static int  NewPicture     ( vout_thread_t *, picture_t * );
+ static void FreePicture    ( vout_thread_t *, picture_t * );
+ 
+-#ifndef MODULE_NAME_IS_glx
+-static IMAGE_TYPE *CreateImage    ( vout_thread_t *,
+-                                    Display *, EXTRA_ARGS, int, int );
+-#endif
+-
+ #ifdef HAVE_SYS_SHM_H
+-#ifndef MODULE_NAME_IS_glx
+-IMAGE_TYPE *CreateShmImage ( vout_thread_t *,
+-                                    Display *, EXTRA_ARGS_SHM, int, int );
+-#endif
+ static int i_shm_major = 0;
+ #endif
+ 
+@@ -428,7 +419,7 @@ int Activate ( vlc_object_t *p_this )
+     if( checkXvMCCap( p_vout ) == VLC_EGENERIC )
+     {
+         msg_Err( p_vout, "no XVMC capability found" );
+-        Deactivate( p_vout );
++        Deactivate( p_this );
+         return VLC_EGENERIC;
+     }
+     subpicture_t sub_pic;
+@@ -1076,7 +1067,7 @@ static void DisplayVideo( vout_thread_t 
+     if( p_vout->p_sys->i_shm_opcode )
+     {
+         /* Display rendered image using shared memory extension */
+-#   if defined(MODULE_NAME_IS_xvideo) || defined(MODULE_NAME_IS_xvmc)
++#if defined(MODULE_NAME_IS_xvideo) || defined(MODULE_NAME_IS_xvmc)
+         XvShmPutImage( p_vout->p_sys->p_display, p_vout->p_sys->i_xvport,
+                        p_vout->p_sys->p_win->video_window,
+                        p_vout->p_sys->p_win->gc, p_pic->p_sys->p_image,
+@@ -1086,7 +1077,7 @@ static void DisplayVideo( vout_thread_t 
+                        p_vout->fmt_out.i_visible_height,
+                        0 /*dest_x*/, 0 /*dest_y*/, i_width, i_height,
+                        False /* Don't put True here or you'll waste your CPU */ );
+-#   else
++#else
+         XShmPutImage( p_vout->p_sys->p_display,
+                       p_vout->p_sys->p_win->video_window,
+                       p_vout->p_sys->p_win->gc, p_pic->p_sys->p_image,
+@@ -1096,7 +1087,7 @@ static void DisplayVideo( vout_thread_t 
+                       p_vout->fmt_out.i_visible_width,
+                       p_vout->fmt_out.i_visible_height,
+                       False /* Don't put True here ! */ );
+-#   endif
++#endif
+     }
+     else
+ #endif /* HAVE_SYS_SHM_H */
+@@ -1922,13 +1913,13 @@ static int NewPicture( vout_thread_t *p_
+         /* Create image using XShm extension */
+         p_pic->p_sys->p_image =
+             CreateShmImage( p_vout, p_vout->p_sys->p_display,
+-#   if defined(MODULE_NAME_IS_xvideo) || defined(MODULE_NAME_IS_xvmc)
++#if defined(MODULE_NAME_IS_xvideo) || defined(MODULE_NAME_IS_xvmc)
+                             p_vout->p_sys->i_xvport,
+                             VLC2X11_FOURCC(p_vout->output.i_chroma),
+-#   else
++#else
+                             p_vout->p_sys->p_visual,
+                             p_vout->p_sys->i_screen_depth,
+-#   endif
++#endif
+                             &p_pic->p_sys->shminfo,
+                             p_vout->output.i_width, p_vout->output.i_height );
+     }
+diff -up vlc-1.0.0-pre1/modules/video_output/x11/xcommon.h.libmpeg2_out vlc-1.0.0-pre1/modules/video_output/x11/xcommon.h
+--- vlc-1.0.0-pre1/modules/video_output/x11/xcommon.h.libmpeg2_out	2009-04-10 00:23:24.000000000 +0200
++++ vlc-1.0.0-pre1/modules/video_output/x11/xcommon.h	2009-04-10 01:19:07.000000000 +0200
+@@ -395,4 +395,12 @@ typedef struct mwmhints_t
+ #   define MAX_DIRECTBUFFERS 2
+ #endif
+ 
++#ifndef MODULE_NAME_IS_glx
++static IMAGE_TYPE *CreateImage    ( vout_thread_t *,
++                                    Display *, EXTRA_ARGS, int, int );
++#ifdef HAVE_SYS_SHM_H
++IMAGE_TYPE *CreateShmImage ( vout_thread_t *,
++                                    Display *, EXTRA_ARGS_SHM, int, int );
++#endif
++#endif
+ 
+diff -up vlc-1.0.0-pre1/modules/video_output/x11/xvmc.c.libmpeg2_out vlc-1.0.0-pre1/modules/video_output/x11/xvmc.c
+--- vlc-1.0.0-pre1/modules/video_output/x11/xvmc.c.libmpeg2_out	2009-02-14 13:39:08.000000000 +0100
++++ vlc-1.0.0-pre1/modules/video_output/x11/xvmc.c	2009-04-09 21:39:18.000000000 +0200
+@@ -1304,7 +1304,7 @@ void xxmc_do_update_frame( picture_t *pi
+     /* Wait a little till frame is being displayed */
+     while( status & XVMC_DISPLAYING )
+     {
+-        msleep(1);
++        /* msleep(1); */
+ 
+         XvMCGetSurfaceStatus( p_vout->p_sys->p_display,
+                               picture->p_sys->xvmc_surf,

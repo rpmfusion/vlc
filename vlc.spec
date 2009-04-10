@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.1pre1%{?dist}
+Release:	0.2pre1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -25,6 +25,7 @@ Patch0:         vlc-trunk-default_font.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
+Patch6:         vlc-1.0.0-pre1-libmpeg2_out.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -87,13 +88,7 @@ BuildRequires:  libupnp-devel
 BuildRequires:	libv4l-devel
 %endif
 BuildRequires:	libvorbis-devel
-%if 0%{?fedora} < 11
-BuildRequires:  libxml2 < 2.7.3
-BuildRequires:  libxml2-devel < 2.7.3
-BuildRequires:  libxml2-static < 2.7.3
-%else
 BuildRequires:  libxml2-devel
-%endif
 BuildRequires:	lirc-devel
 %if %with_internal_live555
 BuildConflicts: live555-devel
@@ -249,13 +244,18 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %if 0%{?fedora} >= 11
 %patch5 -p1 -b .xul191
 %endif
+%patch6 -p1 -b .libmpeg2_out
 
 
 #./bootstrap
 
-%if 0%{?fedora} < 11
-export XML2_LIBS="-static -lxml2 -shared -L%{_libdir} -lz -lm"
-%endif
+#Rip out libmpeg2
+rm ./modules/codec/xvmc/{alloc.c,attributes.h,cpu_accel.c,cpu_state.c,decode.c,header.c,motion_comp.c,motion_comp_mmx.c,mpeg2.h,mpeg2_internal.h,slice.c,slice_xvmc_vld.c,vlc.h,xvmc_vld.h}
+touch ./modules/codec/xvmc/{alloc.c,attributes.h,cpu_accel.c,cpu_state.c,decode.c,header.c,motion_comp.c,motion_comp_mmx.c,mpeg2.h,mpeg2_internal.h,slice.c,slice_xvmc_vld.c,vlc.h,xvmc_vld.h}
+rm ./modules/codec/xvmc/mpeg2.h
+ln -sf %{_includedir}/mpeg2dec/mpeg2.h ./modules/codec/xvmc/mpeg2.h
+rm ./modules/codec/xvmc/mpeg2_internal.h
+ln -sf %{_includedir}/mpeg2dec/mpeg2_internal.h ./modules/codec/xvmc/mpeg2_internal.h
 
 
 %build
@@ -303,7 +303,7 @@ popd
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
 	--enable-svgalib			\
-	--disable-xvmc				\
+	--enable-xvmc				\
 %endif
 %if %with_directfb
 	--enable-directfb			\
@@ -427,10 +427,10 @@ fi || :
 %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %{_libdir}/vlc/visualization/libgalaktos_plugin.so
 %{_libdir}/vlc/misc/libxosd_plugin.so
-#ifarch %{ix86} x86_64
-#{_libdir}/vlc/codec/libxvmc_plugin.so
-#{_libdir}/vlc/video_output/libxvmc_plugin.so
-#endif
+%ifarch %{ix86} x86_64
+%{_libdir}/vlc/codec/libxvmc_plugin.so
+%{_libdir}/vlc/video_output/libxvmc_plugin.so
+%endif
 %{_libdir}/vlc/gui/libskins2_plugin.so
 %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
@@ -462,8 +462,8 @@ fi || :
 %exclude %{_libdir}/vlc/visualization/libgalaktos_plugin.so
 %exclude %{_libdir}/vlc/misc/libxosd_plugin.so
 %ifarch %{ix86} x86_64
-#exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
-#exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
+%exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
+%exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
 %exclude %{_libdir}/vlc/video_output/libsvgalib_plugin.so
 %endif
 %if %with_directfb
@@ -512,6 +512,10 @@ fi || :
 
 
 %changelog
+* Fri Apr 10 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.2pre1
+- Re-enable xxmc
+- Remove libmpeg2 out
+
 * Fri Mar 27 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.1pre1
 - Update to 1.0.0-pre1
 - Add mozilla plugin with xulrunner-1.9.1. Patch from Alexey Gladkov
