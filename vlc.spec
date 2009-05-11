@@ -22,7 +22,7 @@ Version:	0.9.9
 %define _version %{version}
 %define release_tag   2
 %endif
-Release:	%{release_tag}%{?dist}
+Release:	%{release_tag}%{?dist}.1
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -553,6 +553,10 @@ fi || :
 
 
 %changelog
+* Sun May 10 2009 kwizart < kwizart at gmail.com > - 0.9.9-2.1
+- Rebuild for ascii-art. (blame the libcaca update submitter 
+ for not having warned before the co-workers).
+
 * Thu Apr  9 2009 kwizart < kwizart at gmail.com > - 0.9.9-2
 - Add Patch vlc-0.9.9-0.9.10git20090409.patch
 
