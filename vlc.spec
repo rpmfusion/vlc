@@ -1,10 +1,10 @@
 # TODO: libdc1394(juju), modularization (vlc-plugin-foo)
 %define _default_patch_fuzz 2
 
-%define with_internal_live555 		0
+%define with_internal_live555		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_rc          -pre1
+%define vlc_rc          -rc1
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.2pre1%{?dist}
+Release:	0.4rc1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -25,13 +25,14 @@ Patch0:         vlc-trunk-default_font.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
-Patch6:         vlc-1.0.0-pre1-libmpeg2_out.patch
+Patch6:         vlc-1.0.0-bugfix_backport.patch
+Patch7:         vlc-1.0.0-rc1-pkglibd.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  gettext
 
-%if 0
+%if 1
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -42,7 +43,7 @@ BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
-%{?_with_dirac: BuildRequires: dirac-devel >= 1.0.0}
+BuildRequires:  dirac-devel >= 1.0.0
 %if %with_directfb
 BuildRequires:  directfb-devel
 %endif
@@ -67,7 +68,7 @@ BuildRequires:	libdvbpsi-devel
 BuildRequires:	libdvdnav-devel
 BuildRequires:  libebml-devel
 BuildRequires:	libid3tag-devel
-%{?_with_kate:  BuildRequires: libkate-devel}
+BuildRequires:  libkate-devel
 BuildRequires:	libmad-devel
 BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
@@ -244,18 +245,12 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %if 0%{?fedora} >= 11
 %patch5 -p1 -b .xul191
 %endif
-%patch6 -p1 -b .libmpeg2_out
+%patch6 -p1 -b .bp
+%patch7 -p1 -b .pkglibd
 
-
-#./bootstrap
-
-#Rip out libmpeg2
-rm ./modules/codec/xvmc/{alloc.c,attributes.h,cpu_accel.c,cpu_state.c,decode.c,header.c,motion_comp.c,motion_comp_mmx.c,mpeg2.h,mpeg2_internal.h,slice.c,slice_xvmc_vld.c,vlc.h,xvmc_vld.h}
-touch ./modules/codec/xvmc/{alloc.c,attributes.h,cpu_accel.c,cpu_state.c,decode.c,header.c,motion_comp.c,motion_comp_mmx.c,mpeg2.h,mpeg2_internal.h,slice.c,slice_xvmc_vld.c,vlc.h,xvmc_vld.h}
-rm ./modules/codec/xvmc/mpeg2.h
-ln -sf %{_includedir}/mpeg2dec/mpeg2.h ./modules/codec/xvmc/mpeg2.h
-rm ./modules/codec/xvmc/mpeg2_internal.h
-ln -sf %{_includedir}/mpeg2dec/mpeg2_internal.h ./modules/codec/xvmc/mpeg2_internal.h
+rm autotools/* m4/lib*
+cp -p %{_datadir}/gettext/config.rpath autotools
+./bootstrap
 
 
 %build
@@ -298,7 +293,7 @@ popd
 	--enable-speex				\
 	--enable-tarkin				\
 	--enable-theora				\
-	%{?_with_dirac:--enable-dirac}		\
+	--enable-dirac				\
 	--enable-svg				\
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
@@ -512,6 +507,13 @@ fi || :
 
 
 %changelog
+* Tue May 12 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.4rc1
+- Update to 1.0.0-rc1
+- Add 1.0-bugfix patches
+
+* Fri Apr 17 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.3pre2
+- Update to 1.0.0-pre2
+
 * Fri Apr 10 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.2pre1
 - Re-enable xxmc
 - Remove libmpeg2 out
