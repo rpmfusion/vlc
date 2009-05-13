@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.4rc1%{?dist}
+Release:	0.5rc1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -27,6 +27,7 @@ Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
 Patch6:         vlc-1.0.0-bugfix_backport.patch
 Patch7:         vlc-1.0.0-rc1-pkglibd.patch
+Patch8:         0001-Fix-missing-symbol-in-libxvmc_plugin.so.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -173,9 +174,6 @@ mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
 It can also be used as a server to stream in unicast or multicast in
 IPv4 or IPv6 on a high-bandwidth network.
 
-Non-default rpmbuild options:
---with dirac:   Enable dirac codec support
---with kate:    Enable kate codec support
 
 
 %description devel
@@ -247,6 +245,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %endif
 %patch6 -p1 -b .bp
 %patch7 -p1 -b .pkglibd
+%patch8 -p1 -b .xvmc
 
 rm autotools/* m4/lib*
 cp -p %{_datadir}/gettext/config.rpath autotools
@@ -507,6 +506,10 @@ fi || :
 
 
 %changelog
+* Wed May 13 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.5rc1
+- Fix missing XvMC symbols
+- Fix export make_URI
+
 * Tue May 12 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.4rc1
 - Update to 1.0.0-rc1
 - Add 1.0-bugfix patches

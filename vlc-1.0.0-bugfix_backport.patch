@@ -1,3 +1,15 @@
+diff --git a/src/libvlccore.sym b/src/libvlccore.sym
+index ac68b0e..d72c10f 100644
+--- a/src/libvlccore.sym
++++ b/src/libvlccore.sym
+@@ -216,6 +216,7 @@ libvlc_InternalInit
+ libvlc_InternalWait
+ libvlc_Quit
+ LocaleFree
++make_URI
+ mdate
+ module_config_free
+ module_config_get
 diff --git a/include/vlc/libvlc.h b/include/vlc/libvlc.h
 index 4085e25..5794c0a 100644
 --- a/include/vlc/libvlc.h
