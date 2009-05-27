@@ -1,0 +1,25 @@
+From bba9ed13be6a4dade99360583dcc4a9eef62d1f4 Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet (kwizart) <kwizart@gmail.com>
+Date: Tue, 26 May 2009 23:11:50 +0200
+Subject: [PATCH] Default aout for pulse
+
+---
+ modules/audio_output/pulse.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/modules/audio_output/pulse.c b/modules/audio_output/pulse.c
+index 86bd6dd..93b2763 100644
+--- a/modules/audio_output/pulse.c
++++ b/modules/audio_output/pulse.c
+@@ -97,7 +97,7 @@ static void uninit(aout_instance_t *p_aout);
+ vlc_module_begin ()
+     set_shortname( "Pulse Audio" )
+     set_description( N_("Pulseaudio audio output") )
+-    set_capability( "audio output", 40 )
++    set_capability( "audio output", 200 )
+     set_category( CAT_AUDIO )
+     set_subcategory( SUBCAT_AUDIO_AOUT )
+     add_shortcut( "pulseaudio" )
+-- 
+1.6.0.6
+

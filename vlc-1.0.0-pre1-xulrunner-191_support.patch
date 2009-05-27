@@ -86,10 +86,10 @@ index e9ffdc5..a6ca2e4 100644
      {
          pluginFuncs->urlnotify = Private_URLNotify;
 diff --git a/projects/mozilla/support/npunix.c b/projects/mozilla/support/npunix.c
-index 7cabe66..5110c5c 100644
+index 0f6efc0..9ad454c 100644
 --- a/projects/mozilla/support/npunix.c
 +++ b/projects/mozilla/support/npunix.c
-@@ -103,160 +103,144 @@ NPN_Version(int* plugin_major, int* plugin_minor,
+@@ -103,149 +103,136 @@ NPN_Version(int* plugin_major, int* plugin_minor,
  NPError
  NPN_GetValue(NPP instance, NPNVariable variable, void *r_value)
  {
@@ -122,7 +122,7 @@ index 7cabe66..5110c5c 100644
  
  NPError
  NPN_PostURL(NPP instance, const char* url, const char* window,
-          uint32 len, const char* buf, NPBool file)
+          uint32_t len, const char* buf, NPBool file)
  {
 -    return CallNPN_PostURLProc(gNetscapeFuncs.posturl, instance,
 -                    url, window, len, buf, file);
@@ -130,7 +130,7 @@ index 7cabe66..5110c5c 100644
  }
  
  NPError
- NPN_PostURLNotify(NPP instance, const char* url, const char* window, uint32 len,
+ NPN_PostURLNotify(NPP instance, const char* url, const char* window, uint32_t len,
                    const char* buf, NPBool file, void* notifyData)
  {
 -    return CallNPN_PostURLNotifyProc(gNetscapeFuncs.posturlnotify,
@@ -155,8 +155,8 @@ index 7cabe66..5110c5c 100644
 +    return (*gNetscapeFuncs.newstream)(instance, type, window, stream_ptr);
  }
  
- int32
- NPN_Write(NPP instance, NPStream* stream, int32 len, void* buffer)
+ int32_t
+ NPN_Write(NPP instance, NPStream* stream, int32_t len, void* buffer)
  {
 -    return CallNPN_WriteProc(gNetscapeFuncs.write, instance,
 -                    stream, len, buffer);
@@ -185,8 +185,7 @@ index 7cabe66..5110c5c 100644
 +    return (*gNetscapeFuncs.uagent)(instance);
  }
  
- void*
- NPN_MemAlloc(uint32 size)
+ void *NPN_MemAlloc(uint32_t size)
  {
 -    return CallNPN_MemAllocProc(gNetscapeFuncs.memalloc, size);
 +    return (*gNetscapeFuncs.memalloc)(size);
@@ -198,7 +197,7 @@ index 7cabe66..5110c5c 100644
 +    (*gNetscapeFuncs.memfree)(ptr);
  }
  
- uint32 NPN_MemFlush(uint32 size)
+ uint32_t NPN_MemFlush(uint32_t size)
  {
 -    return CallNPN_MemFlushProc(gNetscapeFuncs.memflush, size);
 +    return (*gNetscapeFuncs.memflush)(size);
@@ -263,18 +262,17 @@ index 7cabe66..5110c5c 100644
  }
  
  NPIdentifier NPN_GetStringIdentifier(const NPUTF8 *name)
- {
+@@ -253,8 +240,7 @@ NPIdentifier NPN_GetStringIdentifier(const NPUTF8 *name)
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
--    {
+     {
 -        return CallNPN_GetStringIdentifierProc(
 -                        gNetscapeFuncs.getstringidentifier, name);
--    }
 +        return (*gNetscapeFuncs.getstringidentifier)(name);
+     }
      return NULL;
  }
- 
-@@ -265,19 +249,14 @@ void NPN_GetStringIdentifiers(const NPUTF8 **names, int32_t nameCount,
+@@ -264,19 +250,14 @@ void NPN_GetStringIdentifiers(const NPUTF8 **names, int32_t nameCount,
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -296,7 +294,7 @@ index 7cabe66..5110c5c 100644
      return NULL;
  }
  
-@@ -285,11 +264,7 @@ bool NPN_IdentifierIsString(NPIdentifier identifier)
+@@ -284,11 +265,7 @@ bool NPN_IdentifierIsString(NPIdentifier identifier)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -309,7 +307,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -297,11 +272,7 @@ NPUTF8 *NPN_UTF8FromIdentifier(NPIdentifier identifier)
+@@ -296,11 +273,7 @@ NPUTF8 *NPN_UTF8FromIdentifier(NPIdentifier identifier)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -322,7 +320,7 @@ index 7cabe66..5110c5c 100644
      return NULL;
  }
  
-@@ -309,11 +280,7 @@ int32_t NPN_IntFromIdentifier(NPIdentifier identifier)
+@@ -308,11 +281,7 @@ int32_t NPN_IntFromIdentifier(NPIdentifier identifier)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -335,7 +333,7 @@ index 7cabe66..5110c5c 100644
      return 0;
  }
  
-@@ -321,7 +288,7 @@ NPObject *NPN_CreateObject(NPP npp, NPClass *aClass)
+@@ -320,7 +289,7 @@ NPObject *NPN_CreateObject(NPP npp, NPClass *aClass)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -344,7 +342,7 @@ index 7cabe66..5110c5c 100644
      return NULL;
  }
  
-@@ -329,7 +296,7 @@ NPObject *NPN_RetainObject(NPObject *obj)
+@@ -328,7 +297,7 @@ NPObject *NPN_RetainObject(NPObject *obj)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -353,7 +351,7 @@ index 7cabe66..5110c5c 100644
      return NULL;
  }
  
-@@ -337,7 +304,7 @@ void NPN_ReleaseObject(NPObject *obj)
+@@ -336,7 +305,7 @@ void NPN_ReleaseObject(NPObject *obj)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -362,7 +360,7 @@ index 7cabe66..5110c5c 100644
  }
  
  bool NPN_Invoke(NPP npp, NPObject* obj, NPIdentifier methodName,
-@@ -345,8 +312,7 @@ bool NPN_Invoke(NPP npp, NPObject* obj, NPIdentifier methodName,
+@@ -344,8 +313,7 @@ bool NPN_Invoke(NPP npp, NPObject* obj, NPIdentifier methodName,
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -372,7 +370,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -355,8 +321,7 @@ bool NPN_InvokeDefault(NPP npp, NPObject* obj, const NPVariant *args,
+@@ -354,8 +322,7 @@ bool NPN_InvokeDefault(NPP npp, NPObject* obj, const NPVariant *args,
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -382,7 +380,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -365,8 +330,7 @@ bool NPN_Evaluate(NPP npp, NPObject* obj, NPString *script,
+@@ -364,8 +331,7 @@ bool NPN_Evaluate(NPP npp, NPObject* obj, NPString *script,
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -392,7 +390,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -375,8 +339,7 @@ bool NPN_GetProperty(NPP npp, NPObject* obj, NPIdentifier propertyName,
+@@ -374,8 +340,7 @@ bool NPN_GetProperty(NPP npp, NPObject* obj, NPIdentifier propertyName,
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -402,7 +400,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -385,8 +348,7 @@ bool NPN_SetProperty(NPP npp, NPObject* obj, NPIdentifier propertyName,
+@@ -384,8 +349,7 @@ bool NPN_SetProperty(NPP npp, NPObject* obj, NPIdentifier propertyName,
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -412,7 +410,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -394,8 +356,7 @@ bool NPN_RemoveProperty(NPP npp, NPObject* obj, NPIdentifier propertyName)
+@@ -393,8 +357,7 @@ bool NPN_RemoveProperty(NPP npp, NPObject* obj, NPIdentifier propertyName)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -422,7 +420,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -403,8 +364,7 @@ bool NPN_HasProperty(NPP npp, NPObject* obj, NPIdentifier propertyName)
+@@ -402,8 +365,7 @@ bool NPN_HasProperty(NPP npp, NPObject* obj, NPIdentifier propertyName)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -432,7 +430,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -412,8 +372,7 @@ bool NPN_HasMethod(NPP npp, NPObject* obj, NPIdentifier methodName)
+@@ -411,8 +373,7 @@ bool NPN_HasMethod(NPP npp, NPObject* obj, NPIdentifier methodName)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -442,7 +440,7 @@ index 7cabe66..5110c5c 100644
      return false;
  }
  
-@@ -421,14 +380,14 @@ void NPN_ReleaseVariantValue(NPVariant *variant)
+@@ -420,14 +381,14 @@ void NPN_ReleaseVariantValue(NPVariant *variant)
  {
      int minor = gNetscapeFuncs.version & 0xFF;
      if( minor >= 14 )
@@ -459,7 +457,7 @@ index 7cabe66..5110c5c 100644
  }
  
  /***********************************************************************
-@@ -767,22 +726,22 @@ NP_Initialize(NPNetscapeFuncs* nsTable, NPPluginFuncs* pluginFuncs)
+@@ -766,22 +727,22 @@ NP_Initialize(NPNetscapeFuncs* nsTable, NPPluginFuncs* pluginFuncs)
           */
          pluginFuncs->version    = (NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR;
          pluginFuncs->size       = sizeof(NPPluginFuncs);
@@ -494,4 +492,3 @@ index 7cabe66..5110c5c 100644
          }
  #ifdef OJI
          if( minor >= NPVERS_HAS_LIVECONNECT )
-

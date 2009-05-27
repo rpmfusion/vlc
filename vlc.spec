@@ -4,7 +4,7 @@
 %define with_internal_live555		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_rc          -rc1
+%define vlc_rc          -rc2
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.5rc1%{?dist}
+Release:	0.7rc2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -21,13 +21,13 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 %if %with_internal_live555
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
+Source10:       vlc-handlers.schemas
 Patch0:         vlc-trunk-default_font.patch
+Patch1:         0001-Default-libv4l2-to-true.patch
+Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
-Patch6:         vlc-1.0.0-bugfix_backport.patch
-Patch7:         vlc-1.0.0-rc1-pkglibd.patch
-Patch8:         0001-Fix-missing-symbol-in-libxvmc_plugin.so.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -236,6 +236,8 @@ VLC plugins for libdc1394
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .default_font
+%patch1 -p1 -b .istrue
+%patch2 -p1 -b .defpa
 #http://trac.videolan.org/vlc/ticket/1383
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
@@ -243,12 +245,9 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %if 0%{?fedora} >= 11
 %patch5 -p1 -b .xul191
 %endif
-%patch6 -p1 -b .bp
-%patch7 -p1 -b .pkglibd
-%patch8 -p1 -b .xvmc
 
-rm autotools/* m4/lib*
-cp -p %{_datadir}/gettext/config.rpath autotools
+rm modules/access/videodev2.h
+ln -sf %{_includedir}/videodev2.h modules/access/
 ./bootstrap
 
 
@@ -293,6 +292,7 @@ popd
 	--enable-tarkin				\
 	--enable-theora				\
 	--enable-dirac				\
+	--enable-xcb				\
 	--enable-svg				\
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
@@ -373,6 +373,10 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 
+#Fix CGonf2 url-handler support
+#mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gconf/schemas
+install -pm 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_datadir}/vlc/utils/
+
 %find_lang %{name}
 
 
@@ -380,7 +384,22 @@ rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 rm -rf $RPM_BUILD_ROOT
 
 
+%pre
+if [ "$1" -gt 1 ] ; then
+if [ -x %{_bindir}/gconftool-2 ] ; then
+export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
+gconftool-2 --makefile-uninstall-rule \
+  %{_datadir}/vlc/utils/vlc-handlers.schemas  >/dev/null
+fi
+fi || :
+
+
 %post
+if [ -x %{_bindir}/gconftool-2 ] ; then
+export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
+gconftool-2 --makefile-install-rule \
+  %{_datadir}/vlc/utils/vlc-handlers.schemas >/dev/null
+fi
 touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
@@ -388,6 +407,15 @@ fi
 %{_bindir}/update-desktop-database %{_datadir}/applications || :
 
 %post core -p /sbin/ldconfig
+
+%preun
+if [ "$1" -eq 0 ]; then
+if [ -x %{_bindir}/gconftool-2 ] ; then
+    export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
+    gconftool-2 --makefile-uninstall-rule \
+        %{_datadir}/vlc/utils/vlc-handlers.schemas >& /dev/null
+fi
+fi || :
 
 %postun
 %{_bindir}/update-desktop-database %{_datadir}/applications
@@ -506,6 +534,11 @@ fi || :
 
 
 %changelog
+* Wed May 27 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.7rc2
+- Update to 1.0.0-rc2
+- Rebase xulrunner patch for -rc2
+- Add GConf2 support for url-handler (based on totem)
+
 * Wed May 13 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.5rc1
 - Fix missing XvMC symbols
 - Fix export make_URI
