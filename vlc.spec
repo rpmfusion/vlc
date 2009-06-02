@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.7rc2%{?dist}
+Release:	0.9rc2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
@@ -22,12 +22,16 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
+Source11:       shine.c
+Source12:       enc_base.h
 Patch0:         vlc-trunk-default_font.patch
 Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
+Patch6:         vlc-1.0-bugfix-20090602.patch
+Patch7:         vlc-revert-b8f23ea716693d8d07dd8bd0cb4c9ba8ed05f568.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -68,9 +72,10 @@ BuildRequires:	libdv-devel
 BuildRequires:	libdvbpsi-devel
 BuildRequires:	libdvdnav-devel
 BuildRequires:  libebml-devel
+BuildRequires:	libhildon-devel
 BuildRequires:	libid3tag-devel
 BuildRequires:  libkate-devel
-BuildRequires:	libmad-devel
+BuildRequires:  libmad-devel
 BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
@@ -245,10 +250,18 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %if 0%{?fedora} >= 11
 %patch5 -p1 -b .xul191
 %endif
+%patch6 -p1 -b .bugfix
+%patch7 -p1 -b .revert
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/videodev2.h modules/access/
+rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
 ./bootstrap
+
+#missing sources
+install -pm 0644 %{SOURCE11} modules/codec/shine
+install -pm 0644 %{SOURCE12} modules/codec/shine
+
 
 
 %build
@@ -282,6 +295,8 @@ popd
 	--enable-pvr				\
 	--enable-gnomevfs			\
 	--enable-cddax				\
+	--enable-wma-fixed			\
+	--enable-shine				\
 	--enable-faad				\
 	--enable-twolame			\
 	--enable-real				\
@@ -534,6 +549,10 @@ fi || :
 
 
 %changelog
+* Tue Jun  2 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.9rc2
+- Update to current bugfix
+- Revert b8f23ea716693d8d07dd8bd0cb4c9ba8ed05f568
+
 * Wed May 27 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.7rc2
 - Update to 1.0.0-rc2
 - Rebase xulrunner patch for -rc2
