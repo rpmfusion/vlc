@@ -223,16 +223,24 @@ Requires:       vlc-core = %{version}-%{release}
 %description nox
 VLC Media Player with framebuffer support for X-less server.
 
+%package plugin-jack
+Summary:	JACK audio plugin for VLC
+Group:		Applications/Multimedia
+Requires:       vlc-core = %{version}-%{release}
+
+%description plugin-jack
+JACK audio plugin for the VLC media player.
+
 
 %if %with_dc1394
-%package plugins-dc1394
+%package plugin-dc1394
 Summary:	VLC Media Player Plugins for dc1394
 Group:		Applications/Multimedia
 Requires:	%{name}-core = %{version}
 Requires:       compat-libdc1394-tools
 
-%description plugins-dc1394
-VLC plugins for libdc1394
+%description plugin-dc1394
+VLC plugin for libdc1394
 %endif
 
 %prep
@@ -453,7 +461,6 @@ fi || :
 %{_libdir}/vlc/gui/libqt4_plugin.so
 %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/access/libx11_screen_plugin.so
-%{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %{_libdir}/vlc/misc/libsvg_plugin.so
 %{_libdir}/vlc/misc/libnotify_plugin.so
 %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -486,6 +493,7 @@ fi || :
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/gui/libqt4_plugin.so
 %exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
+%exclude %{_libdir}/vlc/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/access/libx11_screen_plugin.so
 %exclude %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/misc/libsvg_plugin.so
@@ -510,12 +518,19 @@ fi || :
 %exclude %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libpanoramix_plugin.so
+%exclude %{_libdir}/vlc/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
 %if %with_dc1394
 %exclude %{_libdir}/vlc/access/libdc1394_plugin.so
 %endif
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
+
+%files plugin-jack
+%defattr(-,root,root,-)
+%{_libdir}/vlc/access/libaccess_jack_plugin.so
+%{_libdir}/vlc/audio_output/libjack_plugin.so
+%{_libdir}/vlc/codec/libfluidsynth_plugin.so
 
 %files nox
 %defattr(-,root,root,-)
@@ -552,6 +567,7 @@ fi || :
 * Tue Jun  2 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.9rc2
 - Update to current bugfix
 - Revert b8f23ea716693d8d07dd8bd0cb4c9ba8ed05f568
+- Split plugin-jack
 
 * Wed May 27 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.7rc2
 - Update to 1.0.0-rc2
