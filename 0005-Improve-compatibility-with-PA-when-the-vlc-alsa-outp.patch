@@ -1,0 +1,25 @@
+From dce1b815f87daef89715c9e5bec7ee78a69df79f Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet (kwizart) <kwizart@gmail.com>
+Date: Thu, 4 Jun 2009 15:18:40 +0200
+Subject: [PATCH] Improve compatibility with PA when the vlc alsa output is used.
+
+---
+ modules/audio_output/alsa.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/modules/audio_output/alsa.c b/modules/audio_output/alsa.c
+index 2d03d1d..dd33f31 100644
+--- a/modules/audio_output/alsa.c
++++ b/modules/audio_output/alsa.c
+@@ -78,7 +78,7 @@ struct aout_sys_t
+    number of channel(s) (eg. 2 for stereo) and the size of a sample (eg.
+    2 for int16_t). */
+ #define ALSA_DEFAULT_PERIOD_SIZE        1024
+-#define ALSA_DEFAULT_BUFFER_SIZE        ( ALSA_DEFAULT_PERIOD_SIZE << 8 )
++#define ALSA_DEFAULT_BUFFER_SIZE        ( ALSA_DEFAULT_PERIOD_SIZE << 4 )
+ #define ALSA_SPDIF_PERIOD_SIZE          A52_FRAME_NB
+ #define ALSA_SPDIF_BUFFER_SIZE          ( ALSA_SPDIF_PERIOD_SIZE << 4 )
+ /* Why << 4 ? --Meuuh */
+-- 
+1.6.0.6
+

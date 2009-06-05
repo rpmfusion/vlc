@@ -13,10 +13,10 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.9rc2%{?dist}
+Release:	0.10rc2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
-URL:		http://www.videolan.org/
+URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.bz2
 %if %with_internal_live555
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
@@ -32,6 +32,7 @@ Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
 Patch6:         vlc-1.0-bugfix-20090602.patch
 Patch7:         vlc-revert-b8f23ea716693d8d07dd8bd0cb4c9ba8ed05f568.patch
+Patch9:         0001-QT4-menus-remove-previous-signal-slot-connection-s.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -260,6 +261,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %endif
 %patch6 -p1 -b .bugfix
 %patch7 -p1 -b .revert
+%patch9 -p1 -b .disconnect
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/videodev2.h modules/access/
@@ -519,6 +521,7 @@ fi || :
 %exclude %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libpanoramix_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libjack_plugin.so
+%exclude %{_libdir}/vlc/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
 %if %with_dc1394
 %exclude %{_libdir}/vlc/access/libdc1394_plugin.so
@@ -529,6 +532,7 @@ fi || :
 %files plugin-jack
 %defattr(-,root,root,-)
 %{_libdir}/vlc/access/libaccess_jack_plugin.so
+%{_libdir}/vlc/audio_output/libportaudio_plugin.so
 %{_libdir}/vlc/audio_output/libjack_plugin.so
 %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 
@@ -564,6 +568,10 @@ fi || :
 
 
 %changelog
+* Fri Jun  5 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.10rc2
+- Move some module to avoid dependency
+- Remove previous signal-slot connection(s) if any - vlc trac #2818
+
 * Tue Jun  2 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.9rc2
 - Update to current bugfix
 - Revert b8f23ea716693d8d07dd8bd0cb4c9ba8ed05f568
