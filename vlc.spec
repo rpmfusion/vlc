@@ -4,7 +4,7 @@
 %define with_internal_live555		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_rc          -rc2
+%define vlc_rc          -rc4
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
@@ -13,27 +13,28 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.7rc2%{?dist}.1
+Release:	0.12rc4%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
-URL:		http://www.videolan.org/
+URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.bz2
 %if %with_internal_live555
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
+Source11:       shine.c
+Source12:       enc_base.h
 Patch0:         vlc-trunk-default_font.patch
 Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  gettext
 
-%if 1
+%if 0
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -68,9 +69,10 @@ BuildRequires:	libdv-devel
 BuildRequires:	libdvbpsi-devel
 BuildRequires:	libdvdnav-devel
 BuildRequires:  libebml-devel
+BuildRequires:	libhildon-devel
 BuildRequires:	libid3tag-devel
 BuildRequires:  libkate-devel
-BuildRequires:	libmad-devel
+BuildRequires:  libmad-devel
 BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
@@ -78,6 +80,7 @@ BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel
 BuildRequires:  libnotify-devel
 BuildRequires:  libproxy-devel
+BuildRequires:	libraw1394-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
@@ -218,16 +221,24 @@ Requires:       vlc-core = %{version}-%{release}
 %description nox
 VLC Media Player with framebuffer support for X-less server.
 
+%package plugin-jack
+Summary:	JACK audio plugin for VLC
+Group:		Applications/Multimedia
+Requires:       vlc-core = %{version}-%{release}
+
+%description plugin-jack
+JACK audio plugin for the VLC media player.
+
 
 %if %with_dc1394
-%package plugins-dc1394
+%package plugin-dc1394
 Summary:	VLC Media Player Plugins for dc1394
 Group:		Applications/Multimedia
 Requires:	%{name}-core = %{version}
 Requires:       compat-libdc1394-tools
 
-%description plugins-dc1394
-VLC plugins for libdc1394
+%description plugin-dc1394
+VLC plugin for libdc1394
 %endif
 
 %prep
@@ -242,13 +253,17 @@ VLC plugins for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%if 0%{?fedora} >= 11
-%patch5 -p1 -b .xul191
-%endif
+
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/videodev2.h modules/access/
-./bootstrap
+#rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
+#./bootstrap
+
+#missing sources
+install -pm 0644 %{SOURCE11} modules/codec/shine
+install -pm 0644 %{SOURCE12} modules/codec/shine
+
 
 
 %build
@@ -282,6 +297,8 @@ popd
 	--enable-pvr				\
 	--enable-gnomevfs			\
 	--enable-cddax				\
+	--enable-wma-fixed			\
+	--enable-shine				\
 	--enable-faad				\
 	--enable-twolame			\
 	--enable-real				\
@@ -438,7 +455,6 @@ fi || :
 %{_libdir}/vlc/gui/libqt4_plugin.so
 %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/access/libx11_screen_plugin.so
-%{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %{_libdir}/vlc/misc/libsvg_plugin.so
 %{_libdir}/vlc/misc/libnotify_plugin.so
 %{_libdir}/vlc/video_output/libaa_plugin.so
@@ -471,6 +487,7 @@ fi || :
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/gui/libqt4_plugin.so
 %exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
+%exclude %{_libdir}/vlc/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/access/libx11_screen_plugin.so
 %exclude %{_libdir}/vlc/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/misc/libsvg_plugin.so
@@ -495,12 +512,21 @@ fi || :
 %exclude %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libpanoramix_plugin.so
+%exclude %{_libdir}/vlc/audio_output/libjack_plugin.so
+%exclude %{_libdir}/vlc/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
 %if %with_dc1394
 %exclude %{_libdir}/vlc/access/libdc1394_plugin.so
 %endif
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
+
+%files plugin-jack
+%defattr(-,root,root,-)
+%{_libdir}/vlc/access/libaccess_jack_plugin.so
+%{_libdir}/vlc/audio_output/libportaudio_plugin.so
+%{_libdir}/vlc/audio_output/libjack_plugin.so
+%{_libdir}/vlc/codec/libfluidsynth_plugin.so
 
 %files nox
 %defattr(-,root,root,-)
@@ -534,6 +560,21 @@ fi || :
 
 
 %changelog
+* Wed Jun 17 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.12rc4
+- Update to 1.0.0-rc4
+
+* Sun Jun  7 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.11rc3
+- Update to 1.0.0-rc3
+
+* Fri Jun  5 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.10rc2
+- Move some module to avoid dependency
+- Remove previous signal-slot connection(s) if any - vlc trac #2818
+
+* Tue Jun  2 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.9rc2
+- Update to current bugfix
+- Revert b8f23ea716693d8d07dd8bd0cb4c9ba8ed05f568
+- Split plugin-jack
+
 * Wed May 27 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.7rc2
 - Update to 1.0.0-rc2
 - Rebase xulrunner patch for -rc2
