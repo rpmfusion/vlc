@@ -4,7 +4,7 @@
 %define with_internal_live555		0
 %define live555_date	2008.07.25
 %define vlc_git				0
-%define vlc_rc          -rc3
+%define vlc_rc          -rc4
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.11rc3%{?dist}
+Release:	0.12rc4%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -29,15 +29,12 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0.0-pre1-xulrunner-191_support.patch
-Patch6:         0005-Improve-compatibility-with-PA-when-the-vlc-alsa-outp.patch
-Patch7:         vlc-revert-b8f23ea716693d8d07dd8bd0cb4c9ba8ed05f568.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  gettext
 
-%if 1
+%if 0
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -83,6 +80,7 @@ BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel
 BuildRequires:  libnotify-devel
 BuildRequires:  libproxy-devel
+BuildRequires:	libraw1394-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
@@ -255,16 +253,12 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%if 0%{?fedora} >= 11
-%patch5 -p1 -b .xul191
-%endif
-%patch6 -p1 -b .alsa_pa
-%patch7 -p1 -b .revert
+
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/videodev2.h modules/access/
-rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
-./bootstrap
+#rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
+#./bootstrap
 
 #missing sources
 install -pm 0644 %{SOURCE11} modules/codec/shine
@@ -566,6 +560,9 @@ fi || :
 
 
 %changelog
+* Wed Jun 17 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.12rc4
+- Update to 1.0.0-rc4
+
 * Sun Jun  7 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.11rc3
 - Update to 1.0.0-rc3
 
