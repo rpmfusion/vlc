@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.7rc2%{?dist}
+Release:	0.7rc2%{?dist}.1
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org/
