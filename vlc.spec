@@ -34,7 +34,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	desktop-file-utils
 BuildRequires:  gettext
 
-%if 0
+%if 1
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -257,8 +257,8 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
-#rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
-#./bootstrap
+rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
+./bootstrap
 
 #missing sources
 install -pm 0644 %{SOURCE11} modules/codec/shine
