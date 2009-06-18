@@ -61,6 +61,7 @@ BuildRequires:	gsm-devel
 BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:  libavc1394-devel
+BuildRequires:	libass-devel
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
@@ -80,7 +81,6 @@ BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel
 BuildRequires:  libnotify-devel
 BuildRequires:  libproxy-devel
-BuildRequires:	libraw1394-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
@@ -256,7 +256,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 
 rm modules/access/videodev2.h
-ln -sf %{_includedir}/videodev2.h modules/access/
+ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
 #rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
 #./bootstrap
 
@@ -291,8 +291,8 @@ popd
 %endif
 %if %with_dc1394
 	--enable-dc1394				\
-	--enable-dv				\
 %endif
+	--enable-dv				\
 	--enable-opencv				\
 	--enable-pvr				\
 	--enable-gnomevfs			\
@@ -309,6 +309,8 @@ popd
 	--enable-tarkin				\
 	--enable-theora				\
 	--enable-dirac				\
+	--enable-libass				\
+	--enable-asademux			\
 	--enable-xcb				\
 	--enable-svg				\
 	--enable-snapshot			\
