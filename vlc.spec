@@ -257,7 +257,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
-rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
+rm aclocal.m4 m4/lib*.m4
 ./bootstrap
 
 #missing sources
