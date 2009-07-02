@@ -13,7 +13,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.12rc4%{?dist}
+Release:	0.14rc4%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -29,6 +29,7 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
+Patch5:         vlc-1.0-bugfix-duplicate.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -167,7 +168,7 @@ Requires: dejavu-fonts
 %package devel
 Summary:	Development package for %{name}
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 
 %description
@@ -253,6 +254,7 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
+%patch5 -p1 -b .dup
 
 
 rm modules/access/videodev2.h
@@ -282,6 +284,7 @@ popd
 	--disable-dependency-tracking		\
 	--disable-rpath				\
 	--enable-release			\
+	--with-binary-version=%{version}-%{release} \
 	--with-tuning=no			\
 	--enable-switcher			\
 	--enable-lua                            \
@@ -464,6 +467,9 @@ fi || :
 %{_libdir}/vlc/video_output/libglx_plugin.so
 %{_libdir}/vlc/video_output/libopengl_plugin.so
 %{_libdir}/vlc/video_output/libx11_plugin.so
+%{_libdir}/vlc/video_output/libxcb_plugin.so
+%{_libdir}/vlc/video_output/libxcb_window_plugin.so
+%{_libdir}/vlc/video_output/libxcb_xv_plugin.so
 %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %{_libdir}/vlc/visualization/libgalaktos_plugin.so
 %{_libdir}/vlc/misc/libxosd_plugin.so
@@ -499,6 +505,9 @@ fi || :
 %exclude %{_libdir}/vlc/video_output/libglx_plugin.so
 %exclude %{_libdir}/vlc/video_output/libopengl_plugin.so
 %exclude %{_libdir}/vlc/video_output/libx11_plugin.so
+%exclude %{_libdir}/vlc/video_output/libxcb_plugin.so
+%exclude %{_libdir}/vlc/video_output/libxcb_window_plugin.so
+%exclude %{_libdir}/vlc/video_output/libxcb_xv_plugin.so
 %exclude %{_libdir}/vlc/video_output/libxvideo_plugin.so
 %exclude %{_libdir}/vlc/visualization/libgalaktos_plugin.so
 %exclude %{_libdir}/vlc/misc/libxosd_plugin.so
@@ -562,6 +571,11 @@ fi || :
 
 
 %changelog
+* Thu Jul  2 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.14rc4
+- Cherry pick from 1.0-bugfix
+- Move xcb modules into main
+- Move -devel Requirement from main to -core (Mutlilib fix)
+
 * Wed Jun 17 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.12rc4
 - Update to 1.0.0-rc4
 
