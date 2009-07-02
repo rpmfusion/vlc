@@ -1,0 +1,33 @@
+diff --git a/src/Makefile.am b/src/Makefile.am
+index b620179..5f74792 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -29,7 +29,6 @@ pkginclude_HEADERS = \
+ 	../include/vlc/deprecated.h \
+ 	../include/vlc/libvlc.h \
+ 	../include/vlc/libvlc_events.h \
+-	../include/vlc/libvlc_media_list.h \
+ 	../include/vlc/libvlc_media.h \
+ 	../include/vlc/libvlc_media_discoverer.h \
+ 	../include/vlc/libvlc_media_library.h \
+diff --git a/modules/gui/qt4/components/open_panels.cpp b/modules/gui/qt4/components/open_panels.cpp
+index 06056e5..b143a75 100644
+--- a/modules/gui/qt4/components/open_panels.cpp
++++ b/modules/gui/qt4/components/open_panels.cpp
+@@ -1139,14 +1141,14 @@ void CaptureOpenPanel::updateMRL()
+     case V4L_DEVICE:
+         fileList << "v4l://";
+         mrl += " :v4l-vdev=" + v4lVideoDevice->text();
+-        mrl += " :v4l-adev=" + v4lAudioDevice->text();
++        mrl += " :input-slave=alsa://" + v4lAudioDevice->text();
+         mrl += " :v4l-norm=" + QString::number( v4lNormBox->currentIndex() );
+         mrl += " :v4l-frequency=" + QString::number( v4lFreq->value() );
+         break;
+     case V4L2_DEVICE:
+         fileList << "v4l2://";
+         mrl += " :v4l2-dev=" + v4l2VideoDevice->text();
+-        mrl += " :v4l2-adev=" + v4l2AudioDevice->text();
++        mrl += " :input-slave=alsa://" + v4l2AudioDevice->text();
+         mrl += " :v4l2-standard=" + QString::number( v4l2StdBox->currentIndex() );
+         break;
+     case JACK_DEVICE:
