@@ -1,10 +1,8 @@
 # TODO: libdc1394(juju), modularization (vlc-plugin-foo)
-%define _default_patch_fuzz 2
 
 %define with_internal_live555		0
 %define live555_date	2008.07.25
-%define vlc_git				0
-%define vlc_rc          -rc4
+#define vlc_rc          -rc4
 %define with_mozilla	 		1
 %define with_dc1394			0
 %define with_directfb			1
@@ -13,7 +11,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.0
-Release:	0.14rc4%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -29,7 +27,6 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0-bugfix-duplicate.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -110,11 +107,12 @@ BuildRequires:  minizip-devel
 BuildRequires:	mpeg2dec-devel >= 0.3.2
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
-BuildRequires:	openslp-devel
+BuildRequires:  openslp-devel
+BuildRequires:  pcre-devel
 BuildRequires:  prelink
 BuildRequires:  pulseaudio-libs-devel >= 0.9.8
 BuildRequires:  portaudio-devel
-BuildRequires:  qt4-devel
+BuildRequires:  qt4-devel >= 1:4.5.2
 BuildRequires:  schroedinger-devel
 BuildRequires:	SDL_image-devel
 BuildRequires:	speex-devel >= 1.1.5
@@ -164,6 +162,7 @@ Requires: dejavu-sans-fonts
 %else
 Requires: dejavu-fonts
 %endif
+Requires: qt-x11%{_isa} >= 1:4.5.2
 
 %package devel
 Summary:	Development package for %{name}
@@ -254,13 +253,14 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%patch5 -p1 -b .dup
 
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
+%if 1
 rm aclocal.m4 m4/lib*.m4
 ./bootstrap
+%endif
 
 #missing sources
 install -pm 0644 %{SOURCE11} modules/codec/shine
@@ -571,6 +571,9 @@ fi || :
 
 
 %changelog
+* Mon Jul  6 2009 kwizart < kwizart at gmail.com > - 1.0.0-1
+- Update to 1.0.0 (Final)
+
 * Thu Jul  2 2009 kwizart < kwizart at gmail.com > - 1.0.0-0.14rc4
 - Cherry pick from 1.0-bugfix
 - Move xcb modules into main
