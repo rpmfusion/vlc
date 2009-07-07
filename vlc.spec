@@ -112,7 +112,7 @@ BuildRequires:  pcre-devel
 BuildRequires:  prelink
 BuildRequires:  pulseaudio-libs-devel >= 0.9.8
 BuildRequires:  portaudio-devel
-BuildRequires:  qt4-devel >= 1:4.5.2
+BuildRequires:  qt4-devel >= 4.5.2
 BuildRequires:  schroedinger-devel
 BuildRequires:	SDL_image-devel
 BuildRequires:	speex-devel >= 1.1.5
