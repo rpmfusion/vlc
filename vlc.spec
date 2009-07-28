@@ -23,7 +23,6 @@ Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 Patch5:         vlc-1.0-bugfix-bp_zip_qt4.patch
-Patch6:         vlc-1.0-bugfix-bp-font_family.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -240,7 +239,6 @@ VLC plugin for libdc1394
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
 %patch5 -p1 -b .bp5
-%patch6 -p1 -b .bp_ff
 
 
 rm modules/access/videodev2.h
@@ -556,7 +554,6 @@ fi || :
 - Update to 1.0.1 (Final)
 - Improve conditionals
 - Backport zip qt4 from 1.0-bugfix
-- Backport font_family from master
 - More %%_isa requirement
 
 * Mon Jul  6 2009 kwizart < kwizart at gmail.com > - 1.0.0-1
