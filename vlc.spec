@@ -1,38 +1,35 @@
 # TODO: libdc1394(juju), modularization (vlc-plugin-foo)
 
-%define with_internal_live555		0
-%define live555_date	2008.07.25
-#define vlc_rc          -rc4
-%define with_mozilla	 		1
-%define with_dc1394			0
-%define with_directfb			1
+#global live555_date       2009.07.28
+#global vlc_rc             -rc4
+%global vlc_bootstrap      1
 
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	1.0.0
+Version:	1.0.1
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.bz2
-%if %with_internal_live555
+%if 0%{?live555_date:1}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
-Source11:       shine.c
-Source12:       enc_base.h
 Patch0:         vlc-trunk-default_font.patch
 Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
+Patch5:         vlc-1.0-bugfix-bp_zip_qt4.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:	desktop-file-utils
+BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
+BuildRequires:  prelink
 
-%if 1
+%if 0%{?vlc_bootstrap:1}
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
@@ -44,9 +41,7 @@ BuildRequires:	avahi-devel
 BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
 BuildRequires:  dirac-devel >= 1.0.0
-%if %with_directfb
-BuildRequires:  directfb-devel
-%endif
+%{!?_without_directfb:BuildRequires:  directfb-devel}
 BuildRequires:	faac-devel
 BuildRequires:	faad2-devel
 BuildRequires:	ffmpeg-devel >= 0.4.9-0
@@ -68,7 +63,6 @@ BuildRequires:	libdv-devel
 BuildRequires:	libdvbpsi-devel
 BuildRequires:	libdvdnav-devel
 BuildRequires:  libebml-devel
-BuildRequires:	libhildon-devel
 BuildRequires:	libid3tag-devel
 BuildRequires:  libkate-devel
 BuildRequires:  libmad-devel
@@ -93,12 +87,12 @@ BuildRequires:	libv4l-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:  libxml2-devel
 BuildRequires:	lirc-devel
-%if %with_internal_live555
+%if 0%{?live555_date:1}
 BuildConflicts: live555-devel
 %else
 BuildRequires:	live555-devel >= 0-0.19.2008.04.03
 %endif
-BuildRequires:  kernel-headers >= 2.6.20
+BuildRequires:  kernel-headers
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
 BuildRequires:  libmusicbrainz-devel
@@ -109,7 +103,6 @@ BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
 BuildRequires:  openslp-devel
 BuildRequires:  pcre-devel
-BuildRequires:  prelink
 BuildRequires:  pulseaudio-libs-devel >= 0.9.8
 BuildRequires:  portaudio-devel
 BuildRequires:  qt4-devel >= 4.5.2
@@ -142,21 +135,13 @@ BuildRequires:  xcb-util-devel
 BuildRequires:  xorg-x11-proto-devel
 
 
-%if %with_mozilla
-BuildRequires:  gecko-devel
-BuildRequires:  nspr-devel
-%else
-Obsoletes: mozilla-vlc < %{version}-%{release}
-%endif
+%{!?_without_mozilla:BuildRequires:  gecko-devel nspr-devel}
+%{?_without_mozilla:Obsoletes: mozilla-vlc < %{version}-%{release}}
+%{?_with_dc1394: BuildRequires:  compat-libdc1394-devel compat-libraw1394-devel}
 
+Provides: %{name}-xorg%{_isa} = %{version}-%{release}
+Requires: vlc-core%{_isa} = %{version}-%{release}
 
-%if %with_dc1394
-BuildRequires:  compat-libdc1394-devel
-BuildRequires:  compat-libraw1394-devel
-%endif
-
-
-Requires: vlc-core = %{version}-%{release}
 %if 0%{?fedora} > 10
 Requires: dejavu-sans-fonts
 %else
@@ -164,10 +149,11 @@ Requires: dejavu-fonts
 %endif
 Requires: qt-x11%{_isa} >= 1:4.5.2
 
+
 %package devel
 Summary:	Development package for %{name}
 Group:		Development/Libraries
-Requires:	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core%{_isa} = %{version}-%{release}
 
 
 %description
@@ -188,11 +174,11 @@ mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
 It can also be used as a server to stream in unicast or multicast in
 IPv4 or IPv6 on a high-bandwidth network.
 
-%if %with_mozilla
+%{!?_without_mozilla:
 %package -n mozilla-vlc
 Summary:	VLC Media Player plugin for Mozilla compatible web browsers
 Group:		Applications/Multimedia	
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-xorg%{_isa} = %{version}-%{release}
 Requires:	%{_libdir}/mozilla/plugins
 
 %description -n mozilla-vlc
@@ -204,7 +190,7 @@ for various audio and video formats (MPEG-1, MPEG-2, MPEG-4, DivX,
 mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
 It can also be used as a server to stream in unicast or multicast in
 IPv4 or IPv6 on a high-bandwidth network.
-%endif
+}
 
 %package core
 Summary:	VLC Media Player core
@@ -216,7 +202,7 @@ VLC Media Player core components
 %package nox
 Summary:	VLC Media Player without Xorg
 Group:		Applications/Multimedia
-Requires:       vlc-core = %{version}-%{release}
+Requires:       vlc-core%{_isa} = %{version}-%{release}
 
 %description nox
 VLC Media Player with framebuffer support for X-less server.
@@ -224,26 +210,25 @@ VLC Media Player with framebuffer support for X-less server.
 %package plugin-jack
 Summary:	JACK audio plugin for VLC
 Group:		Applications/Multimedia
-Requires:       vlc-core = %{version}-%{release}
+Requires:       vlc-core%{_isa} = %{version}-%{release}
 
 %description plugin-jack
 JACK audio plugin for the VLC media player.
 
 
-%if %with_dc1394
+%{?_with_dc1394:
 %package plugin-dc1394
 Summary:	VLC Media Player Plugins for dc1394
 Group:		Applications/Multimedia
-Requires:	%{name}-core = %{version}
-Requires:       compat-libdc1394-tools
+Requires:	%{name}-core%{_isa} = %{version}
 
 %description plugin-dc1394
 VLC plugin for libdc1394
-%endif
+}
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
-%if %with_internal_live555
+%if 0%{?live555_date:1}
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .default_font
@@ -253,23 +238,20 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
+%patch5 -p1 -b .bp5
 
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
-%if 1
-rm aclocal.m4 m4/lib*.m4
+%if 0%{?vlc_bootstrap:1}
+rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
 ./bootstrap
 %endif
-
-#missing sources
-install -pm 0644 %{SOURCE11} modules/codec/shine
-install -pm 0644 %{SOURCE12} modules/codec/shine
 
 
 
 %build
-%if %with_internal_live555
+%if 0%{?live555_date:1}
 # Then bundled live555 - not needed
 pushd live
 # Force the use of our CFLAGS
@@ -289,12 +271,10 @@ popd
 	--enable-switcher			\
 	--enable-lua                            \
 	--enable-live555 			\
-%if %with_internal_live555
+%if 0%{?live555_date:1}
 	--with-live555-tree=live		\
 %endif
-%if %with_dc1394
-	--enable-dc1394				\
-%endif
+%{?_with_dc1394:--enable-dc1394}		\
 	--enable-dv				\
 	--enable-opencv				\
 	--enable-pvr				\
@@ -313,7 +293,6 @@ popd
 	--enable-theora				\
 	--enable-dirac				\
 	--enable-libass				\
-	--enable-asademux			\
 	--enable-xcb				\
 	--enable-svg				\
 	--enable-snapshot			\
@@ -321,9 +300,7 @@ popd
 	--enable-svgalib			\
 	--enable-xvmc				\
 %endif
-%if %with_directfb
-	--enable-directfb			\
-%endif
+%{!?_without_directfb:--enable-directfb}	\
 	--enable-aa				\
 	--enable-caca				\
 	--enable-jack				\
@@ -341,9 +318,8 @@ popd
 %else
 	--without-contrib			\
 %endif
-%if %with_mozilla 
-	--enable-mozilla			\
-%endif
+%{!?_without_mozilla:--enable-mozilla}		\
+
 
 
 # remove rpath from libtool
@@ -516,9 +492,9 @@ fi || :
 %exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
 %exclude %{_libdir}/vlc/video_output/libsvgalib_plugin.so
 %endif
-%if %with_directfb
+%{!?_without_directfb:
 %exclude %{_libdir}/vlc/video_output/libdirectfb_plugin.so
-%endif
+}
 %exclude %{_libdir}/vlc/gui/libskins2_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
@@ -526,9 +502,9 @@ fi || :
 %exclude %{_libdir}/vlc/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
-%if %with_dc1394
+%{?_with_dc1394:
 %exclude %{_libdir}/vlc/access/libdc1394_plugin.so
-%endif
+}
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
 
@@ -541,16 +517,18 @@ fi || :
 
 %files nox
 %defattr(-,root,root,-)
+%{!?_without_directfb:
 %{_libdir}/vlc/video_output/libdirectfb_plugin.so
+}
 %ifarch %{ix86} x86_64
 %{_libdir}/vlc/video_output/libsvgalib_plugin.so
 %endif
 
-%if %with_dc1394
-%files plugins-dc1394
+%{?_with_dc1394:
+%files plugin-dc1394
 %defattr(-,root,root,-)
 %{_libdir}/vlc/access/libdc1394_plugin.so
-%endif
+}
 
 %files devel
 %defattr(-,root,root,-)
@@ -562,15 +540,21 @@ fi || :
 %{_libdir}/pkgconfig/vlc-plugin.pc
 %{_libdir}/pkgconfig/libvlc.pc
 
-%if %with_mozilla
+%{!?_without_mozilla:
 %files -n mozilla-vlc
 %defattr(-,root,root,-)
 %{_libdir}/mozilla/plugins/libvlcplugin.so
-%endif
+}
 
 
 
 %changelog
+* Tue Jul 28 2009 kwizart < kwizart at gmail.com > - 1.0.1-1
+- Update to 1.0.1 (Final)
+- Improve conditionals
+- Backport zip qt4 from 1.0-bugfix
+- More %%_isa requirement
+
 * Mon Jul  6 2009 kwizart < kwizart at gmail.com > - 1.0.0-1
 - Update to 1.0.0 (Final)
 
