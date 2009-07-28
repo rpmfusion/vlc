@@ -293,7 +293,6 @@ popd
 	--enable-theora				\
 	--enable-dirac				\
 	--enable-libass				\
-	--enable-asademux			\
 	--enable-xcb				\
 	--enable-svg				\
 	--enable-snapshot			\
