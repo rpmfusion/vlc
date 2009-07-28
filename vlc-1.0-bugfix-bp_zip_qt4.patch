@@ -22,6 +22,16 @@ index 0250312..59b3f74 100644
          return VLC_ENOMEM;
      }
      p_sys->psz_path = s->psz_path;
+@@ -310,7 +310,7 @@ static int Control( stream_t *s, int i_query, va_list args )
+                 return VLC_EGENERIC;
+             else
+             {
+-                p_sys->i_len = (size_t) i_position;
++                p_sys->i_pos = (size_t) i_position;
+                 return VLC_SUCCESS;
+             }
+         }
+
 diff --git a/modules/gui/qt4/main_interface.cpp b/modules/gui/qt4/main_interface.cpp
 index 97aca1a..31b990a 100644
 --- a/modules/gui/qt4/main_interface.cpp
