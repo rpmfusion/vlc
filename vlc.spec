@@ -140,8 +140,9 @@ BuildRequires:  xorg-x11-proto-devel
 %{?_without_mozilla:Obsoletes: mozilla-vlc < %{version}-%{release}}
 %{?_with_dc1394: BuildRequires:  compat-libdc1394-devel compat-libraw1394-devel}
 
+Provides: %{name}-xorg%{_isa} = %{version}-%{release}
+Requires: vlc-core%{_isa} = %{version}-%{release}
 
-Requires: vlc-core = %{version}-%{release}
 %if 0%{?fedora} > 10
 Requires: dejavu-sans-fonts
 %else
@@ -153,7 +154,7 @@ Requires: qt-x11%{_isa} >= 1:4.5.2
 %package devel
 Summary:	Development package for %{name}
 Group:		Development/Libraries
-Requires:	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core%{_isa} = %{version}-%{release}
 
 
 %description
@@ -178,7 +179,7 @@ IPv4 or IPv6 on a high-bandwidth network.
 %package -n mozilla-vlc
 Summary:	VLC Media Player plugin for Mozilla compatible web browsers
 Group:		Applications/Multimedia	
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-xorg%{_isa} = %{version}-%{release}
 Requires:	%{_libdir}/mozilla/plugins
 
 %description -n mozilla-vlc
@@ -202,7 +203,7 @@ VLC Media Player core components
 %package nox
 Summary:	VLC Media Player without Xorg
 Group:		Applications/Multimedia
-Requires:       vlc-core = %{version}-%{release}
+Requires:       vlc-core%{_isa} = %{version}-%{release}
 
 %description nox
 VLC Media Player with framebuffer support for X-less server.
@@ -210,7 +211,7 @@ VLC Media Player with framebuffer support for X-less server.
 %package plugin-jack
 Summary:	JACK audio plugin for VLC
 Group:		Applications/Multimedia
-Requires:       vlc-core = %{version}-%{release}
+Requires:       vlc-core%{_isa} = %{version}-%{release}
 
 %description plugin-jack
 JACK audio plugin for the VLC media player.
@@ -220,7 +221,7 @@ JACK audio plugin for the VLC media player.
 %package plugin-dc1394
 Summary:	VLC Media Player Plugins for dc1394
 Group:		Applications/Multimedia
-Requires:	%{name}-core = %{version}
+Requires:	%{name}-core%{_isa} = %{version}
 
 %description plugin-dc1394
 VLC plugin for libdc1394
@@ -556,6 +557,7 @@ fi || :
 - Improve conditionals
 - Backport zip qt4 from 1.0-bugfix
 - Backport font_family from master
+- More %%_isa requirement
 
 * Mon Jul  6 2009 kwizart < kwizart at gmail.com > - 1.0.0-1
 - Update to 1.0.0 (Final)
