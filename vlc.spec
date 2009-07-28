@@ -2,7 +2,7 @@
 
 #global live555_date       2009.07.28
 #global vlc_rc             -rc4
-#global vlc_bootstrap      1
+%global vlc_bootstrap      1
 
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
