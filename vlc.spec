@@ -552,7 +552,7 @@ fi || :
 
 
 %changelog
-* Mon Jul 27 2009 kwizart < kwizart at gmail.com > - 1.0.1-1
+* Tue Jul 28 2009 kwizart < kwizart at gmail.com > - 1.0.1-1
 - Update to 1.0.1 (Final)
 - Improve conditionals
 - Backport zip qt4 from 1.0-bugfix
