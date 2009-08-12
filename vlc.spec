@@ -8,7 +8,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -22,7 +22,7 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0-bugfix-bp_zip_qt4.patch
+Patch5:         vlc-1.0-bugfix-20090812.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -54,7 +54,7 @@ BuildRequires:	gsm-devel
 BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:  libavc1394-devel
-BuildRequires:	libass-devel
+%{?_with_libass:BuildRequires:	libass-devel >= 0.9.7}
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
@@ -238,7 +238,7 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%patch5 -p1 -b .bp5
+%patch5 -p1 -b .bf
 
 
 rm modules/access/videodev2.h
@@ -292,7 +292,7 @@ popd
 	--enable-tarkin				\
 	--enable-theora				\
 	--enable-dirac				\
-	--enable-libass				\
+%{?_with_libass:--enable-libass}		\
 	--enable-xcb				\
 	--enable-svg				\
 	--enable-snapshot			\
@@ -549,6 +549,10 @@ fi || :
 
 
 %changelog
+* Wed Aug 12 2009 kwizart < kwizart at gmail.com > - 1.0.1-2
+- Conditionalize libass until stabilized ABI.
+- Update to 1.0-bugfix 20090812
+
 * Tue Jul 28 2009 kwizart < kwizart at gmail.com > - 1.0.1-1
 - Update to 1.0.1 (Final)
 - Improve conditionals
