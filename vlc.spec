@@ -239,7 +239,7 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%patch4 -p1 -b .ppc
+%patch5 -p1 -b .ppc
 
 
 rm modules/access/videodev2.h
