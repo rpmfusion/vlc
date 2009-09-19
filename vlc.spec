@@ -143,6 +143,7 @@ Requires: vlc-core%{_isa} = %{version}-%{release}
 
 %if 0%{?fedora} > 10
 Requires: dejavu-sans-fonts
+Requires: dejavu-serif-fonts
 %else
 Requires: dejavu-fonts
 %endif
