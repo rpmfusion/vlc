@@ -270,7 +270,7 @@ popd
 %configure \
 	--disable-dependency-tracking		\
 	--disable-rpath				\
-	--enable-debug			\
+	--enable-release			\
 	--with-binary-version=%{version}-%{release} \
 	--with-tuning=no			\
 	--enable-switcher			\
