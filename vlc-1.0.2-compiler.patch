@@ -1,9 +1,0 @@
-diff -up vlc-1.0.2/modules/access/bd/Modules.am.compiler vlc-1.0.2/modules/access/bd/Modules.am
---- vlc-1.0.2/modules/access/bd/Modules.am.compiler	2009-09-18 00:23:37.000000000 +0200
-+++ vlc-1.0.2/modules/access/bd/Modules.am	2009-09-20 10:35:40.107945580 +0200
-@@ -8,3 +8,5 @@ SOURCES_access_bd = \
- 
- libvlc_LTLIBRARIES += libaccess_bd_plugin.la
- 
-+libaccess_bd_plugin_la_CFLAGS = -O0
-+

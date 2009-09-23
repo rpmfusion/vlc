@@ -22,7 +22,6 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0.2-compiler.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -238,13 +237,6 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%ifarch %{ix86} x86_64
-#https://bugzilla.redhat.com/show_bug.cgi?id=524439
-%patch5 -p1 -b .compiler
-%endif
-
-#Workaround internal compiler bug in bd.c
-sed -i -e 's/screen bd zip/screen zip/' modules/access/Modules.am
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -554,8 +546,8 @@ fi || :
 
 
 %changelog
-* Sun Sep 20 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.1
-- Workaround the compiler bug on x86 x86_64 by disabling optimization.
+* Wed Sep 23 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.1
+- Rsync for F-10
 
 * Sat Sep 19 2009 kwizart < kwizart at gmail.com > - 1.0.2-1
 - Update to 1.0.2
