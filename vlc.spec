@@ -8,7 +8,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.2
-Release:	1%{?dist}.1
+Release:	1%{?dist}.2
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -278,6 +278,7 @@ popd
 	--enable-gnomevfs			\
 	--enable-cddax				\
 	--enable-wma-fixed			\
+%{!?_with_x264:--disable-x264}			\
 	--enable-shine				\
 	--enable-faad				\
 	--enable-twolame			\
@@ -546,6 +547,9 @@ fi || :
 
 
 %changelog
+* Sun Sep 27 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.2
+- x264 disabled because version isn't new enought (re-enabled --with x264)
+
 * Wed Sep 23 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.1
 - Rsync for F-10
 
