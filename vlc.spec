@@ -8,7 +8,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.2
-Release:	1%{?dist}.2
+Release:	1%{?dist}.3
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -23,6 +23,8 @@ Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+ExcludeArch:  ppc ppc64
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
@@ -547,6 +549,10 @@ fi || :
 
 
 %changelog
+* Tue Sep 29 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.3
+- Disable ppc/ppc64 builder so build can pass:
+  workaround http://bugzilla.rpmfusion.org/show_bug.cgi?id=830
+
 * Sun Sep 27 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.2
 - x264 disabled because version isn't new enought (re-enabled --with x264)
 
