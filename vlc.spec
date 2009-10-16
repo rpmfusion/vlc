@@ -8,7 +8,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.2
-Release:	1%{?dist}.2
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -22,6 +22,7 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
+Patch5:         vlc-1.0-bugfix-20091016.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -238,6 +239,7 @@ VLC plugin for libdc1394
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
+%patch5 -p1 -b .bf
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -547,6 +549,10 @@ fi || :
 
 
 %changelog
+* Thu Oct 16 2009 kwizart < kwizart at gmail.com > - 1.0.2-2
+- Update to 1.0-bugfix 20091016
+- Rebuild for x264/ffmpeg
+
 * Sun Sep 27 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.2
 - Disable the workaround for the compiler bug. (rhbz#524439)
 - Resync with the fonts requirement.
