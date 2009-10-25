@@ -42,7 +42,7 @@ BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
 BuildRequires:  dirac-devel >= 1.0.0
 %{!?_without_directfb:BuildRequires:  directfb-devel}
-BuildRequires:	faac-devel
+%{?_with_faac:BuildRequires:  faac-devel}
 BuildRequires:	faad2-devel
 BuildRequires:	ffmpeg-devel >= 0.4.9-0
 BuildRequires:	flac-devel
@@ -264,7 +264,6 @@ popd
 %if 0%{?live555_date:1}
 	--with-live555-tree=live		\
 %endif
-%{?_with_dc1394:--enable-dc1394}		\
 	--enable-dv				\
 	--enable-opencv				\
 	--enable-pvr				\
@@ -273,6 +272,7 @@ popd
 	--enable-wma-fixed			\
 	--enable-shine				\
 	--enable-faad				\
+%{!?_with_faac:--disable-faac}			\
 	--enable-twolame			\
 	--enable-real				\
 	--enable-realrtsp			\
@@ -532,6 +532,8 @@ fi || :
 %changelog
 * Sun Oct 25 2009 kwizart < kwizart at gmail.com > - 1.0.3.0.1_rc
 - Update to 1.0.3-rc
+- Update bugfix to 20091025
+- Clean dc1394 sub-package
 
 * Thu Oct 16 2009 kwizart < kwizart at gmail.com > - 1.0.2-2
 - Update to 1.0-bugfix 20091016
