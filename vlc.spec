@@ -1,14 +1,14 @@
 # TODO: libdc1394(juju), modularization (vlc-plugin-foo)
 
 #global live555_date       2009.07.28
-#global vlc_rc             -rc4
+%global vlc_rc             -rc
 %global vlc_bootstrap      1
 
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	1.0.2
-Release:	2%{?dist}
+Version:	1.0.3
+Release:	0.1_rc%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -22,7 +22,7 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0-bugfix-20091016.patch
+Patch5:         vlc-1.0-bugfix-20091025.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -217,16 +217,6 @@ Requires:       vlc-core%{_isa} = %{version}-%{release}
 JACK audio plugin for the VLC media player.
 
 
-%{?_with_dc1394:
-%package plugin-dc1394
-Summary:	VLC Media Player Plugins for dc1394
-Group:		Applications/Multimedia
-Requires:	%{name}-core%{_isa} = %{version}
-
-%description plugin-dc1394
-VLC plugin for libdc1394
-}
-
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 %if 0%{?live555_date:1}
@@ -244,7 +234,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
 %if 0%{?vlc_bootstrap:1}
-rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
+rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 %endif
 
@@ -502,9 +492,6 @@ fi || :
 %exclude %{_libdir}/vlc/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
-%{?_with_dc1394:
-%exclude %{_libdir}/vlc/access/libdc1394_plugin.so
-}
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
 
@@ -523,12 +510,6 @@ fi || :
 %ifarch %{ix86} x86_64
 %{_libdir}/vlc/video_output/libsvgalib_plugin.so
 %endif
-
-%{?_with_dc1394:
-%files plugin-dc1394
-%defattr(-,root,root,-)
-%{_libdir}/vlc/access/libdc1394_plugin.so
-}
 
 %files devel
 %defattr(-,root,root,-)
@@ -549,6 +530,9 @@ fi || :
 
 
 %changelog
+* Sun Oct 25 2009 kwizart < kwizart at gmail.com > - 1.0.3.0.1_rc
+- Update to 1.0.3-rc
+
 * Thu Oct 16 2009 kwizart < kwizart at gmail.com > - 1.0.2-2
 - Update to 1.0-bugfix 20091016
 - Rebuild for x264/ffmpeg
