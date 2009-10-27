@@ -8,7 +8,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.3
-Release:	0.1_rc%{?dist}
+Release:	0.2_rc%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -96,6 +96,7 @@ BuildRequires:  kernel-headers
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
 BuildRequires:  libmusicbrainz-devel
+BuildRequires:  libshout-devel
 BuildRequires:  lua-devel
 BuildRequires:  minizip-devel
 BuildRequires:	mpeg2dec-devel >= 0.3.2
@@ -283,6 +284,7 @@ popd
 	--enable-theora				\
 	--enable-dirac				\
 	--enable-libass				\
+	--enable-shout				\
 	--enable-xcb				\
 	--enable-svg				\
 	--enable-snapshot			\
@@ -530,6 +532,9 @@ fi || :
 
 
 %changelog
+* Tue Oct 27 2009 kwizart < kwizart at gmail.com > - 1.0.3.0.2_rc
+- Rebuild for x264
+
 * Sun Oct 25 2009 kwizart < kwizart at gmail.com > - 1.0.3.0.1_rc
 - Update to 1.0.3-rc
 - Update bugfix to 20091025
