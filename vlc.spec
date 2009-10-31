@@ -1,14 +1,14 @@
 # TODO: libdc1394(juju), modularization (vlc-plugin-foo)
 
 #global live555_date       2009.07.28
-#global vlc_rc             -rc4
+#global vlc_rc             -rc
 %global vlc_bootstrap      1
 
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	1.0.2
-Release:	1%{?dist}.2
+Version:	1.0.3
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -41,7 +41,7 @@ BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
 BuildRequires:  dirac-devel >= 1.0.0
 %{!?_without_directfb:BuildRequires:  directfb-devel}
-BuildRequires:	faac-devel
+%{?_with_faac:BuildRequires:  faac-devel}
 BuildRequires:	faad2-devel
 BuildRequires:	ffmpeg-devel >= 0.4.9-0
 BuildRequires:	flac-devel
@@ -95,6 +95,7 @@ BuildRequires:  kernel-headers
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
 BuildRequires:  libmusicbrainz-devel
+BuildRequires:  libshout-devel
 BuildRequires:  lua-devel
 BuildRequires:  minizip-devel
 BuildRequires:	mpeg2dec-devel >= 0.3.2
@@ -143,6 +144,7 @@ Requires: vlc-core%{_isa} = %{version}-%{release}
 
 %if 0%{?fedora} > 10
 Requires: dejavu-sans-fonts
+Requires: dejavu-serif-fonts
 %else
 Requires: dejavu-fonts
 %endif
@@ -215,16 +217,6 @@ Requires:       vlc-core%{_isa} = %{version}-%{release}
 JACK audio plugin for the VLC media player.
 
 
-%{?_with_dc1394:
-%package plugin-dc1394
-Summary:	VLC Media Player Plugins for dc1394
-Group:		Applications/Multimedia
-Requires:	%{name}-core%{_isa} = %{version}
-
-%description plugin-dc1394
-VLC plugin for libdc1394
-}
-
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 %if 0%{?live555_date:1}
@@ -241,7 +233,7 @@ sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
 %if 0%{?vlc_bootstrap:1}
-rm aclocal.m4 m4/lib*.m4 m4/lt*.m4
+rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 %endif
 
@@ -262,7 +254,7 @@ popd
 %configure \
 	--disable-dependency-tracking		\
 	--disable-rpath				\
-	--enable-debug			\
+	--enable-release			\
 	--with-binary-version=%{version}-%{release} \
 	--with-tuning=no			\
 	--enable-switcher			\
@@ -271,7 +263,6 @@ popd
 %if 0%{?live555_date:1}
 	--with-live555-tree=live		\
 %endif
-%{?_with_dc1394:--enable-dc1394}		\
 	--enable-dv				\
 	--enable-opencv				\
 	--enable-pvr				\
@@ -281,6 +272,7 @@ popd
 %{!?_with_x264:--disable-x264}			\
 	--enable-shine				\
 	--enable-faad				\
+%{!?_with_faac:--disable-faac}			\
 	--enable-twolame			\
 	--enable-real				\
 	--enable-realrtsp			\
@@ -291,6 +283,7 @@ popd
 	--enable-theora				\
 	--enable-dirac				\
 	--enable-libass				\
+	--enable-shout				\
 	--enable-xcb				\
 	--enable-svg				\
 	--enable-snapshot			\
@@ -500,9 +493,6 @@ fi || :
 %exclude %{_libdir}/vlc/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
-%{?_with_dc1394:
-%exclude %{_libdir}/vlc/access/libdc1394_plugin.so
-}
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
 
@@ -521,12 +511,6 @@ fi || :
 %ifarch %{ix86} x86_64
 %{_libdir}/vlc/video_output/libsvgalib_plugin.so
 %endif
-
-%{?_with_dc1394:
-%files plugin-dc1394
-%defattr(-,root,root,-)
-%{_libdir}/vlc/access/libdc1394_plugin.so
-}
 
 %files devel
 %defattr(-,root,root,-)
@@ -547,11 +531,24 @@ fi || :
 
 
 %changelog
+* Sat Oct 31 2009 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.3-1
+- Update to 1.0.3
+- Resync for F-10
+
+* Sun Oct 25 2009 kwizart < kwizart at gmail.com > - 1.0.3-0.1_rc
+- Update to 1.0.3-rc
+- Update bugfix to 20091025
+- Clean dc1394 sub-package
+
+* Thu Oct 16 2009 kwizart < kwizart at gmail.com > - 1.0.2-2
+- Update to 1.0-bugfix 20091016
+- Rebuild for x264/ffmpeg
+
 * Sun Sep 27 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.2
 - x264 disabled because version isn't new enought (re-enabled --with x264)
 
-* Wed Sep 23 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.1
-- Rsync for F-10
+* Sun Sep 20 2009 kwizart < kwizart at gmail.com > - 1.0.2-1.1
+- Workaround the compiler bug on x86 x86_64 by disabling optimization.
 
 * Sat Sep 19 2009 kwizart < kwizart at gmail.com > - 1.0.2-1
 - Update to 1.0.2
