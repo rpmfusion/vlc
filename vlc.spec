@@ -1,14 +1,14 @@
 # TODO: libdc1394(juju), modularization (vlc-plugin-foo)
 
 #global live555_date       2009.07.28
-%global vlc_rc             -rc
+#global vlc_rc             -rc
 %global vlc_bootstrap      1
 
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.3
-Release:	0.2_rc%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -22,7 +22,6 @@ Patch1:         0001-Default-libv4l2-to-true.patch
 Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0-bugfix-20091025.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -230,7 +229,6 @@ JACK audio plugin for the VLC media player.
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch4 -p1 -b .mmx_pic
-%patch5 -p1 -b .bf
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -532,10 +530,10 @@ fi || :
 
 
 %changelog
-* Tue Oct 27 2009 kwizart < kwizart at gmail.com > - 1.0.3.0.2_rc
-- Rebuild for x264
+* Sat Oct 31 2009 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.3-1
+- Update to 1.0.3
 
-* Sun Oct 25 2009 kwizart < kwizart at gmail.com > - 1.0.3.0.1_rc
+* Sun Oct 25 2009 kwizart < kwizart at gmail.com > - 1.0.3-0.1_rc
 - Update to 1.0.3-rc
 - Update bugfix to 20091025
 - Clean dc1394 sub-package
