@@ -137,7 +137,7 @@ BuildRequires:  xorg-x11-proto-devel
 
 %{!?_without_mozilla:BuildRequires:  gecko-devel nspr-devel}
 %{?_without_mozilla:Obsoletes: mozilla-vlc < %{version}-%{release}}
-%{?_with_dc1394: BuildRequires:  compat-libdc1394-devel compat-libraw1394-devel}
+
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
 Requires: vlc-core%{_isa} = %{version}-%{release}
