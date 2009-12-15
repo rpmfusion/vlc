@@ -7,7 +7,7 @@
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	1.0.3
+Version:	1.0.4
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -19,7 +19,6 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 Source10:       vlc-handlers.schemas
 Patch0:         vlc-trunk-default_font.patch
 Patch1:         0001-Default-libv4l2-to-true.patch
-Patch2:         0002-Default-aout-for-pulse.patch
 Patch3:         300_all_pic.patch
 Patch4:         310_all_mmx_pic.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -224,7 +223,6 @@ JACK audio plugin for the VLC media player.
 %endif
 %patch0 -p1 -b .default_font
 %patch1 -p1 -b .istrue
-%patch2 -p1 -b .defpa
 #http://trac.videolan.org/vlc/ticket/1383
 %patch3 -p1 -b .dmo_pic
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
@@ -530,6 +528,10 @@ fi || :
 
 
 %changelog
+* Tue Dec 15 2009 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.4-1
+- Update to 1.0.4
+- Drop patch2 - PulseaAudio is tried first from original sources.
+
 * Sat Oct 31 2009 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.3-1
 - Update to 1.0.3
 
