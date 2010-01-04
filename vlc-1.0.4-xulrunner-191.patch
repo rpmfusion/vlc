@@ -1,0 +1,119 @@
+diff -up vlc-1.0.4/projects/mozilla/vlcplugin.cpp.xul191 vlc-1.0.4/projects/mozilla/vlcplugin.cpp
+--- vlc-1.0.4/projects/mozilla/vlcplugin.cpp.xul191	2009-12-07 22:12:58.000000000 +0100
++++ vlc-1.0.4/projects/mozilla/vlcplugin.cpp	2010-01-03 22:19:46.665420058 +0100
+@@ -36,11 +36,12 @@
+ #include "control/npolibvlc.h"
+ 
+ #include <ctype.h>
++#include <stdlib.h>
+ 
+ /*****************************************************************************
+  * VlcPlugin constructor and destructor
+  *****************************************************************************/
+-VlcPlugin::VlcPlugin( NPP instance, uint16 mode ) :
++VlcPlugin::VlcPlugin( NPP instance, uint16_t mode ) :
+     i_npmode(mode),
+     b_stream(0),
+     b_autoplay(1),
+diff -up vlc-1.0.4/projects/mozilla/vlcplugin.h.xul191 vlc-1.0.4/projects/mozilla/vlcplugin.h
+--- vlc-1.0.4/projects/mozilla/vlcplugin.h.xul191	2009-12-07 22:12:58.000000000 +0100
++++ vlc-1.0.4/projects/mozilla/vlcplugin.h	2010-01-03 22:19:46.666424935 +0100
+@@ -82,7 +82,7 @@ typedef enum vlc_toolbar_clicked_e {
+ class VlcPlugin
+ {
+ public:
+-             VlcPlugin( NPP, uint16 );
++             VlcPlugin( NPP, uint16_t );
+     virtual ~VlcPlugin();
+ 
+     NPError             init(int argc, char* const argn[], char* const argv[]);
+@@ -135,7 +135,7 @@ public:
+     vlc_toolbar_clicked_t getToolbarButtonClicked( int i_xpos, int i_ypos );
+ #endif
+ 
+-    uint16    i_npmode; /* either NP_EMBED or NP_FULL */
++    uint16_t    i_npmode; /* either NP_EMBED or NP_FULL */
+ 
+     /* plugin properties */
+     int      b_stream;
+diff -up vlc-1.0.4/projects/mozilla/vlcshell.cpp.xul191 vlc-1.0.4/projects/mozilla/vlcshell.cpp
+--- vlc-1.0.4/projects/mozilla/vlcshell.cpp.xul191	2009-12-07 22:12:58.000000000 +0100
++++ vlc-1.0.4/projects/mozilla/vlcshell.cpp	2010-01-03 22:19:46.666424935 +0100
+@@ -275,7 +275,7 @@ void NPP_Shutdown( void )
+     ;
+ }
+ 
+-NPError NPP_New( NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc,
++NPError NPP_New( NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc,
+                  char* argn[], char* argv[], NPSavedData* saved )
+ {
+     NPError status;
+@@ -579,7 +579,7 @@ NPError NPP_SetWindow( NPP instance, NPW
+ }
+ 
+ NPError NPP_NewStream( NPP instance, NPMIMEType type, NPStream *stream,
+-                       NPBool seekable, uint16 *stype )
++                       NPBool seekable, uint16_t *stype )
+ {
+     if( NULL == instance  )
+     {
+@@ -608,14 +608,14 @@ NPError NPP_NewStream( NPP instance, NPM
+     return NPERR_GENERIC_ERROR;
+ }
+ 
+-int32 NPP_WriteReady( NPP instance, NPStream *stream )
++int32_t NPP_WriteReady( NPP instance, NPStream *stream )
+ {
+     /* TODO */
+     return 8*1024;
+ }
+ 
+-int32 NPP_Write( NPP instance, NPStream *stream, int32 offset,
+-                 int32 len, void *buffer )
++int32_t NPP_Write( NPP instance, NPStream *stream, int32_t offset,
++                 int32_t len, void *buffer )
+ {
+     /* TODO */
+     return len;
+diff -up vlc-1.0.4/projects/mozilla/vlcshell.h.xul191 vlc-1.0.4/projects/mozilla/vlcshell.h
+--- vlc-1.0.4/projects/mozilla/vlcshell.h.xul191	2009-12-05 10:03:25.000000000 +0100
++++ vlc-1.0.4/projects/mozilla/vlcshell.h	2010-01-03 22:19:46.667422548 +0100
+@@ -27,10 +27,10 @@
+ char * NPP_GetMIMEDescription( void );
+ 
+ NPError NPP_Initialize( void );
+-jref NPP_GetJavaClass( void );
++jref NPP_GetJavaClass( void ); 
+ void NPP_Shutdown( void );
+ 
+-NPError NPP_New( NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc,
++NPError NPP_New( NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc,
+                  char* argn[], char* argv[], NPSavedData* saved );
+ NPError NPP_Destroy( NPP instance, NPSavedData** save );
+ 
+@@ -40,20 +40,20 @@ NPError NPP_SetValue( NPP instance, NPNV
+ NPError NPP_SetWindow( NPP instance, NPWindow* window );
+ 
+ NPError NPP_NewStream( NPP instance, NPMIMEType type, NPStream *stream,
+-                       NPBool seekable, uint16 *stype );
++                       NPBool seekable, uint16_t *stype );
+ NPError NPP_DestroyStream( NPP instance, NPStream *stream, NPError reason );
+ void NPP_StreamAsFile( NPP instance, NPStream *stream, const char* fname );
+ 
+-int32 NPP_WriteReady( NPP instance, NPStream *stream );
+-int32 NPP_Write( NPP instance, NPStream *stream, int32 offset,
+-                 int32 len, void *buffer );
++int32_t NPP_WriteReady( NPP instance, NPStream *stream );
++int32_t NPP_Write( NPP instance, NPStream *stream, int32_t offset,
++                 int32_t len, void *buffer );
+ 
+ void NPP_URLNotify( NPP instance, const char* url,
+                     NPReason reason, void* notifyData );
+ void NPP_Print( NPP instance, NPPrint* printInfo );
+ 
+ #ifdef XP_MACOSX
+-int16 NPP_HandleEvent( NPP instance, void * event );
++int16_t NPP_HandleEvent( NPP instance, void * event );
+ #endif
+ 
+ #endif
