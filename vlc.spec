@@ -7,8 +7,8 @@
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	1.0.4
-Release:	2%{?dist}
+Version:	1.0.5
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -41,7 +41,6 @@ BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
 BuildRequires:  dirac-devel >= 1.0.0
 %{!?_without_directfb:BuildRequires:  directfb-devel}
-%{?_with_faac:BuildRequires:  faac-devel}
 BuildRequires:	faad2-devel
 BuildRequires:	ffmpeg-devel >= 0.4.9-0
 BuildRequires:	flac-devel
@@ -271,7 +270,6 @@ popd
 	--enable-wma-fixed			\
 	--enable-shine				\
 	--enable-faad				\
-%{!?_with_faac:--disable-faac}			\
 	--enable-twolame			\
 	--enable-real				\
 	--enable-realrtsp			\
@@ -530,6 +528,9 @@ fi || :
 
 
 %changelog
+* Thu Jan 28 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.5-1
+- Update to 1.0.5
+
 * Mon Jan  4 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.4-2
 - Add vlc-1.0.4-xulrunner-191.patch
 
