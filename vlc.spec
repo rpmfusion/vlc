@@ -8,7 +8,7 @@
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
 Version:	1.0.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -77,6 +77,7 @@ BuildRequires:  libshout-devel
 BuildRequires:  libsmbclient-devel
 BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
+BuildRequires:	libtiger-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  libupnp-devel
 %if 0%{?fedora} > 8
@@ -528,6 +529,9 @@ fi || :
 
 
 %changelog
+* Sat Feb 27 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.5-2
+- Add BR libtiger-devel
+
 * Thu Jan 28 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.5-1
 - Update to 1.0.5
 
