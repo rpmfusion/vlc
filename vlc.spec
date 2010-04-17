@@ -1,14 +1,25 @@
-# TODO: libdc1394(juju), modularization (vlc-plugin-foo)
-
 #global live555_date       2009.07.28
-#global vlc_rc             -rc
-%global vlc_bootstrap      1
+%global vlc_rc             -pre1
+#global vlc_bootstrap      1
+%global _with_freeworld 1
+%if 0%{?_with_freeworld:1}
+%global _with_faad2 --with-faad2
+%global _with_ffmpeg --with-ffmpeg
+%global _with_libdca --with-libdca
+%global _with_libdvbpsi	--with-libdvbpsi
+%global _with_libmad --with-libmad
+%global _with_libmpeg2 --with-libmpeg2
+%global _with_twolame --with-twolame
+%global _with_vcdimager	--with-vcdimager
+%global _with_x264 --with-x264
+%global _with_xvidcore --with-xvidcore
+%global _with_live555 --with-live55
+%endif
 
-
-Summary:	Multi-platform MPEG, DVD, and DivX player
+Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.0.5
-Release:	2%{?dist}
+Version:	1.1.0
+Release:	0.1.pre1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -17,11 +28,8 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
-Patch0:         vlc-trunk-default_font.patch
-Patch1:         0001-Default-libv4l2-to-true.patch
-Patch3:         300_all_pic.patch
-Patch4:         310_all_mmx_pic.patch
-Patch5:         vlc-1.0.4-xulrunner-192.patch
+Source11:       xcb_keysym.h
+Source12:       position.h
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -33,16 +41,16 @@ BuildRequires:	gettext-devel
 BuildRequires:	libtool
 %endif
 
-BuildRequires:	a52dec-devel
+%{?_with_a52dec:BuildRequires: a52dec-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:  cdparanoia-devel
 BuildRequires:  dbus-devel
 BuildRequires:  dirac-devel >= 1.0.0
-%{!?_without_directfb:BuildRequires:  directfb-devel}
-BuildRequires:	faad2-devel
-BuildRequires:	ffmpeg-devel >= 0.4.9-0
+%{!?_without_directfb:BuildRequires: directfb-devel}
+%{?_with_faad2:BuildRequires: faad2-devel}
+%{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
 BuildRequires:  fluidsynth-devel
 BuildRequires:	fribidi-devel
@@ -51,27 +59,31 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
+BuildRequires:  kdelibs-devel >= 4.4.0
 BuildRequires:  libavc1394-devel
 BuildRequires:	libass-devel >= 0.9.7
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
-BuildRequires:	libdca-devel
+BuildRequires:	libdc1394-devel >= 2.1.0
+%{?_with_libdca:BuildRequires: libdca-devel}
 BuildRequires:	libdv-devel
-BuildRequires:	libdvbpsi-devel
+%{?_with_libdvbpsi:BuildRequires: libdvbpsi-devel}
 BuildRequires:	libdvdnav-devel
 BuildRequires:  libebml-devel
 BuildRequires:	libid3tag-devel
 BuildRequires:  libkate-devel
-BuildRequires:  libmad-devel
+%{?_with_libmad:BuildRequires: libmad-devel}
 BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel
 BuildRequires:  libnotify-devel
+BuildRequires:  libprojectM-qt-devel
 BuildRequires:  libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
+BuildRequires:	libssh2-devel
 BuildRequires:	libsysfs-devel
 BuildRequires:  libshout-devel
 BuildRequires:  libsmbclient-devel
@@ -79,18 +91,14 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:  libtiff-devel
+BuildRequires:  libudev-devel >= 142
 BuildRequires:  libupnp-devel
-%if 0%{?fedora} > 8
 BuildRequires:	libv4l-devel
-%endif
+%{?_with_vaapi:BuildRequires: libva-devel}
 BuildRequires:	libvorbis-devel
 BuildRequires:  libxml2-devel
 BuildRequires:	lirc-devel
-%if 0%{?live555_date:1}
-BuildConflicts: live555-devel
-%else
-BuildRequires:	live555-devel >= 0-0.19.2008.04.03
-%endif
+%{?_with_live555:BuildRequires: live555-devel >= 0-0.19.2008.04.03}
 BuildRequires:  kernel-headers
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
@@ -98,7 +106,7 @@ BuildRequires:  libmusicbrainz-devel
 BuildRequires:  libshout-devel
 BuildRequires:  lua-devel
 BuildRequires:  minizip-devel
-BuildRequires:	mpeg2dec-devel >= 0.3.2
+%{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
 BuildRequires:  opencv-devel
 BuildRequires:  openslp-devel
@@ -113,11 +121,11 @@ BuildRequires:	speex-devel >= 1.1.5
 BuildRequires:  svgalib-devel
 %endif
 BuildRequires:  taglib-devel
-BuildRequires:	twolame-devel
-BuildRequires:	vcdimager-devel >= 0.7.21
-BuildRequires:	x264-devel >= 0-0.8.20061028
+%{?_with_twolame:BuildRequires:	twolame-devel}
+%{?_with_vcdimager:BuildRequires: vcdimager-devel >= 0.7.21}
+%{?_with_x264:BuildRequires: x264-devel >= 0-0.8.20061028}
 BuildRequires:	xosd-devel
-BuildRequires:	xvidcore-devel
+%{?_with_xvidcore:BuildRequires: xvidcore-devel}
 BuildRequires:	zlib-devel
 BuildRequires:  zvbi-devel
 
@@ -128,9 +136,6 @@ BuildRequires:  libXxf86vm-devel
 BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  libXpm-devel
-%ifarch %{ix86} x86_64
-BuildRequires:  libXvMC-devel
-%endif
 BuildRequires:  xcb-util-devel
 BuildRequires:  xorg-x11-proto-devel
 
@@ -151,62 +156,53 @@ Requires: dejavu-fonts
 Requires: qt-x11%{_isa} >= 1:4.5.2
 
 
-%package devel
-Summary:	Development package for %{name}
-Group:		Development/Libraries
-Requires:	%{name}-core%{_isa} = %{version}-%{release}
 
 
 %description
-VLC (initially VideoLAN Client) is a highly portable multimedia player
-for various audio and video formats (MPEG-1, MPEG-2, MPEG-4, DivX,
-mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
-It can also be used as a server to stream in unicast or multicast in
-IPv4 or IPv6 on a high-bandwidth network.
+VLC media player is a highly portable multimedia player and multimedia framework
+capable of reading most audio and video formats as well as DVDs, Audio CDs VCDs,
+and various streaming protocols.
+It can also be used as a media converter or a server to stream in unicast or 
+multicast in IPv4 or IPv6 on networks.
 
 
+%package devel
+Summary:	Development files for %{name}
+Group:		Development/Libraries
+Requires:	%{name}-core%{_isa} = %{version}-%{release}
 
 %description devel
-This package contains development files for VLC Media Player.
+The %{name}-devel package contains libraries and header files for
+developing applications that use %{name}.
 
-VLC (initially VideoLAN Client) is a highly portable multimedia player
-for various audio and video formats (MPEG-1, MPEG-2, MPEG-4, DivX,
-mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
-It can also be used as a server to stream in unicast or multicast in
-IPv4 or IPv6 on a high-bandwidth network.
 
 %{!?_without_mozilla:
 %package -n mozilla-vlc
-Summary:	VLC Media Player plugin for Mozilla compatible web browsers
+Summary:	VLC media player plugin for Mozilla compatible web browsers
 Group:		Applications/Multimedia	
 Requires:	%{name}-xorg%{_isa} = %{version}-%{release}
 Requires:	%{_libdir}/mozilla/plugins
 
 %description -n mozilla-vlc
-This package contains a VLC Media Player plugin for Mozilla compatible
+This package contains a VLC media player plugin for Mozilla compatible
 web browsers.
 
-VLC (initially VideoLAN Client) is a highly portable multimedia player
-for various audio and video formats (MPEG-1, MPEG-2, MPEG-4, DivX,
-mp3, ogg, ...) as well as DVDs, VCDs, and various streaming protocols.
-It can also be used as a server to stream in unicast or multicast in
-IPv4 or IPv6 on a high-bandwidth network.
 }
 
 %package core
-Summary:	VLC Media Player core
+Summary:	VLC media player core
 Group:		Applications/Multimedia
 
 %description core
-VLC Media Player core components
+VLC media player core components
 
 %package nox
-Summary:	VLC Media Player without Xorg
+Summary:	VLC media player without Xorg
 Group:		Applications/Multimedia
 Requires:       vlc-core%{_isa} = %{version}-%{release}
 
 %description nox
-VLC Media Player with framebuffer support for X-less server.
+VLC media player with framebuffer support for X-less server.
 
 %package plugin-jack
 Summary:	JACK audio plugin for VLC
@@ -222,14 +218,14 @@ JACK audio plugin for the VLC media player.
 %if 0%{?live555_date:1}
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
-%patch0 -p1 -b .default_font
-%patch1 -p1 -b .istrue
+#patch1 -p1 -b .istrue
 #http://trac.videolan.org/vlc/ticket/1383
-%patch3 -p1 -b .dmo_pic
-sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
-%patch4 -p1 -b .mmx_pic
-%patch5 -p1 -b .xul192
+#patch3 -p1 -b .dmo_pic
+#sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.{in,am}
+#patch4 -p1 -b .mmx_pic
 
+install -pm 0644 %{SOURCE11} modules/video_output/xcb/xcb_keysym.h
+install -pm 0644 %{SOURCE12} projects/mozilla/control/position.h
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
 %if 0%{?vlc_bootstrap:1}
@@ -254,10 +250,9 @@ popd
 %configure \
 	--disable-dependency-tracking		\
 	--disable-rpath				\
-	--enable-release			\
-	--with-binary-version=%{version}-%{release} \
+	--with-binary-version=%{version}	\
 	--with-tuning=no			\
-	--enable-switcher			\
+%{?_with_ffmpeg:--enable-switcher} \
 	--enable-lua                            \
 	--enable-live555 			\
 %if 0%{?live555_date:1}
@@ -265,19 +260,22 @@ popd
 %endif
 	--enable-dv				\
 	--enable-opencv				\
+	--enable-sftp				\
 	--enable-pvr				\
 	--enable-gnomevfs			\
-	--enable-cddax				\
-	--enable-wma-fixed			\
-	--enable-shine				\
-	--enable-faad				\
-	--enable-twolame			\
-	--enable-real				\
-	--enable-realrtsp			\
+%{?_with_vcdimager--enable-vcdx}		\
+%{?_with_freeworld:--enable-wma-fixed} \
+%{?_with_freeworld:--enable-shine} \
+	--enable-omxil				\
+	--disable-a52				\
+%{!?_with_ffmpeg:--disable-avcodec --disable-avformat --disable-swscale --disable-postproc} \
+%{?_with_faad2:--enable-faad} \
+%{!?_with_libmad:--disable-mad} \
+%{?_with_twolame:--enable-twolame} \
+%{?_with_freeworld:--enable-real --enable-realrtsp} \
 	--enable-flac				\
 	--enable-tremor				\
 	--enable-speex				\
-	--enable-tarkin				\
 	--enable-theora				\
 	--enable-dirac				\
 	--enable-libass				\
@@ -287,20 +285,16 @@ popd
 	--enable-snapshot			\
 %ifarch %{ix86} x86_64
 	--enable-svgalib			\
-	--enable-xvmc				\
 %endif
 %{!?_without_directfb:--enable-directfb}	\
 	--enable-aa				\
 	--enable-caca				\
 	--enable-jack				\
-%if 0%{?fedora} > 7
         --enable-portaudio                      \
 	--enable-pulse				\
-%endif
 	--enable-ncurses			\
 	--enable-xosd				\
 	--enable-fbosd				\
-	--enable-galaktos			\
 	--enable-lirc				\
 %ifarch %{ix86}
 	--enable-loader				\
@@ -310,10 +304,11 @@ popd
 %{!?_without_mozilla:--enable-mozilla}		\
 
 
-
+%if 0
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+%endif
 
 %if 0
 # clean unused-direct-shlib-dependencies
@@ -335,13 +330,15 @@ find $RPM_BUILD_ROOT -name '*.a' -exec rm -f {} ';'
 install -dm 755 $RPM_BUILD_ROOT%{_mandir}/man1
 install -pm 644 doc/vlc*.1 $RPM_BUILD_ROOT%{_mandir}/man1
 
+%if 0
 for i in 16x16 32x32 48x48 128x128 ; do
   mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/${i}/apps
   install -pm 0644 share/vlc${i}.png \
     $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/${i}/apps/vlc.png
 done
+%endif
 
-desktop-file-install --vendor livna			\
+desktop-file-install --vendor ""			\
 	--dir $RPM_BUILD_ROOT%{_datadir}/applications	\
 	--delete-original				\
 	--mode 644					\
@@ -363,6 +360,8 @@ rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 #Fix CGonf2 url-handler support
 #mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gconf/schemas
 install -pm 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_datadir}/vlc/utils/
+
+rm -rf $RPM_BUILD_ROOT%{_datadir}/kde4
 
 %find_lang %{name}
 
@@ -416,37 +415,32 @@ fi || :
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING ChangeLog MAINTAINERS NEWS README THANKS
+%doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_datadir}/applications/*%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/vlc.png
+#exclude #{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
+%{_datadir}/icons/hicolor/*/apps/vlc*.png
+%{_datadir}/icons/hicolor/*/apps/vlc*.xpm
 %{_datadir}/vlc/skins2/
 %{_bindir}/qvlc
 %{_bindir}/svlc
-%{_libdir}/vlc/gui/libqt4_plugin.so
-%{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
-%{_libdir}/vlc/access/libx11_screen_plugin.so
-%{_libdir}/vlc/misc/libsvg_plugin.so
-%{_libdir}/vlc/misc/libnotify_plugin.so
-%{_libdir}/vlc/video_output/libaa_plugin.so
-%{_libdir}/vlc/video_output/libcaca_plugin.so
-%{_libdir}/vlc/video_output/libglx_plugin.so
-%{_libdir}/vlc/video_output/libopengl_plugin.so
-%{_libdir}/vlc/video_output/libx11_plugin.so
-%{_libdir}/vlc/video_output/libxcb_plugin.so
-%{_libdir}/vlc/video_output/libxcb_window_plugin.so
-%{_libdir}/vlc/video_output/libxcb_xv_plugin.so
-%{_libdir}/vlc/video_output/libxvideo_plugin.so
-%{_libdir}/vlc/visualization/libgalaktos_plugin.so
-%{_libdir}/vlc/misc/libxosd_plugin.so
-%ifarch %{ix86} x86_64
-%{_libdir}/vlc/codec/libxvmc_plugin.so
-%{_libdir}/vlc/video_output/libxvmc_plugin.so
+%{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
+%{_libdir}/vlc/plugins/misc/libsvg_plugin.so
+%{_libdir}/vlc/plugins/misc/libnotify_plugin.so
+%{_libdir}/vlc/plugins/video_output/libaa_plugin.so
+%{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
+%{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
+%{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
+%{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+%{_libdir}/vlc/plugins/misc/libxosd_plugin.so
+%{_libdir}/vlc/plugins/gui/libskins2_plugin.so
+%{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
+%{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
+%if 0%{fedora} > 11
+%{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %endif
-%{_libdir}/vlc/gui/libskins2_plugin.so
-%{_libdir}/vlc/video_filter/libopencv_example_plugin.so
-%{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
-%{_libdir}/vlc/video_filter/libpanoramix_plugin.so
-%{_libdir}/vlc/audio_output/libpulse_plugin.so
+%{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 
 %files core -f %{name}.lang
 %defattr(-,root,root,-)
@@ -458,56 +452,52 @@ fi || :
 %exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
-%exclude %{_libdir}/vlc/gui/libqt4_plugin.so
-%exclude %{_libdir}/vlc/access/libaccess_gnomevfs_plugin.so
-%exclude %{_libdir}/vlc/access/libaccess_jack_plugin.so
-%exclude %{_libdir}/vlc/access/libx11_screen_plugin.so
-%exclude %{_libdir}/vlc/codec/libfluidsynth_plugin.so
-%exclude %{_libdir}/vlc/misc/libsvg_plugin.so
-%exclude %{_libdir}/vlc/misc/libnotify_plugin.so
-%exclude %{_libdir}/vlc/video_output/libaa_plugin.so
-%exclude %{_libdir}/vlc/video_output/libcaca_plugin.so
-%exclude %{_libdir}/vlc/video_output/libglx_plugin.so
-%exclude %{_libdir}/vlc/video_output/libopengl_plugin.so
-%exclude %{_libdir}/vlc/video_output/libx11_plugin.so
-%exclude %{_libdir}/vlc/video_output/libxcb_plugin.so
-%exclude %{_libdir}/vlc/video_output/libxcb_window_plugin.so
-%exclude %{_libdir}/vlc/video_output/libxcb_xv_plugin.so
-%exclude %{_libdir}/vlc/video_output/libxvideo_plugin.so
-%exclude %{_libdir}/vlc/visualization/libgalaktos_plugin.so
-%exclude %{_libdir}/vlc/misc/libxosd_plugin.so
+%exclude %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
+%exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
+%exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
+%exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
+%exclude %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
+%exclude %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+%exclude %{_libdir}/vlc/plugins/misc/libxosd_plugin.so
 %ifarch %{ix86} x86_64
-%exclude %{_libdir}/vlc/codec/libxvmc_plugin.so
-%exclude %{_libdir}/vlc/video_output/libxvmc_plugin.so
-%exclude %{_libdir}/vlc/video_output/libsvgalib_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libsvgalib_plugin.so
 %endif
 %{!?_without_directfb:
-%exclude %{_libdir}/vlc/video_output/libdirectfb_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
-%exclude %{_libdir}/vlc/gui/libskins2_plugin.so
-%exclude %{_libdir}/vlc/video_filter/libopencv_example_plugin.so
-%exclude %{_libdir}/vlc/video_filter/libopencv_wrapper_plugin.so
-%exclude %{_libdir}/vlc/video_filter/libpanoramix_plugin.so
-%exclude %{_libdir}/vlc/audio_output/libjack_plugin.so
-%exclude %{_libdir}/vlc/audio_output/libportaudio_plugin.so
-%exclude %{_libdir}/vlc/audio_output/libpulse_plugin.so
+%exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
+%if 0%{fedora} > 11
+%exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
+%endif
+%exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
+%exclude %{_libdir}/vlc/plugins/audio_output/libportaudio_plugin.so
+%exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
 
 %files plugin-jack
 %defattr(-,root,root,-)
-%{_libdir}/vlc/access/libaccess_jack_plugin.so
-%{_libdir}/vlc/audio_output/libportaudio_plugin.so
-%{_libdir}/vlc/audio_output/libjack_plugin.so
-%{_libdir}/vlc/codec/libfluidsynth_plugin.so
+%{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
+%{_libdir}/vlc/plugins/audio_output/libportaudio_plugin.so
+%{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
+%{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 
 %files nox
 %defattr(-,root,root,-)
 %{!?_without_directfb:
-%{_libdir}/vlc/video_output/libdirectfb_plugin.so
+%{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
 %ifarch %{ix86} x86_64
-%{_libdir}/vlc/video_output/libsvgalib_plugin.so
+%{_libdir}/vlc/plugins/video_output/libsvgalib_plugin.so
 %endif
 
 %files devel
@@ -529,6 +519,10 @@ fi || :
 
 
 %changelog
+* Fri Apr 16 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.1.0-0.3.pre1
+- Update to 1.1.0-pre1
+- Changed summary and descriptions
+
 * Sat Feb 27 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.5-2
 - Add BR libtiger-devel
 
