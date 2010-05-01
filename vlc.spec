@@ -7,8 +7,8 @@
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	1.0.5
-Release:	3%{?dist}
+Version:	1.0.6
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -148,7 +148,7 @@ Requires: dejavu-serif-fonts
 %else
 Requires: dejavu-fonts
 %endif
-Requires: qt-x11%{_isa} >= 1:4.5.2
+Requires: qt4%{?_isa} >= %{_qt4_version}
 
 
 %package devel
@@ -529,6 +529,9 @@ fi || :
 
 
 %changelog
+* Sat May 01 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.6-1
+- Update to 1.0.6 security - http://www.videolan.org/security/sa1003.html
+
 * Fri Mar 26 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.5-3
 - rebuilt for opencv
 
