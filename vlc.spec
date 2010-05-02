@@ -1,6 +1,6 @@
 #global live555_date       2009.07.28
 %global vlc_rc             -pre3
-#global vlc_bootstrap      1
+%global vlc_bootstrap      1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
 %global _with_faad2 --with-faad2
@@ -19,7 +19,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	0.5.pre3%{?dist}
+Release:	0.6.pre3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -28,6 +28,7 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
+Patch0          vlc-1.1.0-vlc-cache-gen_noerror.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -217,11 +218,7 @@ JACK audio plugin for the VLC media player.
 %if 0%{?live555_date:1}
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
-#patch1 -p1 -b .istrue
-#http://trac.videolan.org/vlc/ticket/1383
-#patch3 -p1 -b .dmo_pic
-#sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.{in,am}
-#patch4 -p1 -b .mmx_pic
+%patch0 -p1 -b .noerror
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -505,8 +502,9 @@ fi || :
 
 
 %changelog
-* Sat May  1 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.1.0-0.5.pre3
+* Sun May  2 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.1.0-0.6.pre3
 - Update to 1.1.0-pre3
+- Add patch from rdieter
 
 * Fri Apr 16 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.1.0-0.3.pre1
 - Update to 1.1.0-pre1
