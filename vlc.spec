@@ -1,5 +1,5 @@
 #global live555_date       2009.07.28
-%global vlc_rc             -pre1
+%global vlc_rc             -pre3
 #global vlc_bootstrap      1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
@@ -19,7 +19,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	0.1.pre1%{?dist}
+Release:	0.5.pre3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -28,8 +28,6 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
-Source11:       xcb_keysym.h
-Source12:       position.h
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -59,7 +57,7 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:  kdelibs-devel >= 4.4.0
+BuildRequires:  kde-filesystem
 BuildRequires:  libavc1394-devel
 BuildRequires:	libass-devel >= 0.9.7
 BuildRequires:	libcaca-devel
@@ -78,7 +76,7 @@ BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
-BuildRequires:	libmtp-devel
+BuildRequires:	libmtp-devel >= 1.0.0
 BuildRequires:  libnotify-devel
 BuildRequires:  libprojectM-qt-devel
 BuildRequires:  libproxy-devel
@@ -146,6 +144,7 @@ BuildRequires:  xorg-x11-proto-devel
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
 Requires: vlc-core%{_isa} = %{version}-%{release}
+Requires: kde-filesystem
 
 %if 0%{?fedora} > 10
 Requires: dejavu-sans-fonts
@@ -153,7 +152,7 @@ Requires: dejavu-serif-fonts
 %else
 Requires: dejavu-fonts
 %endif
-Requires: qt-x11%{_isa} >= 1:4.5.2
+Requires: qt4%{?_isa} >= %{_qt4_version}
 
 
 
@@ -162,8 +161,8 @@ Requires: qt-x11%{_isa} >= 1:4.5.2
 VLC media player is a highly portable multimedia player and multimedia framework
 capable of reading most audio and video formats as well as DVDs, Audio CDs VCDs,
 and various streaming protocols.
-It can also be used as a media converter or a server to stream in unicast or 
-multicast in IPv4 or IPv6 on networks.
+It can also be used as a media converter or a server to stream in uni-cast or 
+multi-cast in IPv4 or IPv6 on networks.
 
 
 %package devel
@@ -184,7 +183,7 @@ Requires:	%{name}-xorg%{_isa} = %{version}-%{release}
 Requires:	%{_libdir}/mozilla/plugins
 
 %description -n mozilla-vlc
-This package contains a VLC media player plugin for Mozilla compatible
+This package contains a VLC media player plugging for Mozilla compatible
 web browsers.
 
 }
@@ -202,7 +201,7 @@ Group:		Applications/Multimedia
 Requires:       vlc-core%{_isa} = %{version}-%{release}
 
 %description nox
-VLC media player with framebuffer support for X-less server.
+VLC media player with frame-buffer support for X-less server.
 
 %package plugin-jack
 Summary:	JACK audio plugin for VLC
@@ -224,8 +223,6 @@ JACK audio plugin for the VLC media player.
 #sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.{in,am}
 #patch4 -p1 -b .mmx_pic
 
-install -pm 0644 %{SOURCE11} modules/video_output/xcb/xcb_keysym.h
-install -pm 0644 %{SOURCE12} projects/mozilla/control/position.h
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
 %if 0%{?vlc_bootstrap:1}
@@ -252,6 +249,7 @@ popd
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
 	--with-tuning=no			\
+	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
 %{?_with_ffmpeg:--enable-switcher} \
 	--enable-lua                            \
 	--enable-live555 			\
@@ -304,7 +302,7 @@ popd
 %{!?_without_mozilla:--enable-mozilla}		\
 
 
-%if 0
+%if 1
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -326,17 +324,6 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p" CPPROG="cp -p"
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 find $RPM_BUILD_ROOT -name '*.a' -exec rm -f {} ';'
-
-install -dm 755 $RPM_BUILD_ROOT%{_mandir}/man1
-install -pm 644 doc/vlc*.1 $RPM_BUILD_ROOT%{_mandir}/man1
-
-%if 0
-for i in 16x16 32x32 48x48 128x128 ; do
-  mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/${i}/apps
-  install -pm 0644 share/vlc${i}.png \
-    $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/${i}/apps/vlc.png
-done
-%endif
 
 desktop-file-install --vendor ""			\
 	--dir $RPM_BUILD_ROOT%{_datadir}/applications	\
@@ -361,7 +348,6 @@ rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 #mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gconf/schemas
 install -pm 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_datadir}/vlc/utils/
 
-rm -rf $RPM_BUILD_ROOT%{_datadir}/kde4
 
 %find_lang %{name}
 
@@ -417,7 +403,7 @@ fi || :
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_datadir}/applications/*%{name}.desktop
-#exclude #{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
+%{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
 %{_datadir}/icons/hicolor/*/apps/vlc*.xpm
 %{_datadir}/vlc/skins2/
@@ -519,8 +505,12 @@ fi || :
 
 
 %changelog
+* Sat May  1 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.1.0-0.5.pre3
+- Update to 1.1.0-pre3
+
 * Fri Apr 16 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.1.0-0.3.pre1
 - Update to 1.1.0-pre1
+- Built for Fedora
 - Changed summary and descriptions
 
 * Sat Feb 27 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.5-2
