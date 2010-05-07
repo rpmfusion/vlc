@@ -7,8 +7,8 @@
 
 Summary:	Multi-platform MPEG, DVD, and DivX player
 Name:		vlc
-Version:	1.0.5
-Release:	2%{?dist}
+Version:	1.0.6
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -529,6 +529,9 @@ fi || :
 
 
 %changelog
+* Sat May 08 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.6-1
+- Update to 1.0.6 security - http://www.videolan.org/security/sa1003.html
+
 * Sat Feb 27 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.0.5-2
 - Add BR libtiger-devel
 
