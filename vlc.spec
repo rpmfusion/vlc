@@ -1,5 +1,5 @@
 #global live555_date       2009.07.28
-%global vlc_rc             -pre3
+%global vlc_rc             -rc2
 %global vlc_bootstrap      1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
@@ -19,7 +19,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	0.6.pre3%{?dist}
+Release:	0.9.rc2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -56,7 +56,6 @@ BuildRequires:	fribidi-devel
 BuildRequires:  gnome-vfs2-devel
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
-BuildRequires:	hal-devel
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:  kde-filesystem
 BuildRequires:  libavc1394-devel
@@ -259,11 +258,14 @@ popd
 	--enable-pvr				\
 	--enable-gnomevfs			\
 %{?_with_vcdimager--enable-vcdx}		\
+%if 0
 %{?_with_freeworld:--enable-wma-fixed} \
 %{?_with_freeworld:--enable-shine} \
+%endif
 	--enable-omxil				\
-	--disable-a52				\
-%{!?_with_ffmpeg:--disable-avcodec --disable-avformat --disable-swscale --disable-postproc} \
+%{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
+  --disable-swscale --disable-postproc --disable-a52
+} \
 %{?_with_faad2:--enable-faad} \
 %{!?_with_libmad:--disable-mad} \
 %{?_with_twolame:--enable-twolame} \
@@ -502,6 +504,9 @@ fi || :
 
 
 %changelog
+* Fri Jun 04 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.9.rc2
+- Update to 1.1.0-rc2
+
 * Sun May  2 2010 Nicolas Chauvet <kwizart@fedoraproject.org> - 1.1.0-0.6.pre3
 - Update to 1.1.0-pre3
 - Add patch from rdieter
