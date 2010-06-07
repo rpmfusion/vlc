@@ -3,6 +3,7 @@
 %global vlc_bootstrap      1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
+%global _with_a52dec --with-a52dec
 %global _with_faad2 --with-faad2
 %global _with_ffmpeg --with-ffmpeg
 %global _with_libdca --with-libdca
@@ -19,7 +20,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	0.9.rc2%{?dist}
+Release:	0.10.rc2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -263,9 +264,9 @@ popd
 %{?_with_freeworld:--enable-shine} \
 %endif
 	--enable-omxil				\
+%{!?_with_a52dec:--disable-a52}                 \
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
-  --disable-swscale --disable-postproc --disable-a52
-} \
+  --disable-swscale --disable-postproc} \
 %{?_with_faad2:--enable-faad} \
 %{!?_with_libmad:--disable-mad} \
 %{?_with_twolame:--enable-twolame} \
@@ -504,6 +505,9 @@ fi || :
 
 
 %changelog
+* Mon Jun 07 2010 kwizart@gmail.com - 1.1.0-0.10.rc2
+- Fix --with a52dec conditional
+
 * Fri Jun 04 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.9.rc2
 - Update to 1.1.0-rc2
 
