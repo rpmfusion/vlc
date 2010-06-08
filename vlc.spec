@@ -20,7 +20,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	0.10.rc2%{?dist}
+Release:	0.11.rc2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -30,6 +30,7 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
 Patch0:          vlc-1.1.0-vlc-cache-gen_noerror.patch
+Patch1:          vlc-1.1.0-bugfix-dlopen.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -219,6 +220,7 @@ JACK audio plugin for the VLC media player.
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .noerror
+%patch1 -p1 -b .0dlopen
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -505,7 +507,10 @@ fi || :
 
 
 %changelog
-* Mon Jun 07 2010 kwizart@gmail.com - 1.1.0-0.10.rc2
+* Tue Jun 08 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.11.rc2
+- Fix segfault on dlopen
+
+* Mon Jun 07 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.10.rc2
 - Fix --with a52dec conditional
 
 * Fri Jun 04 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.9.rc2
