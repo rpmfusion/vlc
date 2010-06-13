@@ -1,5 +1,5 @@
 #global live555_date       2009.07.28
-%global vlc_rc             -rc2
+%global vlc_rc             -rc3
 %global vlc_bootstrap      1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
@@ -20,7 +20,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	0.11.rc2%{?dist}
+Release:	0.12.rc3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -30,7 +30,6 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:       vlc-handlers.schemas
 Patch0:          vlc-1.1.0-vlc-cache-gen_noerror.patch
-Patch1:          vlc-1.1.0-bugfix-dlopen.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  desktop-file-utils
@@ -220,7 +219,6 @@ JACK audio plugin for the VLC media player.
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .noerror
-%patch1 -p1 -b .0dlopen
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -350,6 +348,12 @@ rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 #mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gconf/schemas
 install -pm 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_datadir}/vlc/utils/
 
+#Workaround scaled pixmaps
+pushd $RPM_BUILD_ROOT%{_datadir}/icons/hicolor
+  for s in 16 32 48 128 256 ; do
+    ln -s vlc${s}x${s}.png ${s}x${s}/apps/vlc.png
+  done
+popd
 
 %find_lang %{name}
 
@@ -413,6 +417,7 @@ fi || :
 %{_bindir}/svlc
 %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
+%{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
 %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
@@ -507,6 +512,9 @@ fi || :
 
 
 %changelog
+* Sat Jun 12 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.12.rc3
+- Update to -rc3
+
 * Tue Jun 08 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.11.rc2
 - Fix segfault on dlopen
 
