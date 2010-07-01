@@ -1,5 +1,5 @@
 #global live555_date       2009.07.28
-%global vlc_rc             -rc3
+#global vlc_rc             -rc3
 %global vlc_bootstrap      1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
@@ -17,10 +17,11 @@
 %global _with_live555 --with-live55
 %endif
 
+
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	0.12.rc3%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -512,6 +513,9 @@ fi || :
 
 
 %changelog
+* Thu Jul 01 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-1
+- Update to 1.1.0
+
 * Sat Jun 12 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-0.12.rc3
 - Update to -rc3
 
