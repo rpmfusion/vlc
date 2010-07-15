@@ -21,7 +21,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -295,6 +295,7 @@ popd
 	--enable-xosd				\
 	--enable-fbosd				\
 	--enable-lirc				\
+	--disable-notify			\
 %ifarch %{ix86}
 	--enable-loader				\
 %else
@@ -513,6 +514,9 @@ fi || :
 
 
 %changelog
+* Thu Jul 15 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-2
+- Disable notify
+
 * Thu Jul 01 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.0-1
 - Update to 1.1.0
 
