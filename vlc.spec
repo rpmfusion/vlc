@@ -349,12 +349,6 @@ rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 #mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gconf/schemas
 install -pm 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_datadir}/vlc/utils/
 
-#Workaround scaled pixmaps
-pushd $RPM_BUILD_ROOT%{_datadir}/icons/hicolor
-  for s in 16 32 48 128 256 ; do
-    ln -s vlc${s}x${s}.png ${s}x${s}/apps/vlc.png
-  done
-popd
 
 %find_lang %{name}
 
