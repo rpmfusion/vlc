@@ -1,6 +1,6 @@
-#global live555_date       2009.07.28
-#global vlc_rc             -rc3
-%global vlc_bootstrap      1
+#global live555_date		2009.07.28
+#global vlc_rc			-rc3
+%global vlc_bootstrap		1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -29,13 +29,13 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 %if 0%{?live555_date:1}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
-Source10:       vlc-handlers.schemas
-Patch0:          vlc-1.1.0-vlc-cache-gen_noerror.patch
+Source10:	vlc-handlers.schemas
+Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  desktop-file-utils
-BuildRequires:  gettext
-BuildRequires:  prelink
+BuildRequires:	desktop-file-utils
+BuildRequires:	gettext
+BuildRequires:	prelink
 
 %if 0%{?vlc_bootstrap:1}
 BuildRequires:	gettext-devel
@@ -46,21 +46,21 @@ BuildRequires:	libtool
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
-BuildRequires:  cdparanoia-devel
-BuildRequires:  dbus-devel
-BuildRequires:  dirac-devel >= 1.0.0
+BuildRequires:	cdparanoia-devel
+BuildRequires:	dbus-devel
+BuildRequires:	dirac-devel >= 1.0.0
 %{!?_without_directfb:BuildRequires: directfb-devel}
 %{?_with_faad2:BuildRequires: faad2-devel}
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
-BuildRequires:  fluidsynth-devel
+BuildRequires:	fluidsynth-devel
 BuildRequires:	fribidi-devel
-BuildRequires:  gnome-vfs2-devel
+BuildRequires:	gnome-vfs2-devel
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:  kde-filesystem
-BuildRequires:  libavc1394-devel
+BuildRequires:	kde-filesystem
+BuildRequires:	libavc1394-devel
 BuildRequires:	libass-devel >= 0.9.7
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
@@ -70,74 +70,74 @@ BuildRequires:	libdc1394-devel >= 2.1.0
 BuildRequires:	libdv-devel
 %{?_with_libdvbpsi:BuildRequires: libdvbpsi-devel}
 BuildRequires:	libdvdnav-devel
-BuildRequires:  libebml-devel
+BuildRequires:	libebml-devel
 BuildRequires:	libid3tag-devel
-BuildRequires:  libkate-devel
+BuildRequires:	libkate-devel
 %{?_with_libmad:BuildRequires: libmad-devel}
 BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel >= 1.0.0
-BuildRequires:  libnotify-devel
-BuildRequires:  libprojectM-qt-devel
-BuildRequires:  libproxy-devel
+BuildRequires:	libnotify-devel
+BuildRequires:	libprojectM-qt-devel
+BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libssh2-devel
 BuildRequires:	libsysfs-devel
-BuildRequires:  libshout-devel
-BuildRequires:  libsmbclient-devel
+BuildRequires:	libshout-devel
+BuildRequires:	libsmbclient-devel
 BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
-BuildRequires:  libtiff-devel
-BuildRequires:  libudev-devel >= 142
-BuildRequires:  libupnp-devel
+BuildRequires:	libtiff-devel
+BuildRequires:	libudev-devel >= 142
+BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
 BuildRequires:	libvorbis-devel
-BuildRequires:  libxml2-devel
+BuildRequires:	libxml2-devel
 BuildRequires:	lirc-devel
 %{?_with_live555:BuildRequires: live555-devel >= 0-0.19.2008.04.03}
 BuildRequires:  kernel-headers
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
-BuildRequires:  libmusicbrainz-devel
-BuildRequires:  libshout-devel
-BuildRequires:  lua-devel
-BuildRequires:  minizip-devel
+BuildRequires:	libmusicbrainz-devel
+BuildRequires:	libshout-devel
+BuildRequires:	lua-devel
+BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
-BuildRequires:  opencv-devel
-BuildRequires:  openslp-devel
-BuildRequires:  pcre-devel
-BuildRequires:  pulseaudio-libs-devel >= 0.9.8
-BuildRequires:  portaudio-devel
-BuildRequires:  qt4-devel >= 4.5.2
-BuildRequires:  schroedinger-devel
+BuildRequires:	opencv-devel
+BuildRequires:	openslp-devel
+BuildRequires:	pcre-devel
+BuildRequires:	pulseaudio-libs-devel >= 0.9.8
+BuildRequires:	portaudio-devel
+BuildRequires:	qt4-devel >= 4.5.2
+BuildRequires:	schroedinger-devel
 BuildRequires:	SDL_image-devel
 BuildRequires:	speex-devel >= 1.1.5
 %ifarch %{ix86} x86_64
-BuildRequires:  svgalib-devel
+BuildRequires:	svgalib-devel
 %endif
-BuildRequires:  taglib-devel
+BuildRequires:	taglib-devel
 %{?_with_twolame:BuildRequires:	twolame-devel}
 %{?_with_vcdimager:BuildRequires: vcdimager-devel >= 0.7.21}
 %{?_with_x264:BuildRequires: x264-devel >= 0-0.8.20061028}
 BuildRequires:	xosd-devel
 %{?_with_xvidcore:BuildRequires: xvidcore-devel}
 BuildRequires:	zlib-devel
-BuildRequires:  zvbi-devel
+BuildRequires:	zvbi-devel
 
 # X-libs
 BuildRequires:	libXt-devel
 BuildRequires:	libXv-devel
-BuildRequires:  libXxf86vm-devel
-BuildRequires:  libX11-devel
-BuildRequires:  libXext-devel
-BuildRequires:  libXpm-devel
-BuildRequires:  xcb-util-devel
-BuildRequires:  xorg-x11-proto-devel
+BuildRequires:	libXxf86vm-devel
+BuildRequires:	libX11-devel
+BuildRequires:	libXext-devel
+BuildRequires:	libXpm-devel
+BuildRequires:	xcb-util-devel
+BuildRequires:	xorg-x11-proto-devel
 
 
 %{!?_without_mozilla:BuildRequires:  gecko-devel nspr-devel}
@@ -200,7 +200,7 @@ VLC media player core components
 %package nox
 Summary:	VLC media player without Xorg
 Group:		Applications/Multimedia
-Requires:       vlc-core%{_isa} = %{version}-%{release}
+Requires:	vlc-core%{_isa} = %{version}-%{release}
 
 %description nox
 VLC media player with frame-buffer support for X-less server.
@@ -208,7 +208,7 @@ VLC media player with frame-buffer support for X-less server.
 %package plugin-jack
 Summary:	JACK audio plugin for VLC
 Group:		Applications/Multimedia
-Requires:       vlc-core%{_isa} = %{version}-%{release}
+Requires:	vlc-core%{_isa} = %{version}-%{release}
 
 %description plugin-jack
 JACK audio plugin for the VLC media player.
@@ -249,7 +249,7 @@ popd
 	--with-tuning=no			\
 	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
 %{?_with_ffmpeg:--enable-switcher} \
-	--enable-lua                            \
+	--enable-lua				\
 	--enable-live555 			\
 %if 0%{?live555_date:1}
 	--with-live555-tree=live		\
@@ -265,9 +265,9 @@ popd
 %{?_with_freeworld:--enable-shine} \
 %endif
 	--enable-omxil				\
-%{!?_with_a52dec:--disable-a52}                 \
+%{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
-  --disable-swscale --disable-postproc} \
+	--disable-swscale --disable-postproc} \
 %{?_with_faad2:--enable-faad} \
 %{!?_with_libmad:--disable-mad} \
 %{?_with_twolame:--enable-twolame} \
@@ -289,7 +289,7 @@ popd
 	--enable-aa				\
 	--enable-caca				\
 	--enable-jack				\
-        --enable-portaudio                      \
+	--enable-portaudio			\
 	--enable-pulse				\
 	--enable-ncurses			\
 	--enable-xosd				\
