@@ -148,7 +148,7 @@ Provides: %{name}-xorg%{_isa} = %{version}-%{release}
 Requires: vlc-core%{_isa} = %{version}-%{release}
 Requires: kde-filesystem
 
-%if 0%{?fedora} > 10 || 0%{rhel} > 5
+%if 0%{?fedora} > 10 || 0%{?rhel} > 5
 Requires: dejavu-sans-fonts
 Requires: dejavu-serif-fonts
 %else
@@ -426,7 +426,7 @@ fi || :
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
-%if 0%{fedora} > 11 || 0%{rhel} > 5
+%if 0%{?fedora} > 11 || 0%{?rhel} > 5
 %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %endif
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
@@ -466,7 +466,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
-%if 0%{fedora} > 11 || 0%{rhel} > 5
+%if 0%{?fedora} > 11 || 0%{?rhel} > 5
 %exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %endif
 %exclude %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
