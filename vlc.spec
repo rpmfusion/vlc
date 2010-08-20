@@ -20,7 +20,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.2
+Version:	1.1.3
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -148,7 +148,7 @@ Provides: %{name}-xorg%{_isa} = %{version}-%{release}
 Requires: vlc-core%{_isa} = %{version}-%{release}
 Requires: kde-filesystem
 
-%if 0%{?fedora} > 10
+%if 0%{?fedora} > 10 || 0%{rhel} > 5
 Requires: dejavu-sans-fonts
 Requires: dejavu-serif-fonts
 %else
@@ -413,6 +413,7 @@ fi || :
 %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
+%{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
 %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
@@ -425,9 +426,10 @@ fi || :
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
-%if 0%{fedora} > 11
+%if 0%{fedora} > 11 || 0%{rhel} > 5
 %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %endif
+%{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 
 %files core -f %{name}.lang
@@ -445,6 +447,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
+%exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %exclude %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
 %exclude %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
@@ -463,9 +466,10 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
-%if 0%{fedora} > 11
+%if 0%{fedora} > 11 || 0%{rhel} > 5
 %exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %endif
+%exclude %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
@@ -507,6 +511,10 @@ fi || :
 
 
 %changelog
+* Sat Aug 21 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.3-1
+- Update to 1.1.3
+- move some plugin from core to main
+
 * Thu Aug 05 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.2-1
 - Update to 1.1.2
 
