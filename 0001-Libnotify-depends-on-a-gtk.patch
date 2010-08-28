@@ -1,0 +1,27 @@
+From 967294c285981da403d3c3cd9c7d5616a6f96288 Mon Sep 17 00:00:00 2001
+From: Dominique Leuenberger <dominique@leuenberger.net>
+Date: Fri, 27 Aug 2010 22:30:00 +0200
+Subject: [PATCH] Libnotify depends on *a* GTK version (can be gtk-2.0 or gtk-3.0).
+
+As both are possible, libnotify can not drag the dependency in automatically, and as such
+the applications being built have to decide upon it. At this time, gtk-2.0 is the logical choice.
+---
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 7650ade..a60e4c5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1691,7 +1691,7 @@ AS_IF([test "${enable_growl}" != "no"], [
+ dnl
+ dnl Libnotify notification plugin
+ dnl
+-PKG_ENABLE_MODULES_VLC([NOTIFY], [], [libnotify], [libnotify notification], [auto])
++PKG_ENABLE_MODULES_VLC([NOTIFY], [], [libnotify gtk+-2.0], [libnotify notification], [auto])
+ 
+ dnl
+ dnl Taglibplugin
+-- 
+1.7.1
+

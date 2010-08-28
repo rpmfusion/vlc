@@ -20,7 +20,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.3
+Version:	1.1.4
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -31,6 +31,7 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Source10:	vlc-handlers.schemas
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
+Patch1:		0001-Libnotify-depends-on-a-gtk.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -193,6 +194,13 @@ web browsers.
 %package core
 Summary:	VLC media player core
 Group:		Applications/Multimedia
+%if 0%{?fedora} >= 13
+Conflicts:	selinux-policy-targeted < 3.7.19-51
+%endif
+Provides:	ffmpeg4vlc-libs = 0.6-0.5
+Provides:	ffmpeg4vlc-devel = 0.6-0.5
+Obsoletes:	ffmpeg4vlc-libs < 0.6-0.5
+Obsoletes:	ffmpeg4vlc-devel < 0.6-0.5
 
 %description core
 VLC media player core components
@@ -220,6 +228,7 @@ JACK audio plugin for the VLC media player.
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .noerror
+%patch1 -p1 -b .gtk23
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -511,6 +520,12 @@ fi || :
 
 
 %changelog
+* Sat Aug 28 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-1
+- Update to 1.1.4
+- Fix libnotify build on f14
+- Obsoletes ffmpeg4vlc
+- Raise selinux requirements that fix rhbz#591854
+
 * Sat Aug 21 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.3-1
 - Update to 1.1.3
 - move some plugin from core to main
