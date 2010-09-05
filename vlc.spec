@@ -21,7 +21,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -29,7 +29,6 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 %if 0%{?live555_date:1}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
-Source10:	vlc-handlers.schemas
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch1:		0001-Libnotify-depends-on-a-gtk.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -354,10 +353,6 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 
-#Fix CGonf2 url-handler support
-#mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gconf/schemas
-install -pm 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_datadir}/vlc/utils/
-
 
 %find_lang %{name}
 
@@ -366,22 +361,7 @@ install -pm 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_datadir}/vlc/utils/
 rm -rf $RPM_BUILD_ROOT
 
 
-%pre
-if [ "$1" -gt 1 ] ; then
-if [ -x %{_bindir}/gconftool-2 ] ; then
-export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
-gconftool-2 --makefile-uninstall-rule \
-  %{_datadir}/vlc/utils/vlc-handlers.schemas  >/dev/null
-fi
-fi || :
-
-
 %post
-if [ -x %{_bindir}/gconftool-2 ] ; then
-export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
-gconftool-2 --makefile-install-rule \
-  %{_datadir}/vlc/utils/vlc-handlers.schemas >/dev/null
-fi
 touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
@@ -389,15 +369,6 @@ fi
 %{_bindir}/update-desktop-database %{_datadir}/applications || :
 
 %post core -p /sbin/ldconfig
-
-%preun
-if [ "$1" -eq 0 ]; then
-if [ -x %{_bindir}/gconftool-2 ] ; then
-    export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source`
-    gconftool-2 --makefile-uninstall-rule \
-        %{_datadir}/vlc/utils/vlc-handlers.schemas >& /dev/null
-fi
-fi || :
 
 %postun
 %{_bindir}/update-desktop-database %{_datadir}/applications
@@ -407,6 +378,34 @@ if [ -x %{_bindir}/gtk-update-icon-cache ]; then
 fi || :
 
 %postun core -p /sbin/ldconfig
+
+%posttrans core
+%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+
+%post nox
+if [ $1 == 1 ] ; then
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+fi
+
+%post plugin-jack
+if [ $1 == 1 ] ; then
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+fi
+
+%postun nox
+if [ $1 == 0 ] ; then
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+fi
+
+%postun plugin-jack
+if [ $1 == 0 ] ; then
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+fi
+
+%preun core
+if [ $1 == 0 ] ; then
+  rm -rf %{_libdir}/vlc/plugins-*-*.dat
+fi || :
 
 
 %files
@@ -520,6 +519,11 @@ fi || :
 
 
 %changelog
+* Sun Sep 05 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-2
+- Adds support for vlc-cache-gen
+- Drop support for vlc-handlers.schemas
+  (will be handled in .desktop file)
+
 * Sat Aug 28 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-1
 - Update to 1.1.4
 - Fix libnotify build on f14
