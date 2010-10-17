@@ -21,7 +21,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -228,6 +228,7 @@ JACK audio plugin for the VLC media player.
 %endif
 %patch0 -p1 -b .noerror
 %patch1 -p1 -b .gtk23
+sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -252,6 +253,7 @@ popd
 
 %configure \
 	--disable-dependency-tracking		\
+	--with-pic				\
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
 	--with-tuning=no			\
@@ -366,12 +368,12 @@ touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
 fi 
-%{_bindir}/update-desktop-database %{_datadir}/applications || :
+%{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null || :
 
 %post core -p /sbin/ldconfig
 
 %postun
-%{_bindir}/update-desktop-database %{_datadir}/applications
+%{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null
 touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
@@ -380,26 +382,26 @@ fi || :
 %postun core -p /sbin/ldconfig
 
 %posttrans core
-%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 
 %post nox
 if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
 
 %post plugin-jack
 if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
 
 %postun nox
 if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
 
 %postun plugin-jack
 if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc || :
+  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
 
 %preun core
@@ -519,6 +521,10 @@ fi || :
 
 
 %changelog
+* Sun Oct 17 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-3
+- Explicitely use -fPIC compilation even for dmo plugin
+- Silence post scriptlet
+
 * Sun Sep 05 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-2
 - Adds support for vlc-cache-gen
 - Drop support for vlc-handlers.schemas
