@@ -21,7 +21,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -31,6 +31,7 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch1:		0001-Libnotify-depends-on-a-gtk.patch
+Patch2:         vlc-1.1.0-pending-taglib-not-tread_safe.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -228,6 +229,7 @@ JACK audio plugin for the VLC media player.
 %endif
 %patch0 -p1 -b .noerror
 %patch1 -p1 -b .gtk23
+%patch2 -p1 -b .taglib_ts
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -521,6 +523,9 @@ fi || :
 
 
 %changelog
+* Sun Oct 24 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-4
+- Workaround for taglib not been tread safe
+
 * Sun Oct 17 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-3
 - Explicitely use -fPIC compilation even for dmo plugin
 - Silence post scriptlet
