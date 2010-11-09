@@ -14,14 +14,15 @@
 %global _with_vcdimager	--with-vcdimager
 %global _with_x264 --with-x264
 %global _with_xvidcore --with-xvidcore
-%global _with_live555 --with-live55
+%global _with_live555 --with-live555
+%global _with_vaapi --with-vaapi
 %endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -523,6 +524,9 @@ fi || :
 
 
 %changelog
+* Tue Nov 09 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-5
+- Enable VAAPI
+
 * Sun Oct 24 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-4
 - Workaround for taglib not been tread safe
 
