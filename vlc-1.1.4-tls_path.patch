@@ -1,0 +1,14 @@
+diff -up vlc-1.1.4/modules/misc/gnutls.c.tls_path vlc-1.1.4/modules/misc/gnutls.c
+--- vlc-1.1.4/modules/misc/gnutls.c.tls_path	2010-06-08 00:57:45.000000000 +0200
++++ vlc-1.1.4/modules/misc/gnutls.c	2010-11-10 23:13:01.390977175 +0100
+@@ -695,8 +695,8 @@ static int OpenClient (vlc_object_t *obj
+     const char *confdir = config_GetConfDir ();
+     {
+         char path[strlen (confdir)
+-                   + sizeof ("/ssl/certs/ca-certificates.crt")];
+-        sprintf (path, "%s/ssl/certs/ca-certificates.crt", confdir);
++                   + sizeof ("/pki/tls/certs/ca-bundle.crt")];
++        sprintf (path, "%s/pki/tls/certs/ca-bundle.crt", confdir);
+         gnutls_Addx509File (VLC_OBJECT (p_session),
+                             p_sys->x509_cred, path, false);
+     }

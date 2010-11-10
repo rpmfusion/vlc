@@ -1,0 +1,15 @@
+diff -up vlc-1.1.4/modules/visualization/projectm.cpp.hardcode vlc-1.1.4/modules/visualization/projectm.cpp
+--- vlc-1.1.4/modules/visualization/projectm.cpp.hardcode	2010-04-13 02:22:27.000000000 +0200
++++ vlc-1.1.4/modules/visualization/projectm.cpp	2010-11-10 22:52:59.496688406 +0100
+@@ -75,9 +75,9 @@ vlc_module_begin ()
+ #else
+     add_file( "projectm-preset-path", "/usr/share/projectM/presets", NULL,
+               PRESET_PATH_TXT, PRESET_PATH_LONGTXT, true )
+-    add_file( "projectm-title-font", "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf", NULL,
++    add_file( "projectm-title-font", "/usr/share/fonts/dejavu/DejaVuSans.ttf", NULL,
+               TITLE_FONT_TXT, TITLE_FONT_LONGTXT, true )
+-    add_file( "projectm-menu-font", "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", NULL,
++    add_file( "projectm-menu-font", "/usr/share/fonts/dejavu/DejaVuSansMono.ttf", NULL,
+               MENU_FONT_TXT, MENU_FONT_LONGTXT, true )
+ #endif
+     add_integer( "projectm-width", 800, NULL, WIDTH_TEXT, WIDTH_LONGTEXT,
