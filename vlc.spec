@@ -83,7 +83,7 @@ BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel >= 1.0.0
-%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
+%if 0%{?fedora} < 15
 BuildRequires:	libnotify-devel
 %endif
 BuildRequires:	libprojectM-qt-devel
@@ -267,7 +267,7 @@ popd
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
 	--with-tuning=no			\
-%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
+%if 0%{?fedora} < 15
 	--disable-notify			\
 %endif
 	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
@@ -438,7 +438,7 @@ fi || :
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
-%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
+%if 0%{?fedora} < 15
 %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
 %endif
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
@@ -474,7 +474,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %exclude %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
-%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
+%if 0%{?fedora} < 15
 %exclude %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
 %endif
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
