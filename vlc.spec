@@ -14,14 +14,15 @@
 %global _with_vcdimager	--with-vcdimager
 %global _with_x264 --with-x264
 %global _with_xvidcore --with-xvidcore
-%global _with_live555 --with-live55
+%global _with_live555 --with-live555
+%global _with_vaapi --with-vaapi
 %endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.4
-Release:	4%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -31,7 +32,9 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch1:		0001-Libnotify-depends-on-a-gtk.patch
-Patch2:         vlc-1.1.0-pending-taglib-not-tread_safe.patch
+Patch2:		vlc-1.1.0-pending-taglib-not-tread_safe.patch
+Patch3:		vlc-1.1.4-hardode_font_patch.patch
+Patch4:		vlc-1.1.4-tls_path.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -80,7 +83,9 @@ BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel >= 1.0.0
+%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
 BuildRequires:	libnotify-devel
+%endif
 BuildRequires:	libprojectM-qt-devel
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
@@ -151,6 +156,7 @@ Requires: kde-filesystem
 
 %if 0%{?fedora} > 10 || 0%{?rhel} > 5
 Requires: dejavu-sans-fonts
+Requires: dejavu-sans-mono-fonts
 Requires: dejavu-serif-fonts
 %else
 Requires: dejavu-fonts
@@ -230,6 +236,8 @@ JACK audio plugin for the VLC media player.
 %patch0 -p1 -b .noerror
 %patch1 -p1 -b .gtk23
 %patch2 -p1 -b .taglib_ts
+%patch3 -p1 -b .hardode_path
+%patch4 -p1 -b .tls_path
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -259,6 +267,9 @@ popd
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
 	--with-tuning=no			\
+%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
+	--disable-notify			\
+%endif
 	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
 %{?_with_ffmpeg:--enable-switcher} \
 	--enable-lua				\
@@ -427,7 +438,9 @@ fi || :
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
+%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
 %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
+%endif
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
@@ -461,7 +474,9 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %exclude %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
+%if 0%{?fedora} < 15 || 0%{?rhel} =< 6
 %exclude %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
+%endif
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
@@ -523,6 +538,14 @@ fi || :
 
 
 %changelog
+* Wed Nov 10 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-6
+- Disable notify by f15 - deprecated upstream
+- Fix libProjectM crash once selected.
+- Fix default CA file for gnutls module.
+
+* Tue Nov 09 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-5
+- Enable VAAPI
+
 * Sun Oct 24 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-4
 - Workaround for taglib not been tread safe
 
