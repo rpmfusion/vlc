@@ -130,7 +130,7 @@ BuildRequires:	taglib-devel
 %{?_with_twolame:BuildRequires:	twolame-devel}
 %{?_with_vcdimager:BuildRequires: vcdimager-devel >= 0.7.21}
 %{?_with_x264:BuildRequires: x264-devel >= 0-0.8.20061028}
-BuildRequires:	xosd-devel
+%{?_with_xosd:BuildRequires: xosd-devel}
 %{?_with_xvidcore:BuildRequires: xvidcore-devel}
 BuildRequires:	zlib-devel
 BuildRequires:	zvbi-devel
@@ -267,7 +267,7 @@ popd
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
 	--with-tuning=no			\
-%if 0%{?fedora} < 15
+%if 0%{?fedora} > 14
 	--disable-notify			\
 %endif
 	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
@@ -315,7 +315,7 @@ popd
 	--enable-portaudio			\
 	--enable-pulse				\
 	--enable-ncurses			\
-	--enable-xosd				\
+%{?_with_xosd:--enable-xosd} \
 	--enable-fbosd				\
 	--enable-lirc				\
 %ifarch %{ix86}
@@ -447,7 +447,7 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-%{_libdir}/vlc/plugins/misc/libxosd_plugin.so
+%{?_with_xosd:%{_libdir}/vlc/plugins/misc/libxosd_plugin.so}
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
@@ -483,7 +483,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-%exclude %{_libdir}/vlc/plugins/misc/libxosd_plugin.so
+%{?_with_xosd:%exclude %{_libdir}/vlc/plugins/misc/libxosd_plugin.so}
 %ifarch %{ix86} x86_64
 %exclude %{_libdir}/vlc/plugins/video_output/libsvgalib_plugin.so
 %endif
@@ -542,6 +542,7 @@ fi || :
 - Disable notify by f15 - deprecated upstream
 - Fix libProjectM crash once selected.
 - Fix default CA file for gnutls module.
+- xosd not built by default - deprecated upstream
 
 * Tue Nov 09 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-5
 - Enable VAAPI
