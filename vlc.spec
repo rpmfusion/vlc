@@ -21,8 +21,8 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.4
-Release:	6%{?dist}
+Version:	1.1.5
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -32,7 +32,6 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch1:		0001-Libnotify-depends-on-a-gtk.patch
-Patch2:		vlc-1.1.0-pending-taglib-not-tread_safe.patch
 Patch3:		vlc-1.1.4-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -235,7 +234,6 @@ JACK audio plugin for the VLC media player.
 %endif
 %patch0 -p1 -b .noerror
 %patch1 -p1 -b .gtk23
-%patch2 -p1 -b .taglib_ts
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
@@ -538,6 +536,9 @@ fi || :
 
 
 %changelog
+* Sun Nov 14 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-1
+- Update to 1.1.5
+
 * Wed Nov 10 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-6
 - Disable notify by f15 - deprecated upstream
 - Fix libProjectM crash once selected.
