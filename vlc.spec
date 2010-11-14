@@ -210,13 +210,15 @@ Obsoletes:	ffmpeg4vlc-devel < 0.6-0.5
 %description core
 VLC media player core components
 
-%package nox
-Summary:	VLC media player without Xorg
+%package extras
+Summary:	VLC media player with extras modules
 Group:		Applications/Multimedia
 Requires:	vlc-core%{_isa} = %{version}-%{release}
+Provides:	vlc-nox = %{version}-%{release}
+Obsoletes:	vlc-nox < 1.1.5-2
 
-%description nox
-VLC media player with frame-buffer support for X-less server.
+%description extras
+VLC media player extras modules.
 
 %package plugin-jack
 Summary:	JACK audio plugin for VLC
@@ -395,7 +397,7 @@ fi || :
 %posttrans core
 %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 
-%post nox
+%post extras
 if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
@@ -405,7 +407,7 @@ if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
 
-%postun nox
+%postun extras
 if [ $1 == 0 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
@@ -436,9 +438,6 @@ fi || :
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
-%if 0%{?fedora} < 15
-%{_libdir}/vlc/plugins/misc/libnotify_plugin.so
-%endif
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
@@ -447,8 +446,6 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
 %{?_with_xosd:%{_libdir}/vlc/plugins/misc/libxosd_plugin.so}
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
-%{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
-%{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
 %if 0%{?fedora} > 11 || 0%{?rhel} > 5
 %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %endif
@@ -508,11 +505,16 @@ fi || :
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 
-%files nox
+%files extras
 %defattr(-,root,root,-)
 %{!?_without_directfb:
 %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
+%if 0%{?fedora} < 15
+%{_libdir}/vlc/plugins/misc/libnotify_plugin.so
+%endif
+%{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
+%{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
 %ifarch %{ix86} x86_64
 %{_libdir}/vlc/plugins/video_output/libsvgalib_plugin.so
 %endif
@@ -538,6 +540,9 @@ fi || :
 %changelog
 * Sun Nov 14 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-1
 - Update to 1.1.5
+- Rename nox subpackage to extras
+- Move opencv modules to extras
+- Move libnotify module to extras until f15
 
 * Wed Nov 10 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.4-6
 - Disable notify by f15 - deprecated upstream
