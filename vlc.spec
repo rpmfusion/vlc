@@ -162,6 +162,8 @@ Requires: dejavu-fonts
 %endif
 Requires: qt4%{?_isa} >= %{_qt4_version}
 
+#For xdg-sreensaver
+Requires: xdg-utils
 
 
 
