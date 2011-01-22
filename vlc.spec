@@ -22,7 +22,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.5
-Release:	1%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -365,7 +365,10 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
   $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
 
 #Clear execstak
-#execstack -c $RPM_BUILD_ROOT%{_bindir}/vlc
+%ifarch %{ix86}
+execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/libdmo_plugin.so
+execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/librealvideo_plugin.so
+%endif
 
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
@@ -540,6 +543,12 @@ fi || :
 
 
 %changelog
+* Sat Jan 22 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-3
+- Rebuilt for OpenCV 2.2
+
+* Sat Dec 18 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-2
+-  Clear execstack on dmo and real plugin for i686
+
 * Sun Nov 14 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-1
 - Update to 1.1.5
 - Rename nox subpackage to extras
