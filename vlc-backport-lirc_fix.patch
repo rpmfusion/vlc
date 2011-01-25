@@ -16,9 +16,9 @@ index aee33c3..e8c4780 100644
  #include <fcntl.h>
  
  #ifdef HAVE_CONFIG_H
-@@ -154,10 +155,12 @@ static void Run( intf_thread_t *p_intf )
+@@ -154,10 +155,12 @@
          /* Wait for data */
-         struct pollfd ufd = { .fd = p_sys->i_fd, .events = POLLIN, .revents = 0
+         struct pollfd ufd = { .fd = p_sys->i_fd, .events = POLLIN, .revents = 0 };
          if( poll( &ufd, 1, -1 ) == -1 )
 +        {
              if( errno == EINTR )
@@ -28,3 +28,4 @@ index aee33c3..e8c4780 100644
 +        }
  
          /* Process */
+         int canc = vlc_savecancel();
