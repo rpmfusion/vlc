@@ -26,7 +26,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -39,6 +39,7 @@ Patch1:		0001-Libnotify-depends-on-a-gtk.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
 Patch5:		vlc-backport-lirc_fix.patch
+Patch6:         vlc-backport-signal_fix.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -248,6 +249,7 @@ JACK audio plugin for the VLC media player.
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
 %patch5 -p1 -b .lirc_fix
+%patch6 -p1 -b .signal_fix
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -555,8 +557,9 @@ fi || :
 
 
 %changelog
-* Mon Jan 24 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.6-1
+* Mon Jan 24 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.6-2
 - Update to 1.1.6
+- backport lirc and signal fixes
 
 * Sat Dec 18 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-2
 -  Clear execstack on dmo and real plugin for i686
