@@ -17,12 +17,16 @@
 %global _with_live555 --with-live555
 %global _with_vaapi --with-vaapi
 %endif
-
+%if 0%{?fedora} > 14
+# Those need works in Rawhide
+%global _without_opencv 1
+%global _without_mozilla 1
+%endif
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.5
-Release:	3%{?dist}
+Version:	1.1.6
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -32,8 +36,9 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch1:		0001-Libnotify-depends-on-a-gtk.patch
-Patch3:		vlc-1.1.4-hardode_font_patch.patch
+Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
+Patch5:		vlc-backport-lirc_fix.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -88,6 +93,7 @@ BuildRequires:	libnotify-devel
 BuildRequires:	libprojectM-qt-devel
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
+BuildRequires:  librtmp-devel
 BuildRequires:	libssh2-devel
 BuildRequires:	libsysfs-devel
 BuildRequires:	libshout-devel
@@ -113,7 +119,7 @@ BuildRequires:	lua-devel
 BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
-BuildRequires:	opencv-devel
+%{!?_without_opencv:BuildRequires: opencv-devel}
 BuildRequires:	openslp-devel
 BuildRequires:	pcre-devel
 BuildRequires:	pulseaudio-libs-devel >= 0.9.8
@@ -208,6 +214,7 @@ Provides:	ffmpeg4vlc-libs = 0.6-0.5
 Provides:	ffmpeg4vlc-devel = 0.6-0.5
 Obsoletes:	ffmpeg4vlc-libs < 0.6-0.5
 Obsoletes:	ffmpeg4vlc-devel < 0.6-0.5
+%{?live555date:Requires: live555%{_isa} = %{live555date}}
 
 %description core
 VLC media player core components
@@ -240,6 +247,7 @@ JACK audio plugin for the VLC media player.
 %patch1 -p1 -b .gtk23
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
+%patch5 -p1 -b .lirc_fix
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -280,7 +288,7 @@ popd
 	--with-live555-tree=live		\
 %endif
 	--enable-dv				\
-	--enable-opencv				\
+%{!?_without_opencv:--enable-opencv} \
 	--enable-sftp				\
 	--enable-pvr				\
 	--enable-gnomevfs			\
@@ -491,8 +499,10 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
+%{!?_without_opencv:
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
+}
 %if 0%{?fedora} > 11 || 0%{?rhel} > 5
 %exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %endif
@@ -518,8 +528,10 @@ fi || :
 %if 0%{?fedora} < 15
 %{_libdir}/vlc/plugins/misc/libnotify_plugin.so
 %endif
+%{!?_without_opencv:
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
+}
 %ifarch %{ix86} x86_64
 %{_libdir}/vlc/plugins/video_output/libsvgalib_plugin.so
 %endif
@@ -543,8 +555,8 @@ fi || :
 
 
 %changelog
-* Sat Jan 22 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-3
-- Rebuilt for OpenCV 2.2
+* Mon Jan 24 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.6-1
+- Update to 1.1.6
 
 * Sat Dec 18 2010 Nicolas Chauvet <kwizart@gmail.com> - 1.1.5-2
 -  Clear execstack on dmo and real plugin for i686
