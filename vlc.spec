@@ -214,7 +214,7 @@ Provides:	ffmpeg4vlc-libs = 0.6-0.5
 Provides:	ffmpeg4vlc-devel = 0.6-0.5
 Obsoletes:	ffmpeg4vlc-libs < 0.6-0.5
 Obsoletes:	ffmpeg4vlc-devel < 0.6-0.5
-%{?live555date:Requires: live555%{_isa} = %{live555date}}
+%{?live555date:Requires: live555date%{_isa} = %{live555date}}
 
 %description core
 VLC media player core components
