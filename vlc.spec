@@ -518,7 +518,7 @@ fi || :
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 
-%files c
+%files plugin-extras
 %defattr(-,root,root,-)
 %{!?_without_directfb:
 %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
