@@ -25,8 +25,8 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.6
-Release:	2%{?dist}
+Version:	1.1.6.1
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -35,11 +35,8 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
-Patch1:		0001-Libnotify-depends-on-a-gtk.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
-Patch5:		vlc-backport-lirc_fix.patch
-Patch6:         vlc-backport-signal_fix.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -215,19 +212,21 @@ Provides:	ffmpeg4vlc-libs = 0.6-0.5
 Provides:	ffmpeg4vlc-devel = 0.6-0.5
 Obsoletes:	ffmpeg4vlc-libs < 0.6-0.5
 Obsoletes:	ffmpeg4vlc-devel < 0.6-0.5
+Provides:	vlc-nox = %{version}-%{release}
+Obsoletes:	vlc-nox < 1.1.5-2
 %{?live555date:Requires: live555date%{_isa} = %{live555date}}
 
 %description core
 VLC media player core components
 
-%package extras
+%package plugin-extras
 Summary:	VLC media player with extras modules
 Group:		Applications/Multimedia
 Requires:	vlc-core%{_isa} = %{version}-%{release}
-Provides:	vlc-nox = %{version}-%{release}
-Obsoletes:	vlc-nox < 1.1.5-2
+Provides:	vlc-extras = %{version}-%{release}
+Obsoletes:	vlc-extras < 1.1.6.1
 
-%description extras
+%description plugin-extras
 VLC media player extras modules.
 
 %package plugin-jack
@@ -245,11 +244,8 @@ JACK audio plugin for the VLC media player.
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .noerror
-%patch1 -p1 -b .gtk23
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
-%patch5 -p1 -b .lirc_fix
-%patch6 -p1 -b .signal_fix
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -412,7 +408,7 @@ fi || :
 %posttrans core
 %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 
-%post extras
+%post plugin-extras
 if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
@@ -422,7 +418,7 @@ if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
 
-%postun extras
+%postun plugin-extras
 if [ $1 == 0 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
@@ -522,7 +518,7 @@ fi || :
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 
-%files extras
+%files c
 %defattr(-,root,root,-)
 %{!?_without_directfb:
 %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
@@ -557,6 +553,11 @@ fi || :
 
 
 %changelog
+* Sat Jan 29 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.6.1-1
+- Update to 1.1.6.1
+- Remove merged patches
+- Switch extras subpackage to plugin-extras
+
 * Mon Jan 24 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.6-2
 - Update to 1.1.6
 - backport lirc and signal fixes
