@@ -219,14 +219,13 @@ Obsoletes:	vlc-nox < 1.1.5-2
 %description core
 VLC media player core components
 
-%package plugin-extras
+%package extras
 Summary:	VLC media player with extras modules
 Group:		Applications/Multimedia
 Requires:	vlc-core%{_isa} = %{version}-%{release}
-Provides:	vlc-extras = %{version}-%{release}
-Obsoletes:	vlc-extras < 1.1.6.1
 
-%description plugin-extras
+
+%description extras
 VLC media player extras modules.
 
 %package plugin-jack
@@ -408,7 +407,7 @@ fi || :
 %posttrans core
 %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 
-%post plugin-extras
+%post extras
 if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
@@ -418,7 +417,7 @@ if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
 
-%postun plugin-extras
+%postun extras
 if [ $1 == 0 ] ; then
   %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
 fi
@@ -518,7 +517,7 @@ fi || :
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 
-%files plugin-extras
+%files extras
 %defattr(-,root,root,-)
 %{!?_without_directfb:
 %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
@@ -556,7 +555,6 @@ fi || :
 * Sat Jan 29 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.6.1-1
 - Update to 1.1.6.1
 - Remove merged patches
-- Switch extras subpackage to plugin-extras
 
 * Mon Jan 24 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.6-2
 - Update to 1.1.6
