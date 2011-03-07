@@ -1,6 +1,7 @@
 #global live555_date		2009.07.28
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
+%global tarball_version         1.1.7
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -25,18 +26,19 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.7
-Release:	1%{?dist}
+Version:	1.1.8
+Release:	0.1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.bz2
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{tarball_version}%{?vlc_rc}.tar.bz2
 %if 0%{?live555_date:1}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
+Patch5:         vlc-1.1-bugfix-20110307.patch.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -238,13 +240,14 @@ JACK audio plugin for the VLC media player.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{name}-%{tarball_version}%{?vlc_rc}
 %if 0%{?live555_date:1}
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .noerror
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
+%patch5 -p1
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -552,6 +555,9 @@ fi || :
 
 
 %changelog
+* Mon Mar 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.1²
+- Update to pre-1.1.8 bugfix git from today
+
 * Wed Feb 02 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.7-1
 - Update to 1.1.7
 
