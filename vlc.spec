@@ -555,7 +555,7 @@ fi || :
 
 
 %changelog
-* Mon Mar 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.1²
+* Mon Mar 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.1
 - Update to pre-1.1.8 bugfix git from today
 
 * Wed Feb 02 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.7-1
