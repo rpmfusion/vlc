@@ -28,7 +28,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.8
-Release:	0.1%{?dist}
+Release:	0.1%{?dist}.1
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -249,7 +249,7 @@ JACK audio plugin for the VLC media player.
 %patch0 -p1 -b .noerror
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
-%patch5 -p1
+%patch5 -p2
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -557,7 +557,7 @@ fi || :
 
 
 %changelog
-* Mon Mar 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.1
+* Mon Mar 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.1.1
 - Update to pre-1.1.8 bugfix git from today
 
 * Wed Feb 02 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.7-1
