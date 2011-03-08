@@ -2,6 +2,7 @@
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
 %global tarball_version         1.1.7
+%global _with_workaround_circle_deps 1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -153,6 +154,7 @@ BuildRequires:	xorg-x11-proto-devel
 
 %{!?_without_mozilla:BuildRequires:  gecko-devel nspr-devel}
 %{?_without_mozilla:Obsoletes: mozilla-vlc < %{version}-%{release}}
+%{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
