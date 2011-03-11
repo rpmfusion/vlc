@@ -28,7 +28,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.8
-Release:	0.1%{?dist}.1
+Release:	0.2%{?dist}.1
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -557,6 +557,9 @@ fi || :
 
 
 %changelog
+* Fri Mar 11 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.2.1
+- Rebuilt for new x264/FFmpeg
+
 * Mon Mar 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.1.1
 - Update to pre-1.1.8 bugfix git from today
 
