@@ -1,8 +1,8 @@
 #global live555_date		2009.07.28
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
-%global tarball_version         1.1.7
-%global _with_workaround_circle_deps 1
+%global tarball_version         1.1.8
+#global _with_workaround_circle_deps 1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -23,23 +23,24 @@
 # Those need works in Rawhide
 %global _without_opencv 1
 %global _without_mozilla 1
+%else
+%global _with_gnomevfs 1
 %endif
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.8
-Release:	0.2%{?dist}
+Release:	0%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{tarball_version}%{?vlc_rc}.tar.bz2
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.bz2
 %if 0%{?live555_date:1}
 Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 %endif
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
-Patch5:         vlc-1.1-bugfix-20110307.patch.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -64,7 +65,7 @@ BuildRequires:	dirac-devel >= 1.0.0
 BuildRequires:	flac-devel
 BuildRequires:	fluidsynth-devel
 BuildRequires:	fribidi-devel
-BuildRequires:	gnome-vfs2-devel
+%{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	jack-audio-connection-kit-devel
@@ -249,7 +250,6 @@ JACK audio plugin for the VLC media player.
 %patch0 -p1 -b .noerror
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
-%patch5 -p2
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -293,8 +293,8 @@ popd
 %{!?_without_opencv:--enable-opencv} \
 	--enable-sftp				\
 	--enable-pvr				\
-	--enable-gnomevfs			\
-%{?_with_vcdimager--enable-vcdx}		\
+%{?_with_gnomevfs:--enable-gnomevfs}            \
+%{?_with_vcdimager:--enable-vcdx}		\
 %if 0
 %{?_with_freeworld:--enable-wma-fixed} \
 %{?_with_freeworld:--enable-shine} \
@@ -449,7 +449,9 @@ fi || :
 %{_bindir}/qvlc
 %{_bindir}/svlc
 %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
+}
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
@@ -478,7 +480,9 @@ fi || :
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%{?_with_gnomevfs:
 %exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
+}
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
