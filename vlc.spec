@@ -1,6 +1,8 @@
 #global live555_date		2009.07.28
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
+%global tarball_version         1.1.8
+#global _with_workaround_circle_deps 1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -19,13 +21,14 @@
 %endif
 %if 0%{?fedora} > 14
 # Those need works in Rawhide
-%global _without_opencv 1
 %global _without_mozilla 1
+%else
+%global _with_gnomevfs 1
 %endif
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.7
+Version:	1.1.8
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -37,6 +40,7 @@ Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
 Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
+Patch5:         vlc-1.1.8-bugfix.opencv22.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -61,7 +65,7 @@ BuildRequires:	dirac-devel >= 1.0.0
 BuildRequires:	flac-devel
 BuildRequires:	fluidsynth-devel
 BuildRequires:	fribidi-devel
-BuildRequires:	gnome-vfs2-devel
+%{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	jack-audio-connection-kit-devel
@@ -151,6 +155,7 @@ BuildRequires:	xorg-x11-proto-devel
 
 %{!?_without_mozilla:BuildRequires:  gecko-devel nspr-devel}
 %{?_without_mozilla:Obsoletes: mozilla-vlc < %{version}-%{release}}
+%{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
@@ -238,13 +243,16 @@ JACK audio plugin for the VLC media player.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{name}-%{tarball_version}%{?vlc_rc}
 %if 0%{?live555_date:1}
 %setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
 %endif
 %patch0 -p1 -b .noerror
 %patch3 -p1 -b .hardode_path
 %patch4 -p1 -b .tls_path
+%if 0%{?fedora} >= 15
+%patch5 -p1 -b .opencv22
+%endif
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -288,8 +296,8 @@ popd
 %{!?_without_opencv:--enable-opencv} \
 	--enable-sftp				\
 	--enable-pvr				\
-	--enable-gnomevfs			\
-%{?_with_vcdimager--enable-vcdx}		\
+%{?_with_gnomevfs:--enable-gnomevfs}            \
+%{?_with_vcdimager:--enable-vcdx}		\
 %if 0
 %{?_with_freeworld:--enable-wma-fixed} \
 %{?_with_freeworld:--enable-shine} \
@@ -444,7 +452,9 @@ fi || :
 %{_bindir}/qvlc
 %{_bindir}/svlc
 %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
+}
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %{_libdir}/vlc/plugins/misc/libsvg_plugin.so
@@ -473,7 +483,9 @@ fi || :
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%{?_with_gnomevfs:
 %exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
+}
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
@@ -552,6 +564,15 @@ fi || :
 
 
 %changelog
+* Thu Mar 24 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-1
+- Update to 1.1.8
+
+* Fri Mar 11 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.2.1
+- Rebuilt for new x264/FFmpeg
+
+* Mon Mar 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-0.1.1
+- Update to pre-1.1.8 bugfix git from today
+
 * Wed Feb 02 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.7-1
 - Update to 1.1.7
 
