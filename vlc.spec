@@ -29,7 +29,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -41,6 +41,7 @@ Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
 Patch5:         vlc-1.1.8-bugfix.opencv22.patch
+Patch6:         vlc-1.1.8-bugfix-20110406.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -253,6 +254,7 @@ JACK audio plugin for the VLC media player.
 %if 0%{?fedora} >= 15
 %patch5 -p1 -b .opencv22
 %endif
+%patch6 -p1
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -564,6 +566,9 @@ fi || :
 
 
 %changelog
+* Wed Apr 06 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-2
+- Backport youtube lua fix - rfbz#1675
+
 * Thu Mar 24 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.8-1
 - Update to 1.1.8
 
