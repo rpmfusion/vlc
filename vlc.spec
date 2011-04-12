@@ -1,7 +1,7 @@
 #global live555_date		2009.07.28
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
-%global tarball_version         1.1.8
+%global tarball_version         1.1.9
 #global _with_workaround_circle_deps 1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
