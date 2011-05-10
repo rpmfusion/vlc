@@ -29,7 +29,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -564,6 +564,9 @@ fi || :
 
 
 %changelog
+* Tue May 10 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.9-2
+- Rebuilt for libdvbpsi
+
 * Tue Apr 12 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.9-1
 - Update to 1.1.9
 
