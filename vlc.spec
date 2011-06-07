@@ -1,8 +1,8 @@
 #global live555_date		2009.07.28
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
-%global tarball_version         1.1.9
-#global _with_workaround_circle_deps 1
+%global tarball_version         1.1.10
+%global _with_workaround_circle_deps 1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -19,16 +19,13 @@
 %global _with_live555 --with-live555
 %global _with_vaapi --with-vaapi
 %endif
-%if 0%{?fedora} > 14
-# Those need works in Rawhide
-%global _without_mozilla 1
-%else
+%if 0%{?fedora} < 15
 %global _with_gnomevfs 1
 %endif
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.9
+Version:	1.1.10
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -41,6 +38,7 @@ Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
 Patch5:         vlc-1.1.8-bugfix.opencv22.patch
+Patch6:         vlc-1.1-backport_20110607.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -253,6 +251,7 @@ JACK audio plugin for the VLC media player.
 %if 0%{?fedora} >= 15
 %patch5 -p1 -b .opencv22
 %endif
+%patch6 -p1
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 
 rm modules/access/videodev2.h
@@ -564,6 +563,11 @@ fi || :
 
 
 %changelog
+* Mon Jun 06 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.10-1
+- Update to 1.1.10
+- backport from 1.1-bugfix
+- Re-add mozilla-vlc for f15
+
 * Tue Apr 12 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.9-1
 - Update to 1.1.9
 
