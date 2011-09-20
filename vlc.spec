@@ -39,6 +39,7 @@ Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
 Patch5:         vlc-1.1.8-bugfix.opencv22.patch
 Patch6:		vlc-1.1-bugfix-20110920.patch
+Patch7:		0001-port-to-FFmpeg-0.8-API.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -253,6 +254,7 @@ JACK audio plugin for the VLC media player.
 %endif
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
 %patch6 -p1
+%patch7 -p1 -b .ff08
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -565,6 +567,7 @@ fi || :
 %changelog
 * Tue Sep 20 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.11-2
 - Update to current bugfix
+- Add patch for FFmpeg-0.8
 
 * Wed Jul 20 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.11-1
 - Update to 1.1.11
