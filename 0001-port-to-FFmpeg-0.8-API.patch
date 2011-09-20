@@ -1,22 +1,23 @@
-From e2a0e38258a16da56a5d850e179a691839558dcd Mon Sep 17 00:00:00 2001
+From 02d07530a2ef11acee153137fcccfbe124b2b9e6 Mon Sep 17 00:00:00 2001
 From: Dominik 'Rathann' Mierzejewski <dominik@greysector.net>
 Date: Sun, 4 Sep 2011 23:58:53 +0200
 Subject: [PATCH] port to FFmpeg-0.8 API
 
+Reworked to allow older ffmpeg version
 Signed-off-by: Nicolas Chauvet <kwizart@gmail.com>
 ---
  modules/stream_out/switcher.c |   41 ++++++++++++++++++++++++++++++++++++++++-
  1 files changed, 40 insertions(+), 1 deletions(-)
 
 diff --git a/modules/stream_out/switcher.c b/modules/stream_out/switcher.c
-index ca57a28..d96f690 100644
+index ca57a28..0b48a71 100644
 --- a/modules/stream_out/switcher.c
 +++ b/modules/stream_out/switcher.c
 @@ -358,6 +358,7 @@ static sout_stream_id_t *Add( sout_stream_t *p_stream, es_format_t *p_fmt )
          /* Set CPU capabilities */
          unsigned i_cpu = vlc_CPU();
          id->ff_enc_c->dsp_mask = 0;
-+#if FF_API_MM_FLAGS
++#if LIBAVCODEC_VERSION_MAJOR < 53
          if( !(i_cpu & CPU_CAPABILITY_MMX) )
          {
              id->ff_enc_c->dsp_mask |= FF_MM_MMX;
@@ -38,6 +39,23 @@ index ca57a28..d96f690 100644
 +        {
 +            id->ff_enc_c->dsp_mask |= AV_CPU_FLAG_3DNOW;
 +        }
++        if( !(i_cpu & CPU_CAPABILITY_SSE) )
++        {
++            id->ff_enc_c->dsp_mask |= AV_CPU_FLAG_SSE;
++            id->ff_enc_c->dsp_mask |= AV_CPU_FLAG_SSE2;
++        }
++#endif
+         id->ff_enc_c->sample_rate = p_fmt->audio.i_rate;
+         id->ff_enc_c->channels    = p_fmt->audio.i_channels;
+         id->ff_enc_c->bit_rate    = p_fmt->i_bitrate;
+@@ -747,6 +766,7 @@ static mtime_t VideoCommand( sout_stream_t *p_stream, sout_stream_id_t *id )
+         /* Set CPU capabilities */
+         unsigned i_cpu = vlc_CPU();
+         id->ff_enc_c->dsp_mask = 0;
++#if LIBAVCODEC_VERSION_MAJOR < 53
+         if( !(i_cpu & CPU_CAPABILITY_MMX) )
+         {
+             id->ff_enc_c->dsp_mask |= FF_MM_MMX;
 @@ -764,6 +784,25 @@ static mtime_t VideoCommand( sout_stream_t *p_stream, sout_stream_id_t *id )
              id->ff_enc_c->dsp_mask |= FF_MM_SSE;
              id->ff_enc_c->dsp_mask |= FF_MM_SSE2;
@@ -61,7 +79,7 @@ index ca57a28..d96f690 100644
 +            id->ff_enc_c->dsp_mask |= AV_CPU_FLAG_SSE2;
 +        }
 +#endif
-
+ 
          id->ff_enc_c->width = p_sys->p_pictures[p_sys->i_cmd-1].format.i_width;
          id->ff_enc_c->height = p_sys->p_pictures[p_sys->i_cmd-1].format.i_height;
 -- 
