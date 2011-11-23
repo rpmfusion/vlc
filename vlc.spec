@@ -22,11 +22,12 @@
 %if 0%{?fedora} < 15
 %global _with_gnomevfs 1
 %endif
+%global _without_mozilla 1
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.12
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -558,6 +559,9 @@ fi || :
 
 
 %changelog
+* Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-3
+- Disable mozilla-vlc for F-17
+
 * Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-2
 - Rebuilf for libcdio/libmatroska
 
