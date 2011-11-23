@@ -26,7 +26,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.12
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -209,13 +209,6 @@ web browsers.
 %package core
 Summary:	VLC media player core
 Group:		Applications/Multimedia
-%if 0%{?fedora} >= 13
-Conflicts:	selinux-policy-targeted < 3.7.19-51
-%endif
-Provides:	ffmpeg4vlc-libs = 0.6-0.5
-Provides:	ffmpeg4vlc-devel = 0.6-0.5
-Obsoletes:	ffmpeg4vlc-libs < 0.6-0.5
-Obsoletes:	ffmpeg4vlc-devel < 0.6-0.5
 Provides:	vlc-nox = %{version}-%{release}
 Obsoletes:	vlc-nox < 1.1.5-2
 %{?live555date:Requires: live555date%{_isa} = %{live555date}}
@@ -565,6 +558,9 @@ fi || :
 
 
 %changelog
+* Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-2
+- Rebuilf for libcdio/libmatroska
+
 * Fri Oct 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-1
 - Update to 1.1.12
 - Add 2 already merged patches
