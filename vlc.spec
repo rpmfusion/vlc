@@ -270,7 +270,7 @@ popd
 %{?_with_faad2:--enable-faad} \
 %{!?_with_libmad:--disable-mad} \
 %{?_with_twolame:--enable-twolame} \
-%{?_with_freeworld:--enable-real --enable-realrtsp} \
+%{?!_without_freeworld:--enable-real --enable-realrtsp} \
 	--enable-flac				\
 	--enable-tremor				\
 	--enable-speex				\
