@@ -27,7 +27,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.12
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -559,6 +559,9 @@ fi || :
 
 
 %changelog
+* Wed Dec 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-4
+- Rebuilt for xcb
+
 * Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-3
 - Disable mozilla-vlc for F-17
 
