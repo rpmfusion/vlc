@@ -150,6 +150,7 @@ BuildRequires:	libX11-devel
 BuildRequires:	libXext-devel
 BuildRequires:	libXpm-devel
 BuildRequires:	xcb-util-devel
+BuildRequires:	pkgconfig(xcb-keysyms)
 BuildRequires:	xorg-x11-proto-devel
 
 
