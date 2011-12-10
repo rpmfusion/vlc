@@ -403,7 +403,9 @@ fi || :
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
+%if 0%{?fedora} >= 17
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
+%endif
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
@@ -430,7 +432,9 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
+%if 0%{?fedora} >= 17
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
+%endif
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
@@ -484,6 +488,7 @@ fi || :
 - Update to 1.2.0-pre2
 - Reverse build conditional to --without freeworld
   So it can be tested with Fedora only (patches welcomed)
+- Disable xcb globalhotkeys in Rawhide/F-17
 
 * Fri Oct 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-1
 - Update to 1.1.12
