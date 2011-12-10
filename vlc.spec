@@ -37,6 +37,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	desktop-file-utils
 BuildRequires:	gettext
 BuildRequires:	prelink
+Buildrequires:	xz
 
 %{?_with_bootstrap:
 BuildRequires:	gettext-devel
@@ -485,7 +486,7 @@ fi || :
 
 %changelog
 * Sat Dec 10 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.2.0-0.3_pre2
-- Rebuilt
+- Rebuilt with xz to workaround rfbz#2086
 
 * Wed Dec 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.2.0-0.2_pre2
 - Update to 1.2.0-pre2
