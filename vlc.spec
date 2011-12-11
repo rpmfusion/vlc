@@ -404,7 +404,7 @@ fi || :
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%if 0%{?fedora} >= 17
+%if 0%{?fedora} < 17
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %endif
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
@@ -433,7 +433,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
-%if 0%{?fedora} >= 17
+%if 0%{?fedora} < 17
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %endif
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
