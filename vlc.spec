@@ -1,7 +1,7 @@
 #global live555_date		2009.07.28
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
-%global tarball_version         1.1.12
+%global tarball_version         1.1.13
 %global _with_workaround_circle_deps 1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
@@ -25,7 +25,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	1.1.12
+Version:	1.1.13
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -38,8 +38,6 @@ Patch0:		vlc-1.1.0-vlc-cache-gen_noerror.patch
 Patch3:		vlc-1.1.6-hardode_font_patch.patch
 Patch4:		vlc-1.1.4-tls_path.patch
 Patch5:		vlc-1.1.8-bugfix.opencv22.patch
-Patch6:		0001-Fix-typo-in-vlc.desktop.patch
-Patch7:		0001-kate-do-not-access-the-renderer-if-it-fails-to-initi.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -253,8 +251,6 @@ JACK audio plugin for the VLC media player.
 %patch5 -p1 -b .opencv22
 %endif
 sed -i.dmo_pic -e 's/fno-PIC/fPIC/' libs/loader/Makefile.in
-%patch6 -p1
-%patch7 -p1
 
 rm modules/access/videodev2.h
 ln -sf %{_includedir}/linux/videodev2.h modules/access/videodev2.h
@@ -565,6 +561,9 @@ fi || :
 
 
 %changelog
+* Wed Dec 21 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.13-1
+- Update to 1.1.13
+
 * Fri Oct 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.12-1
 - Update to 1.1.12
 - Add 2 already merged patches
