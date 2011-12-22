@@ -22,11 +22,15 @@
 %if 0%{?fedora} < 15
 %global _with_gnomevfs 1
 %endif
+#Only compatible to gecko up to 1.9.2
+%if 0%{?fedora} > 14 || 0%{?rhel} > 6
+%global _without_mozilla 1
+%endif
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -561,6 +565,9 @@ fi || :
 
 
 %changelog
+* Thu Dec 22 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.13-2
+- Disable mozilla-vlc (moving to npapi-vlc).
+
 * Wed Dec 21 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.13-1
 - Update to 1.1.13
 
