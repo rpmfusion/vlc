@@ -1,6 +1,6 @@
 #global live555_date		2009.07.28
-%global vlc_rc			-pre2
-#global _with_bootstrap		1
+%global vlc_rc			-pre3
+%global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -23,7 +23,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.2.0
-Release:	0.4_pre2%{?dist}
+Release:	0.5_pre3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -186,7 +186,6 @@ Summary:	VLC media player core
 Group:		Applications/Multimedia
 Provides:	vlc-nox = %{version}-%{release}
 Obsoletes:	vlc-nox < 1.1.5-2
-Obsoletes:	mozilla-vlc < 1.2.0
 %{?live555date:Requires: live555date%{_isa} = %{live555date}}
 
 %description core
@@ -485,6 +484,9 @@ fi || :
 
 
 %changelog
+* Wed Dec 28 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.2.0-0.5_pre3
+- Update to 1.2.0-pre3
+
 * Tue Dec 13 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.2.0-0.4_pre2
 - Rebuild for libbluray
 
