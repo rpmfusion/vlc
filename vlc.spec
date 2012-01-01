@@ -1,7 +1,7 @@
 #global live555_date		2009.07.28
 #global vlc_rc			-rc3
 %global vlc_bootstrap		1
-%global tarball_version         1.1.13
+%global tarball_version		1.1.13
 %global _with_workaround_circle_deps 1
 %global _with_freeworld 1
 %if 0%{?_with_freeworld:1}
@@ -30,7 +30,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.1.13
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -155,7 +155,6 @@ BuildRequires:	xorg-x11-proto-devel
 
 
 %{!?_without_mozilla:BuildRequires:  gecko-devel nspr-devel}
-%{?_without_mozilla:Obsoletes: mozilla-vlc < %{version}-%{release}}
 %{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
 
@@ -565,6 +564,9 @@ fi || :
 
 
 %changelog
+* Sun Jan 01 2012 Nicolas Chauvet <kwizart@gmail.com> - 1.1.13-3
+- Don't obsoletes mozilla-vlc (now handled by npapi-vlc).
+
 * Thu Dec 22 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.1.13-2
 - Disable mozilla-vlc (moving to npapi-vlc).
 
