@@ -23,7 +23,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	1.2.0
-Release:	0.5_pre3%{?dist}
+Release:	0.6_pre3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -62,6 +62,7 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	kde-filesystem
+BuildRequires:	game-music-emu-devel
 BuildRequires:	libavc1394-devel
 BuildRequires:	libass-devel >= 0.9.7
 BuildRequires:	libbluray-devel
@@ -431,6 +432,11 @@ fi || :
 }
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
+%{?_with_vcdimager:
+%exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
+%exclude %{_libdir}/vlc/plugins/access/libvcdx_plugin.so
+%exclude %{_libdir}/vlc/plugins/codec/libsvcdsub_plugin.so
+}
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 %if 0%{?fedora} < 17
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
@@ -472,6 +478,11 @@ fi || :
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
 }
+%{?_with_vcdimager:
+%{_libdir}/vlc/plugins/access/libvcd_plugin.so
+%{_libdir}/vlc/plugins/access/libvcdx_plugin.so
+%{_libdir}/vlc/plugins/codec/libsvcdsub_plugin.so
+}
 
 %files devel
 %defattr(-,root,root,-)
@@ -484,6 +495,10 @@ fi || :
 
 
 %changelog
+* Mon Jan 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 1.2.0-0.6_pre3
+- Add BR game-music-emu-devel
+- move vcdimager plugin to vlc-extras
+
 * Wed Dec 28 2011 Nicolas Chauvet <kwizart@gmail.com> - 1.2.0-0.5_pre3
 - Update to 1.2.0-pre3
 
