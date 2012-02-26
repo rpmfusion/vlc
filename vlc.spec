@@ -1,5 +1,4 @@
-#global live555_date		2012.01.26
-#global vlc_rc			-rc1
+#global vlc_rc                        -rc1
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -23,14 +22,11 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-%if 0%{?live555_date:1}
-Source2:	http://www.live555.com/liveMedia/public/live.%{live555_date}.tar.gz
-%endif
 Patch5:		vlc-1.1.8-bugfix.opencv22.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -103,7 +99,7 @@ BuildRequires:	libv4l-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:	libxml2-devel
 BuildRequires:	lirc-devel
-%{?_with_live555:BuildRequires: live555-devel >= 0-0.19.2008.04.03}
+%{?_with_live555:BuildRequires: live555-devel >= 0-0.33.2011.12.23}
 BuildRequires:  kernel-headers
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
@@ -212,9 +208,6 @@ JACK audio plugin for the VLC media player.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
-%if 0%{?live555_date:1}
-%setup -q -D -T -a 2 -n %{name}-%{version}%{?vlc_rc}
-%endif
 %if 0%{?fedora} >= 15
 %patch5 -p1 -b .opencv22
 %endif
@@ -225,17 +218,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 }
 
 
-
 %build
-%if 0%{?live555_date:1}
-# Then bundled live555 - not needed
-pushd live
-# Force the use of our CFLAGS
-%{__perl} -pi -e 's|-O2|%{optflags} -fPIC -DPIC|g' config.linux
-# Configure and build
-./genMakefiles linux && make
-popd
-%endif
 
 
 %configure \
@@ -251,9 +234,6 @@ popd
 %{?_with_ffmpeg:--enable-switcher} \
 	--enable-lua				\
 	--enable-live555 			\
-%if 0%{?live555_date:1}
-	--with-live555-tree=live		\
-%endif
 	--enable-dv				\
 %{!?_without_opencv:--enable-opencv} \
 	--enable-sftp				\
@@ -326,6 +306,13 @@ desktop-file-install --vendor ""			\
 	--mode 644					\
 	$RPM_BUILD_ROOT%{_datadir}/applications/vlc.desktop
 
+# Remove installed fonts for skins2
+rm -f $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/*.ttf
+ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
+  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
+ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
+  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
+
 #Clear execstak
 %ifarch %{ix86}
 execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/libdmo_plugin.so
@@ -397,6 +384,7 @@ fi || :
 %{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
 %{_datadir}/icons/hicolor/*/apps/vlc*.xpm
+%{_datadir}/vlc/skins2/
 %{_bindir}/qvlc
 %{_bindir}/svlc
 %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
@@ -413,6 +401,7 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+%{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
@@ -424,6 +413,7 @@ fi || :
 %{_bindir}/nvlc
 %{_bindir}/rvlc
 %{_bindir}/vlc-wrapper
+%exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
@@ -450,6 +440,7 @@ fi || :
 %{!?_without_directfb:
 %exclude %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
+%exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{!?_without_opencv:
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
@@ -495,6 +486,10 @@ fi || :
 
 
 %changelog
+* Sun Feb 26 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.0-3
+- Reenable skins2 - rfbz#2195
+- Disable internal live555 build
+
 * Wed Feb 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.0-2
 - Rebuilt for x264/FFmpeg
 
@@ -902,7 +897,7 @@ Security updates:
 
 * Thu Jan 10 2008 kwizart < kwizart at gmail.com > - 0.8.6d-3.1
 - Remove BR portaudio arts
-- Move skin2 to main vlc package
+- Move skins2 to main vlc package
 - Enable libopendaap (included within Fedora)
 
 * Mon Dec  3 2007 kwizart < kwizart at gmail.com > - 0.8.6d-3
@@ -943,7 +938,7 @@ Security updates:
 * Thu Aug 23 2007 kwizart < kwizart at gmail.com > - 0.8.6c-4
 - Change default font to dejavu-lgc/DejaVuLGCSerif.ttf
   http://bugzilla.livna.org/show_bug.cgi?id=1605
-- Remove unneeded fonts provided by skin2
+- Remove unneeded fonts provided by skins2
 
 * Tue Aug 14 2007 kwizart < kwizart at gmail.com > - 0.8.6c-3.2
 - clean-up with svn
