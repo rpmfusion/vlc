@@ -22,7 +22,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -486,6 +486,9 @@ fi || :
 
 
 %changelog
+* Tue Mar 13 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.0-5
+- Rebuilt for x264 ABI 0.120
+
 * Fri Mar 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.0-4
 - Rebuilt for c++ ABI breakage
 
