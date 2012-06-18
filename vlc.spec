@@ -22,12 +22,12 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-Patch0:		vlc-2.0.1-fftype.patch
+Patch0:         vlc-backport-ffmpeg54.patch
 Patch5:		vlc-1.1.8-bugfix.opencv22.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -488,6 +488,9 @@ fi || :
 
 
 %changelog
+* Mon Jun 18 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.1-2
+- Backport patch for ffmpeg54
+
 * Wed May 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.1-1
 - Update to 2.0.1
 
