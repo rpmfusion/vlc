@@ -21,13 +21,12 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.0.1
+Version:	2.0.2
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-Patch0:		vlc-2.0.1-fftype.patch
 Patch5:		vlc-1.1.8-bugfix.opencv22.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -209,7 +208,6 @@ JACK audio plugin for the VLC media player.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
-%patch0 -p1
 %if 0%{?fedora} >= 15
 %patch5 -p1 -b .opencv22
 %endif
@@ -488,6 +486,15 @@ fi || :
 
 
 %changelog
+* Thu Jun 28 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.2-1
+- Update to 2.0.2
+
+* Sun Jun 24 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.1-3
+- Rebuild for FFmpeg/x264
+
+* Mon Jun 18 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.1-2
+- Backport patch for ffmpeg54
+
 * Wed May 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.1-1
 - Update to 2.0.1
 
