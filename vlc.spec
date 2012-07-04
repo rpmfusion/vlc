@@ -1,5 +1,5 @@
 #global vlc_rc                        -rc1
-%global _with_bootstrap		1
+#global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -15,19 +15,24 @@
 %global _with_xvidcore --with-xvidcore
 %global _with_live555 --with-live555
 %global _with_vaapi --with-vaapi
-%global _without_opencv  1
+%endif
+%if 0%{?fedora}
+%global _with_fluidsyth 1
+%global _with_bluray    1
+%global _with_crystalhd 1
+%global _with_projectm  1
+%global _with_schroedinger 1
 %endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-Patch5:		vlc-1.1.8-bugfix.opencv22.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -51,7 +56,7 @@ BuildRequires:	dirac-devel >= 1.0.0
 %{?_with_faad2:BuildRequires: faad2-devel}
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
-BuildRequires:	fluidsynth-devel
+%{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
 BuildRequires:	fribidi-devel
 %{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
@@ -61,11 +66,11 @@ BuildRequires:	kde-filesystem
 BuildRequires:	game-music-emu-devel
 BuildRequires:	libavc1394-devel
 BuildRequires:	libass-devel >= 0.9.7
-BuildRequires:	libbluray-devel
+%{?_with_bluray:BuildRequires: libbluray-devel >= 0.2.1}
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
-BuildRequires:	libcrystalhd-devel
+%{?_with_crystalhd:BuildRequires: libcrystalhd-devel}
 BuildRequires:	libdc1394-devel >= 2.1.0
 %{?_with_libdca:BuildRequires: libdca-devel}
 BuildRequires:	libdv-devel
@@ -80,10 +85,9 @@ BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmtp-devel >= 1.0.0
-BuildRequires:	libprojectM-qt-devel
+%{?_with_projectm:BuildRequires: libprojectM-qt-devel}
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
-BuildRequires:  librtmp-devel
 BuildRequires:	libssh2-devel
 BuildRequires:	libsysfs-devel
 BuildRequires:	libshout-devel
@@ -99,7 +103,7 @@ BuildRequires:	libv4l-devel
 BuildRequires:	libvorbis-devel
 BuildRequires:	libxml2-devel
 BuildRequires:	lirc-devel
-%{?_with_live555:BuildRequires: live555-devel >= 0-0.33.2011.12.23}
+%{?_with_live555:BuildRequires: live555-devel >= 0-0.33}
 BuildRequires:  kernel-headers
 BuildRequires:	libGL-devel
 BuildRequires:	libGLU-devel
@@ -110,15 +114,16 @@ BuildRequires:	lua-devel
 BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
-%{!?_without_opencv:BuildRequires: opencv-devel}
+%{?_with_opencv:BuildRequires: opencv-devel}
 BuildRequires:	openslp-devel
 BuildRequires:	pcre-devel
 BuildRequires:	pulseaudio-libs-devel >= 0.9.8
 BuildRequires:	portaudio-devel
 BuildRequires:	qt4-devel >= 4.5.2
-BuildRequires:	schroedinger-devel
+%{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
 BuildRequires:	SDL_image-devel
+%{?_with_sidplay:BuildRequires: sidplay-libs-devel}
 BuildRequires:	speex-devel >= 1.1.5
 BuildRequires:	taglib-devel
 %{?_with_twolame:BuildRequires:	twolame-devel}
@@ -146,13 +151,9 @@ Provides: %{name}-xorg%{_isa} = %{version}-%{release}
 Requires: vlc-core%{_isa} = %{version}-%{release}
 Requires: kde-filesystem
 
-%if 0%{?fedora} > 10 || 0%{?rhel} > 5
 Requires: dejavu-sans-fonts
 Requires: dejavu-sans-mono-fonts
 Requires: dejavu-serif-fonts
-%else
-Requires: dejavu-fonts
-%endif
 Requires: qt4%{?_isa} >= %{_qt4_version}
 
 #For xdg-sreensaver
@@ -208,9 +209,6 @@ JACK audio plugin for the VLC media player.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
-%if 0%{?fedora} >= 15
-%patch5 -p1 -b .opencv22
-%endif
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -227,15 +225,13 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
 	--with-tuning=no			\
-%if 0%{?fedora} > 14
 	--disable-notify			\
-%endif
 	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
 %{?_with_ffmpeg:--enable-switcher} \
 	--enable-lua				\
-	--enable-live555 			\
+%{?_with_live555:--enable-live555} 		\
 	--enable-dv				\
-%{!?_without_opencv:--enable-opencv} \
+%{?_with_opencv:--enable-opencv} \
 	--enable-sftp				\
 	--enable-pvr				\
 %{?_with_gnomevfs:--enable-gnomevfs}		\
@@ -259,7 +255,8 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-dirac				\
 	--enable-libass				\
 	--enable-shout				\
-	--enable-xcb				\
+%{?_with_xcb:--enable-xcb --enable-xvideo} 	\
+%{!?_with_xcb:--disable-xcb --disable-xvideo} 	\
 	--enable-svg				\
 %{!?_without_directfb:--enable-directfb}	\
 	--enable-aa				\
@@ -391,19 +388,23 @@ fi || :
 %{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
+%{_libdir}/vlc/plugins/video_output/libaa_plugin.so
+%{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%{?_with_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %if 0%{?fedora} < 17
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %endif
-%{_libdir}/vlc/plugins/video_output/libaa_plugin.so
-%{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-%{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
+}
+%{_libdir}/vlc/plugins/gui/libskins2_plugin.so
+%{?_with_projectm:
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
+}
 %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 
 %files core -f %{name}.lang
@@ -421,13 +422,16 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
-%exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{?_with_vcdimager:
 %exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libvcdx_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libsvcdsub_plugin.so
 }
+%{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
+}
+%{?_with_xcb:
+%exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %if 0%{?fedora} < 17
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %endif
@@ -437,16 +441,19 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
+}
 %{!?_without_directfb:
 %exclude %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
-%{!?_without_opencv:
+%{?_with_opencv:
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
 }
-%exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
+%{?_with_projectm:
 %exclude %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
+}
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
@@ -458,14 +465,16 @@ fi || :
 %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libportaudio_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
+%{?_with_fluidsynth:
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
+}
 
 %files extras
 %defattr(-,root,root,-)
 %{!?_without_directfb:
 %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
-%{!?_without_opencv:
+%{?_with_opencv:
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
 }
@@ -486,6 +495,10 @@ fi || :
 
 
 %changelog
+* Wed Jul 04 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.2-2
+- Rework BR and RPM conditionals
+- Drop support for anything below EL-6 and current Fedora.
+
 * Thu Jun 28 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.2-1
 - Update to 2.0.2
 
