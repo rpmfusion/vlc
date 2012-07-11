@@ -15,6 +15,7 @@
 %global _with_xvidcore --with-xvidcore
 %global _with_live555 --with-live555
 %global _with_vaapi --with-vaapi
+%global _with_xcb 1
 %endif
 %if 0%{?fedora}
 %global _with_fluidsyth 1
@@ -28,11 +29,12 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+Patch0:         vlc-2.0.2-xcb_discard.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -96,7 +98,7 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
-BuildRequires:	libudev-devel >= 142
+BuildRequires:	pkgconfig(libudev)
 BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
@@ -140,7 +142,10 @@ BuildRequires:	libXxf86vm-devel
 BuildRequires:	libX11-devel
 BuildRequires:	libXext-devel
 BuildRequires:	libXpm-devel
-BuildRequires:	xcb-util-devel
+%{?_with_xcb:
+BuildRequires:  libxcb-devel
+BuildRequires:  xcb-util-devel
+}
 BuildRequires:	xorg-x11-proto-devel
 
 
@@ -209,6 +214,14 @@ JACK audio plugin for the VLC media player.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
+
+%if 0%{?rhel}
+%patch0 -p1 -b .xcb_discard 
+%{?_with_xcb:
+sed -i -e "s|xcb >= 1.6|xcb >= 1.5|" configure configure.ac
+touch -r config.h.in configure configure.ac
+}
+%endif
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -495,6 +508,10 @@ fi || :
 
 
 %changelog
+* Wed Jul 11 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.2-3
+- Fix build of xcb
+- Switch to pkgconfig(libudev)
+
 * Wed Jul 04 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.2-2
 - Rework BR and RPM conditionals
 - Drop support for anything below EL-6 and current Fedora.
