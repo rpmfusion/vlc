@@ -20,7 +20,9 @@
 %if 0%{?fedora}
 %global _with_fluidsyth 1
 %global _with_bluray    1
+%ifarch x86_64 i686
 %global _with_crystalhd 1
+%endif
 %global _with_projectm  1
 %global _with_schroedinger 1
 %endif
@@ -28,8 +30,8 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.0.2
-Release:	3%{?dist}
+Version:	2.0.3
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -98,7 +100,7 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
-BuildRequires:	libudev-devel >= 142
+BuildRequires:	pkgconfig(libudev)
 BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
@@ -144,7 +146,7 @@ BuildRequires:	libXext-devel
 BuildRequires:	libXpm-devel
 %{?_with_xcb:
 BuildRequires:  libxcb-devel
-BuildRequires:	xcb-util-devel
+BuildRequires:  xcb-util-devel
 }
 BuildRequires:	xorg-x11-proto-devel
 
@@ -508,8 +510,12 @@ fi || :
 
 
 %changelog
+* Fri Jul 20 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.3-1
+- Update to 2.0.3
+
 * Wed Jul 11 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.2-3
 - Fix build of xcb
+- Switch to pkgconfig(libudev)
 
 * Wed Jul 04 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.2-2
 - Rework BR and RPM conditionals
