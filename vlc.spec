@@ -20,7 +20,9 @@
 %if 0%{?fedora}
 %global _with_fluidsyth 1
 %global _with_bluray    1
+%ifarch x86_64 i686
 %global _with_crystalhd 1
+%endif
 %global _with_projectm  1
 %global _with_schroedinger 1
 %endif
