@@ -18,7 +18,7 @@
 %global _with_xcb 1
 %endif
 %if 0%{?fedora}
-%global _with_fluidsyth 1
+%global _with_fluidsynth 1
 %global _with_bluray    1
 %ifarch x86_64 i686
 %global _with_crystalhd 1
@@ -31,7 +31,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -127,7 +127,7 @@ BuildRequires:	qt4-devel >= 4.5.2
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
 BuildRequires:	SDL_image-devel
-%{?_with_sidplay:BuildRequires: sidplay-libs-devel}
+%{?_with_sidplay:BuildRequires: pkgconfig(libsidplay2)}
 BuildRequires:	speex-devel >= 1.1.5
 BuildRequires:	taglib-devel
 %{?_with_twolame:BuildRequires:	twolame-devel}
@@ -147,6 +147,7 @@ BuildRequires:	libXpm-devel
 %{?_with_xcb:
 BuildRequires:  libxcb-devel
 BuildRequires:  xcb-util-devel
+BuildRequires:  pkgconfig(xcb-keysyms)
 }
 BuildRequires:	xorg-x11-proto-devel
 
@@ -510,6 +511,9 @@ fi || :
 
 
 %changelog
+* Wed Sep 26 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.3-3
+- Fix --with fluidsynth typo
+
 * Wed Sep 05 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.3-2
 - Rebuilt for x264 ABI 125
 
