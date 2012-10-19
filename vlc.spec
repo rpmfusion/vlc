@@ -331,7 +331,7 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
 
 #Clear execstak
 %ifarch %{ix86}
-execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/libdmo_plugin.so
+#execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/libdmo_plugin.so
 execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/librealvideo_plugin.so
 %endif
 
