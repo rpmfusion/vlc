@@ -1,5 +1,5 @@
 #global vlc_rc                        -rc1
-#global _with_bootstrap		1
+%global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -37,6 +37,7 @@ Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-2.0.2-xcb_discard.patch
+Patch1:		vlc-2.0.4-cache.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -120,6 +121,7 @@ BuildRequires:	minizip-devel
 BuildRequires:	ncurses-devel
 %{?_with_opencv:BuildRequires: opencv-devel}
 BuildRequires:	openslp-devel
+Buildrequires:	opus-devel
 BuildRequires:	pcre-devel
 BuildRequires:	pulseaudio-libs-devel >= 0.9.8
 BuildRequires:	portaudio-devel
@@ -225,6 +227,7 @@ sed -i -e "s|xcb >= 1.6|xcb >= 1.5|" configure configure.ac
 touch -r config.h.in configure configure.ac
 }
 %endif
+%patch1 -p1 -b .vlc_cache
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -283,14 +286,14 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-ncurses			\
 	--enable-fbosd				\
 	--enable-lirc				\
-%ifarch %{ix86}
+%if 0
 	--enable-loader				\
 %else
 	--without-contrib			\
 %endif
 
 
-%if 0
+%if 1
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -513,6 +516,9 @@ fi || :
 %changelog
 * Fri Oct 19 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.4-1
 - Update to 2.0.4
+- Enable opus
+- Disable x86 loader
+- Avoid rpath
 
 * Wed Sep 26 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.3-3
 - Fix --with fluidsynth typo
