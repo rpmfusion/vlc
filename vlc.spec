@@ -31,13 +31,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-2.0.2-xcb_discard.patch
 Patch1:		vlc-2.0.4-cache.patch
+Patch2:		vlc-backport-dvb58.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -228,6 +229,7 @@ touch -r config.h.in configure configure.ac
 }
 %endif
 %patch1 -p1 -b .vlc_cache
+%patch2 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -293,7 +295,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %endif
 
 
-%if 1
+%if 0
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -514,6 +516,9 @@ fi || :
 
 
 %changelog
+* Sat Nov 24 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.4-3
+- Fix build with kernel-3.7
+
 * Fri Nov 23 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.4-2
 - Rebuilt for x264
 
