@@ -30,14 +30,13 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.0.4
+Version:	2.0.5
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-2.0.2-xcb_discard.patch
-Patch1:		vlc-2.0.4-cache.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -227,7 +226,6 @@ sed -i -e "s|xcb >= 1.6|xcb >= 1.5|" configure configure.ac
 touch -r config.h.in configure configure.ac
 }
 %endif
-%patch1 -p1 -b .vlc_cache
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -293,7 +291,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %endif
 
 
-%if 1
+%if 0
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -514,6 +512,15 @@ fi || :
 
 
 %changelog
+* Fri Dec 14 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-1
+- Update to 2.0.5
+
+* Sat Nov 24 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.4-3
+- Fix build with kernel-3.7
+
+* Fri Nov 23 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.4-2
+- Rebuilt for x264
+
 * Fri Oct 19 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.4-1
 - Update to 2.0.4
 - Enable opus
