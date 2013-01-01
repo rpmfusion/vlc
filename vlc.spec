@@ -736,7 +736,7 @@ fi || :
 - Update bugfix to 20091025
 - Clean dc1394 sub-package
 
-* Thu Oct 16 2009 kwizart < kwizart at gmail.com > - 1.0.2-2
+* Fri Oct 16 2009 kwizart < kwizart at gmail.com > - 1.0.2-2
 - Update to 1.0-bugfix 20091016
 - Rebuild for x264/ffmpeg
 
@@ -1159,7 +1159,7 @@ Security updates:
 - Test Updated static live555 to 2007.02.22
 - Clean up svn to release changes
 
-* Tue Mar 22 2007 kwizart < kwizart at gmail.com > - 0.8.6a-4.4
+* Thu Mar 22 2007 kwizart < kwizart at gmail.com > - 0.8.6a-4.4
 - WIP changes - ld.conf is unusefull...
 
 * Wed Mar 21 2007 kwizart < kwizart at gmail.com > - 0.8.6a-4.3
