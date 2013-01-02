@@ -222,12 +222,12 @@ JACK audio plugin for the VLC media player.
 
 %if 0%{?rhel}
 %patch0 -p1 -b .xcb_discard
-%patch1 -p1 -b .FLAC13
 %{?_with_xcb:
 sed -i -e "s|xcb >= 1.6|xcb >= 1.5|" configure configure.ac
 touch -r config.h.in configure configure.ac
 }
 %endif
+%patch1 -p1 -b .FLAC13
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
