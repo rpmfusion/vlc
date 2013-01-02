@@ -1,28 +1,9 @@
-From 606908a31b2dae46899601fe88b6443d024c8d09 Mon Sep 17 00:00:00 2001
-From: Nicolas Chauvet <kwizart@gmail.com>
-Date: Wed, 2 Jan 2013 19:05:27 +0100
-Subject: [PATCH] Fix build with unreleased FLAC 1.3.x
-
-The issue was initialy reported here:
-http://bugzilla.redhat.com/891123
-
-FLAC upstream has always expected to include headers as
-as shown in examples/c/decode/file/main.c
-
-The FLAC suffix will not be be made available in the flac.pc
-for the next release:
-http://lists.xiph.org/pipermail/flac-dev/2012-April/003355.html
----
- modules/codec/flac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/modules/codec/flac.c b/modules/codec/flac.c
-index 4cfbfa9..543e8bb 100644
---- a/modules/codec/flac.c
-+++ b/modules/codec/flac.c
-@@ -37,8 +37,8 @@
- #include <vlc_plugin.h>
+diff -up vlc-2.0.5/modules/codec/flac.c.FLAC13 vlc-2.0.5/modules/codec/flac.c
+--- vlc-2.0.5/modules/codec/flac.c.FLAC13	2011-12-08 19:00:26.000000000 +0100
++++ vlc-2.0.5/modules/codec/flac.c	2013-01-02 20:48:33.569532663 +0100
+@@ -38,8 +38,8 @@
  #include <vlc_codec.h>
+ #include <vlc_aout.h>
  
 -#include <stream_decoder.h>
 -#include <stream_encoder.h>
@@ -31,6 +12,3 @@ index 4cfbfa9..543e8bb 100644
  
  #include <vlc_block_helper.h>
  #include <vlc_bits.h>
--- 
-1.7.11.7
-
