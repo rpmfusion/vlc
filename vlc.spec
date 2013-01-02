@@ -31,12 +31,13 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-2.0.2-xcb_discard.patch
+Patch1:         0001-Fix-build-with-unreleased-FLAC-1.3.x.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -220,7 +221,8 @@ JACK audio plugin for the VLC media player.
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 
 %if 0%{?rhel}
-%patch0 -p1 -b .xcb_discard 
+%patch0 -p1 -b .xcb_discard
+%patch1 -p1 -b .FLAC13
 %{?_with_xcb:
 sed -i -e "s|xcb >= 1.6|xcb >= 1.5|" configure configure.ac
 touch -r config.h.in configure configure.ac
@@ -512,6 +514,9 @@ fi || :
 
 
 %changelog
+* Wed Jan 02 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-2
+- Fix build with FLAC-1.3.x
+
 * Fri Dec 14 2012 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-1
 - Update to 2.0.5
 
