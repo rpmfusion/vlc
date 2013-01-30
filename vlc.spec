@@ -31,7 +31,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -194,7 +194,10 @@ Summary:	VLC media player core
 Group:		Applications/Multimedia
 Provides:	vlc-nox = %{version}-%{release}
 Obsoletes:	vlc-nox < 1.1.5-2
+#Deprecated since F-19, can be dropped by F-21/EL-7
 %{?live555date:Requires: live555date%{_isa} = %{live555date}}
+#Introduced in F-19
+%{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 
 %description core
 VLC media player core components
@@ -514,6 +517,9 @@ fi || :
 
 
 %changelog
+* Wed Jan 30 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-4
+- Add new live555 requires
+
 * Sun Jan 20 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-3
 - Rebuilt for ffmpeg/x264
 
