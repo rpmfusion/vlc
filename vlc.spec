@@ -31,13 +31,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-2.0.2-xcb_discard.patch
 Patch1:         0001-Fix-build-with-unreleased-FLAC-1.3.x.patch
+Patch2:         0001-Switch-detection-of-smbclient-from-header-to-pkgconf.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -231,6 +232,7 @@ touch -r config.h.in configure configure.ac
 }
 %endif
 %patch1 -p1 -b .FLAC13
+%patch2 -p1 -b .samba4
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -517,6 +519,9 @@ fi || :
 
 
 %changelog
+* Sat Feb 23 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-5
+- Fix samba4 detection rfbz#2659
+
 * Wed Jan 30 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-4
 - Add new live555 requires
 
