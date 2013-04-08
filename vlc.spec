@@ -30,8 +30,8 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.0.5
-Release:	5%{?dist}
+Version:	2.0.6
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -245,6 +245,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 
 %configure \
 	--disable-dependency-tracking		\
+	--disable-silent-rules			\
 	--with-pic				\
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
@@ -342,6 +343,11 @@ execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/librealvideo_plugin.so
 
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
+
+#Workaround config file provided in %%{_datadir}
+#https://bugzilla.rpmfusion.org/show_bug.cgi?id=2726
+mv $RPM_BUILD_ROOT%{_datadir}/vlc/lua/http/.hosts \
+ $RPM_BUILD_ROOT%{_datadir}/vlc/lua/http/hosts-sample
 
 
 %find_lang %{name}
@@ -519,6 +525,13 @@ fi || :
 
 
 %changelog
+* Mon Apr 08 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.6-1
+- Update to 2.0.6
+
+* Tue Mar 26 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-6
+- Move %%{_datadir}/vlc/lua/http/.hosts to hosts-sample to avoid
+  config file - https://bugzilla.rpmfusion.org/2726
+
 * Sat Feb 23 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.5-5
 - Fix samba4 detection rfbz#2659
 
