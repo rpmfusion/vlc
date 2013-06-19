@@ -38,7 +38,6 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	gettext
-BuildRequires:	prelink
 Buildrequires:	xz
 
 %{?_with_bootstrap:
@@ -312,11 +311,6 @@ ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
   $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
 ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
   $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
-
-#Clear execstak
-%ifarch %{ix86}
-execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/librealvideo_plugin.so
-%endif
 
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
