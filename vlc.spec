@@ -1,4 +1,4 @@
-#global vlc_rc                        -rc1
+%global vlc_rc			-pre1
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -10,12 +10,10 @@
 %global _with_libmad --with-libmad
 %global _with_libmpeg2 --with-libmpeg2
 %global _with_twolame --with-twolame
-%global _with_vcdimager	--with-vcdimager
 %global _with_x264 --with-x264
 %global _with_xvidcore --with-xvidcore
 %global _with_live555 --with-live555
 %global _with_vaapi --with-vaapi
-%global _with_xcb 1
 %endif
 %if 0%{?fedora}
 %global _with_fluidsynth 1
@@ -30,15 +28,12 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.0.6
-Release:	1%{?dist}
+Version:	2.1.0
+Release:	0.pre1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-Patch0:         vlc-2.0.2-xcb_discard.patch
-Patch1:         0001-Fix-build-with-unreleased-FLAC-1.3.x.patch
-Patch2:         0001-Switch-detection-of-smbclient-from-header-to-pkgconf.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -63,6 +58,7 @@ BuildRequires:	dirac-devel >= 1.0.0
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
+BuildRequires:	freerdp-devel
 BuildRequires:	fribidi-devel
 %{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
@@ -106,6 +102,7 @@ BuildRequires:	pkgconfig(libudev)
 BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
+BuildRequires:  pkgconfig(vdpau)
 BuildRequires:	libvorbis-devel
 BuildRequires:	libxml2-devel
 BuildRequires:	lirc-devel
@@ -125,7 +122,6 @@ BuildRequires:	openslp-devel
 Buildrequires:	opus-devel
 BuildRequires:	pcre-devel
 BuildRequires:	pulseaudio-libs-devel >= 0.9.8
-BuildRequires:	portaudio-devel
 BuildRequires:	qt4-devel >= 4.5.2
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
@@ -147,7 +143,7 @@ BuildRequires:	libXxf86vm-devel
 BuildRequires:	libX11-devel
 BuildRequires:	libXext-devel
 BuildRequires:	libXpm-devel
-%{?_with_xcb:
+%{!?_without_xcb:
 BuildRequires:  libxcb-devel
 BuildRequires:  xcb-util-devel
 BuildRequires:  pkgconfig(xcb-keysyms)
@@ -224,16 +220,6 @@ JACK audio plugin for the VLC media player.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 
-%if 0%{?rhel}
-%patch0 -p1 -b .xcb_discard
-%{?_with_xcb:
-sed -i -e "s|xcb >= 1.6|xcb >= 1.5|" configure configure.ac
-touch -r config.h.in configure configure.ac
-}
-%endif
-%patch1 -p1 -b .FLAC13
-%patch2 -p1 -b .samba4
-
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -249,16 +235,11 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--with-pic				\
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
-	--with-tuning=no			\
-	--disable-notify			\
 	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
-%{?_with_ffmpeg:--enable-switcher} \
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
-	--enable-dv				\
 %{?_with_opencv:--enable-opencv} \
 	--enable-sftp				\
-	--enable-pvr				\
 %{?_with_gnomevfs:--enable-gnomevfs}		\
 %{?_with_vcdimager:--enable-vcdx}		\
 %if 0
@@ -266,13 +247,17 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_freeworld:--enable-shine} \
 %endif
 	--enable-omxil				\
+%ifarch armv5tel armv6l armv6hl
+	--enable-omxil-vout			\
+	--enable-rpi-omxil			\
+%endif
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
 %{?_with_faad2:--enable-faad} \
 %{!?_with_libmad:--disable-mad} \
 %{?_with_twolame:--enable-twolame} \
-%{?!_without_freeworld:--enable-real --enable-realrtsp} \
+%{?!_without_freeworld: --enable-realrtsp} \
 	--enable-flac				\
 	--enable-tremor				\
 	--enable-speex				\
@@ -280,23 +265,16 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-dirac				\
 	--enable-libass				\
 	--enable-shout				\
-%{?_with_xcb:--enable-xcb --enable-xvideo} 	\
-%{!?_with_xcb:--disable-xcb --disable-xvideo} 	\
+%{!?_without_xcb:--enable-xcb --enable-xvideo} 	\
+%{?_without_xcb:--disable-xcb --disable-xvideo} \
 	--enable-svg				\
 %{!?_without_directfb:--enable-directfb}	\
 	--enable-aa				\
 	--enable-caca				\
 	--enable-jack				\
-	--enable-portaudio			\
 	--enable-pulse				\
 	--enable-ncurses			\
-	--enable-fbosd				\
-	--enable-lirc				\
-%if 0
-	--enable-loader				\
-%else
-	--without-contrib			\
-%endif
+	--enable-lirc
 
 
 %if 0
@@ -337,17 +315,11 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
 
 #Clear execstak
 %ifarch %{ix86}
-#execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/libdmo_plugin.so
 execstack -c $RPM_BUILD_ROOT%{_libdir}/vlc/plugins/codec/librealvideo_plugin.so
 %endif
 
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
-
-#Workaround config file provided in %%{_datadir}
-#https://bugzilla.rpmfusion.org/show_bug.cgi?id=2726
-mv $RPM_BUILD_ROOT%{_datadir}/vlc/lua/http/.hosts \
- $RPM_BUILD_ROOT%{_datadir}/vlc/lua/http/hosts-sample
 
 
 %find_lang %{name}
@@ -420,7 +392,7 @@ fi || :
 }
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%{?_with_xcb:
+%{!?_without_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %if 0%{?fedora} < 17
 %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
@@ -460,7 +432,7 @@ fi || :
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-%{?_with_xcb:
+%{!?_without_xcb:
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %if 0%{?fedora} < 17
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
@@ -485,7 +457,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
-%exclude %{_libdir}/vlc/plugins/audio_output/libportaudio_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
@@ -493,7 +464,6 @@ fi || :
 %files plugin-jack
 %defattr(-,root,root,-)
 %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
-%{_libdir}/vlc/plugins/audio_output/libportaudio_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %{?_with_fluidsynth:
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
