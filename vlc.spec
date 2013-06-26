@@ -1,5 +1,5 @@
 %global vlc_rc			-pre1
-%global _with_bootstrap		1
+#global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
 %global _with_a52dec --with-a52dec
@@ -29,7 +29,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.1.0
-Release:	0.pre1%{?dist}
+Release:	0.2.pre1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -37,8 +37,6 @@ Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
-BuildRequires:	gettext
-Buildrequires:	xz
 
 %{?_with_bootstrap:
 BuildRequires:	gettext-devel
@@ -50,7 +48,7 @@ BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
-BuildRequires:	dbus-devel
+BuildRequires:	pkgconfig(dbus-1)
 BuildRequires:	dirac-devel >= 1.0.0
 %{!?_without_directfb:BuildRequires: directfb-devel}
 %{?_with_faad2:BuildRequires: faad2-devel}
@@ -71,6 +69,7 @@ BuildRequires:	libass-devel >= 0.9.7
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
+BuildRequires:	pkgconfig(libchromaprint)
 %{?_with_crystalhd:BuildRequires: libcrystalhd-devel}
 BuildRequires:	libdc1394-devel >= 2.1.0
 %{?_with_libdca:BuildRequires: libdca-devel}
@@ -102,13 +101,13 @@ BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
 BuildRequires:  pkgconfig(vdpau)
-BuildRequires:	libvorbis-devel
-BuildRequires:	libxml2-devel
+BuildRequires:	pkgconfig(vorbis)
+BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	lirc-devel
 %{?_with_live555:BuildRequires: live555-devel >= 0-0.33}
 BuildRequires:  kernel-headers
-BuildRequires:	libGL-devel
-BuildRequires:	libGLU-devel
+BuildRequires:	pkgconfig(gl)
+BuildRequires:	pkgconfig(glu)
 BuildRequires:	libmusicbrainz-devel
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
@@ -116,11 +115,11 @@ BuildRequires:	lua-devel
 BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
-%{?_with_opencv:BuildRequires: opencv-devel}
+%{?_with_opencv:BuildRequires: pkgconfig(opencv)}
 BuildRequires:	openslp-devel
 Buildrequires:	opus-devel
 BuildRequires:	pcre-devel
-BuildRequires:	pulseaudio-libs-devel >= 0.9.8
+BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	qt4-devel >= 4.5.2
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
@@ -241,10 +240,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-sftp				\
 %{?_with_gnomevfs:--enable-gnomevfs}		\
 %{?_with_vcdimager:--enable-vcdx}		\
-%if 0
-%{?_with_freeworld:--enable-wma-fixed} \
-%{?_with_freeworld:--enable-shine} \
-%endif
 	--enable-omxil				\
 %ifarch armv5tel armv6l armv6hl
 	--enable-omxil-vout			\
@@ -273,7 +268,10 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-jack				\
 	--enable-pulse				\
 	--enable-ncurses			\
-	--enable-lirc
+	--enable-lirc				\
+%if 0%{?fedora} < 19
+	--disable-vdpau
+%endif
 
 
 %if 0
@@ -489,6 +487,9 @@ fi || :
 
 
 %changelog
+* Wed Jun 26 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.2.pre1
+- Update to 2.1.0-pre1
+
 * Mon Apr 08 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.6-1
 - Update to 2.0.6
 
