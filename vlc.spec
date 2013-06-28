@@ -18,6 +18,7 @@
 %if 0%{?fedora}
 %global _with_fluidsynth 1
 %global _with_bluray    1
+%global _with_opencv    1
 %ifarch x86_64 i686
 %global _with_crystalhd 1
 %endif
@@ -97,6 +98,7 @@ BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libudev)
+BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
@@ -270,7 +272,9 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-ncurses			\
 	--enable-lirc				\
 %if 0%{?fedora} < 19
-	--disable-vdpau
+	--disable-vdpau				\
+%else
+	--disable-vaapi				\
 %endif
 
 
