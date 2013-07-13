@@ -30,7 +30,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.1.0
-Release:	0.2.pre1%{?dist}
+Release:	0.3.pre1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -273,8 +273,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-lirc				\
 %if 0%{?fedora} < 19
 	--disable-vdpau				\
-%else
-	--disable-vaapi				\
 %endif
 
 
@@ -491,6 +489,9 @@ fi || :
 
 
 %changelog
+* Fri Jul 12 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.3.pre1
+- Use Officially tagged 2.1.0-pre1
+
 * Wed Jun 26 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.2.pre1
 - Update to 2.1.0-pre1
 
