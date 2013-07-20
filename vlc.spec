@@ -78,6 +78,7 @@ BuildRequires:	libdv-devel
 %{?_with_libdvbpsi:BuildRequires: libdvbpsi-devel}
 BuildRequires:	libdvdnav-devel
 BuildRequires:	libebml-devel
+BuildRequires:	libgcrypt-devel
 BuildRequires:	libid3tag-devel
 BuildRequires:	libkate-devel
 %{?_with_libmad:BuildRequires: libmad-devel}
