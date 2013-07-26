@@ -1,4 +1,4 @@
-%global vlc_rc			-pre1
+%global vlc_rc			-pre2
 #global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -30,7 +30,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.1.0
-Release:	0.4.pre1%{?dist}
+Release:	0.5.pre2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -490,6 +490,9 @@ fi || :
 
 
 %changelog
+* Fri Jul 26 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.5.pre2
+- Update to 2.1.0-pre2
+
 * Sat Jul 20 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.4.pre1
 - Rebuilt for x264
 
