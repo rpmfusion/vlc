@@ -31,13 +31,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-2.0.2-xcb_discard.patch
 Patch2:         0001-Switch-detection-of-smbclient-from-header-to-pkgconf.patch
+Patch3:         vlc-backport-audio_decoder.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -231,6 +232,7 @@ touch -r config.h.in configure configure.ac
 }
 %endif
 %patch2 -p1 -b .samba4
+%patch3 -p1 -b .backport
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -524,6 +526,9 @@ fi || :
 
 
 %changelog
+* Fri Aug 02 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.8-2
+- Backport patch from 2.0.8a
+
 * Tue Jul 30 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.8-1
 - Update to 2.0.8
 - Enable upnp - rfbz#2833
