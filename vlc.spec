@@ -30,7 +30,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.1.0
-Release:	0.7.rc1%{?dist}
+Release:	0.8.rc1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -51,7 +51,6 @@ BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
 BuildRequires:	pkgconfig(dbus-1)
 BuildRequires:	dirac-devel >= 1.0.0
-%{!?_without_directfb:BuildRequires: directfb-devel}
 %{?_with_faad2:BuildRequires: faad2-devel}
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
@@ -265,7 +264,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{!?_without_xcb:--enable-xcb --enable-xvideo} 	\
 %{?_without_xcb:--disable-xcb --disable-xvideo} \
 	--enable-svg				\
-%{!?_without_directfb:--enable-directfb}	\
 	--enable-aa				\
 	--enable-caca				\
 	--enable-jack				\
@@ -277,7 +275,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %endif
 
 
-%if 0
+%if 1
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -440,9 +438,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
-%{!?_without_directfb:
-%exclude %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
-}
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
@@ -466,9 +461,6 @@ fi || :
 
 %files extras
 %defattr(-,root,root,-)
-%{!?_without_directfb:
-%{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
-}
 %{?_with_opencv:
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
@@ -490,7 +482,7 @@ fi || :
 
 
 %changelog
-* Wed Aug 28 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.7.rc1
+* Wed Aug 28 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.8.rc1
 - Update to 2.1.0-rc1
 
 * Thu Aug 15 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.0-0.6.pre2
