@@ -422,6 +422,9 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libvcdx_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libsvcdsub_plugin.so
 }
+%{?_with_crystalhd:
+%exclude %{_libdir}/vlc/plugins/codec/libcrystalhd_plugin.so
+}
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
@@ -469,6 +472,9 @@ fi || :
 %{_libdir}/vlc/plugins/access/libvcd_plugin.so
 %{_libdir}/vlc/plugins/access/libvcdx_plugin.so
 %{_libdir}/vlc/plugins/codec/libsvcdsub_plugin.so
+}
+%{?_with_crystalhd:
+%{_libdir}/vlc/plugins/codec/libcrystalhd_plugin.so
 }
 
 %files devel
