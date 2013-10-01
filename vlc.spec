@@ -1,5 +1,5 @@
 #global vlc_rc			-rc1
-#global _with_bootstrap		1
+%global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
 %global _with_a52dec --with-a52dec
