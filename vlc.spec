@@ -275,7 +275,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %endif
 
 
-%if 1
+%if 0
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
