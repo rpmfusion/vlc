@@ -30,15 +30,15 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.0.8
-Release:	2%{?dist}
+Version:	2.0.9
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-2.0.2-xcb_discard.patch
 Patch2:         0001-Switch-detection-of-smbclient-from-header-to-pkgconf.patch
-Patch3:         vlc-backport-audio_decoder.patch
+Patch3:		0003-Fix-the-ca-cert-path-in-fedora.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
@@ -232,7 +232,7 @@ touch -r config.h.in configure configure.ac
 }
 %endif
 %patch2 -p1 -b .samba4
-%patch3 -p1 -b .backport
+%patch3 -p1 -b .tls
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -458,6 +458,9 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libvcdx_plugin.so
 %exclude %{_libdir}/vlc/plugins/codec/libsvcdsub_plugin.so
 }
+%{?_with_crystalhd:
+%exclude %{_libdir}/vlc/plugins/codec/libcrystalhd_plugin.so
+}
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
@@ -514,6 +517,9 @@ fi || :
 %{_libdir}/vlc/plugins/access/libvcdx_plugin.so
 %{_libdir}/vlc/plugins/codec/libsvcdsub_plugin.so
 }
+%{?_with_crystalhd:
+%{_libdir}/vlc/plugins/codec/libcrystalhd_plugin.so
+}
 
 %files devel
 %defattr(-,root,root,-)
@@ -526,6 +532,13 @@ fi || :
 
 
 %changelog
+* Wed Nov 06 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.9-1
+- Update to 2.0.9
+- Move crystalhd to extras - rhbz#2835
+  Patch from Sergio Durigan Junior <sergiodj@riseup.net>
+- Update smb pkgconfig detection
+- Fix ca cert path on fedora
+
 * Fri Aug 02 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.8-2
 - Backport patch from 2.0.8a
 
