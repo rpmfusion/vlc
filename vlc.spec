@@ -536,7 +536,6 @@ fi || :
 - Update to 2.0.9
 - Move crystalhd to extras - rhbz#2835
   Patch from Sergio Durigan Junior <sergiodj@riseup.net>
-- Update smb pkgconfig detection
 - Fix ca cert path on fedora
 
 * Fri Aug 02 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.8-2

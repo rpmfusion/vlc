@@ -1,52 +1,43 @@
-From 497c321ae1829bf92856b259aefad7f90d346086 Mon Sep 17 00:00:00 2001
+From 9cbe32f2d9542a4a8d17a0828c1a7c0046397f57 Mon Sep 17 00:00:00 2001
 From: Nicolas Chauvet <kwizart@gmail.com>
 Date: Sat, 23 Feb 2013 16:39:23 +0100
-Subject: [PATCH 1/3] Switch detection of smbclient from header to pkgconfig v2
+Subject: [PATCH] Switch detection of smbclient from header to pkgconfig
 
 ---
- configure.ac              | 13 +++++++------
- modules/access/Modules.am |  4 ++--
- 2 files changed, 9 insertions(+), 8 deletions(-)
+ configure.ac              | 5 +++--
+ modules/access/Modules.am | 2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 27d6476..6ecb819 100644
+index 65377ac..6c634f2 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1871,12 +1871,13 @@ dnl
+@@ -1874,9 +1874,10 @@ dnl
  AC_ARG_ENABLE(smb,
    [AS_HELP_STRING([--disable-smb], [disable SMB/CIFS support (default auto)])])
  if test "${enable_smb}" != "no"; then
 -  AC_CHECK_HEADERS(libsmbclient.h,
--    [ VLC_ADD_PLUGIN([access_smb])
--      VLC_ADD_LIBS([access_smb],[-lsmbclient]) ],
--    [ if test -n "${enable_smb}"; then
--        AC_MSG_ERROR([cannot find libsmbclient headers])
--     fi ])
 +  PKG_CHECK_MODULES(SMBCLIENT, smbclient,
-+    [ VLC_ADD_PLUGIN([access_smb]) ], [
-+      AC_CHECK_HEADERS(libsmbclient.h, [
-+        VLC_ADD_PLUGIN([access_smb])
-+        VLC_ADD_LIBS([access_smb],[-lsmbclient]) ],
-+        AC_MSG_ERROR([${SMBCLIENT_PKG_ERRORS} (required for smb plugin).])
-+    ])
- fi
- 
- 
+     [ VLC_ADD_PLUGIN([access_smb])
+-      VLC_ADD_LIBS([access_smb],[-lsmbclient]) ],
++      VLC_ADD_CFLAGS([access_smb],[$SMBCLIENT_CFLAGS])
++      VLC_ADD_LIBS([access_smb],[$SMBCLIENT_LIBS])],
+     [ if test -n "${enable_smb}"; then
+         AC_MSG_ERROR([cannot find libsmbclient headers])
+      fi ])
 diff --git a/modules/access/Modules.am b/modules/access/Modules.am
-index ff6047e..d1c0173 100644
+index ff6047e..c06c89b 100644
 --- a/modules/access/Modules.am
 +++ b/modules/access/Modules.am
-@@ -35,8 +35,8 @@ libsdp_plugin_la_LIBADD = $(AM_LIBADD)
+@@ -35,7 +35,7 @@ libsdp_plugin_la_LIBADD = $(AM_LIBADD)
  libsdp_plugin_la_DEPENDENCIES =
  
  libaccess_smb_plugin_la_SOURCES = smb.c
 -libaccess_smb_plugin_la_CFLAGS = $(AM_CFLAGS)
--libaccess_smb_plugin_la_LIBADD = $(AM_LIBADD) $(LIBS_access_smb)
-+libaccess_smb_plugin_la_CFLAGS = $(AM_CFLAGS) $(SMBCLIENT_CFLAGS)
-+libaccess_smb_plugin_la_LIBADD = $(AM_LIBADD) $(SMBCLIENT_LIBS) $(LIBS_access_smb)
++libaccess_smb_plugin_la_CFLAGS = $(AM_CFLAGS) $(CFLAGS_access_smb)
+ libaccess_smb_plugin_la_LIBADD = $(AM_LIBADD) $(LIBS_access_smb)
  if HAVE_WIN32
  libaccess_smb_plugin_la_LIBADD += -lmpr
- endif
 -- 
-1.8.3.1
+1.7.11.7
 
