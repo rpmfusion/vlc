@@ -83,6 +83,7 @@ BuildRequires:	libdv-devel
 %{?_with_libdvbpsi:BuildRequires: libdvbpsi-devel}
 BuildRequires:	libdvdnav-devel
 BuildRequires:	libebml-devel
+BuildRequires:	libgcrypt-devel
 BuildRequires:	libid3tag-devel
 BuildRequires:	libkate-devel
 %{?_with_libmad:BuildRequires: libmad-devel}
@@ -536,8 +537,8 @@ fi || :
 - Update to 2.0.9
 - Move crystalhd to extras - rhbz#2835
   Patch from Sergio Durigan Junior <sergiodj@riseup.net>
-- Update smb pkgconfig detection
 - Fix ca cert path on fedora
+- Add missing libgcrypt-devel
 
 * Fri Aug 02 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.8-2
 - Backport patch from 2.0.8a
