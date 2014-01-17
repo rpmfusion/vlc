@@ -25,12 +25,15 @@
 %global _with_projectm  1
 %global _with_schroedinger 1
 %endif
+%if 0%{?fedora} < 21
+%global _with_freerdp 1
+%endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.1.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -55,7 +58,7 @@ BuildRequires:	dirac-devel >= 1.0.0
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
-BuildRequires:	freerdp-devel
+%{?_with_freerdp:BuildRequires: freerdp-devel}
 BuildRequires:	fribidi-devel
 %{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
@@ -488,6 +491,9 @@ fi || :
 
 
 %changelog
+* Fri Jan 17 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.2-2
+- Disable freerdp for f21
+
 * Tue Dec 10 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.2-1
 - Update to 2.1.2
 
