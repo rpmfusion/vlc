@@ -32,8 +32,8 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.1.2
-Release:	2%{?dist}
+Version:	2.1.3
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -491,6 +491,9 @@ fi || :
 
 
 %changelog
+* Thu Feb 06 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.3-1
+- Update to 2.1.3
+
 * Fri Jan 17 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.2-2
 - Disable freerdp for f21
 
