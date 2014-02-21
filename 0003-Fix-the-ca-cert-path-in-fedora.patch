@@ -1,0 +1,27 @@
+From 08c6d8f3cbc5b2bd845b5e6ed8a5d15978ca6186 Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet <kwizart@gmail.com>
+Date: Wed, 6 Nov 2013 23:48:48 +0100
+Subject: [PATCH 3/3] Fix the ca cert path in fedora
+
+---
+ modules/misc/gnutls.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/modules/misc/gnutls.c b/modules/misc/gnutls.c
+index b0129ad..9070e3d 100644
+--- a/modules/misc/gnutls.c
++++ b/modules/misc/gnutls.c
+@@ -580,8 +580,8 @@ static int OpenClient (vlc_tls_t *session, int fd, const char *hostname)
+     const char *confdir = config_GetConfDir ();
+     {
+         char path[strlen (confdir)
+-                   + sizeof ("/ssl/certs/ca-certificates.crt")];
+-        sprintf (path, "%s/ssl/certs/ca-certificates.crt", confdir);
++                   + sizeof ("/ssl/certs/ca-bundle.trust.crt")];
++        sprintf (path, "%s/ssl/certs/ca-bundle.trust.crt", confdir);
+         gnutls_Addx509File (VLC_OBJECT(session), sys->x509_cred, path, false);
+     }
+ #else /* WIN32 */
+-- 
+1.8.3.1
+
