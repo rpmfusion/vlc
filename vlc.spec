@@ -30,7 +30,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.0.9
+Version:	2.0.10
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -533,6 +533,9 @@ fi || :
 
 
 %changelog
+* Fri Feb 21 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.0.10-1
+- Update to 2.0.10
+
 * Wed Nov 06 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.0.9-1
 - Update to 2.0.9
 - Move crystalhd to extras - rhbz#2835
