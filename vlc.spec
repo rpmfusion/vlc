@@ -32,7 +32,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.1.4
+Version:	2.1.5
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -491,6 +491,21 @@ fi || :
 
 
 %changelog
+* Sat Jul 26 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.5-1
+- Update to 2.1.5
+
+* Sat Apr 26 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.4-5
+- Rebuilt for libgcrypt
+
+* Sat Mar 29 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.4-4
+- Rebuilt for ffmpeg
+
+* Sat Mar 22 2014 Sérgio Basto <sergio@serjux.com> - 2.1.4-3
+- Rebuilt for x264
+
+* Thu Mar 06 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.4-2
+- Rebuilt for x264
+
 * Fri Feb 21 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.4-1
 - Update to 2.1.4
 
