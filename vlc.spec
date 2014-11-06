@@ -33,13 +33,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.1.5
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Patch0:         vlc-2.1.5-ffmpeg-2.4.patch
+Patch1:         vlc-2.1.5-ffmpeg-2.4-bug.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -224,6 +225,7 @@ JACK audio plugin for the VLC media player.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 %patch0 -p1 -b .ffmpeg24
+%patch1 -p1 -b .ffmpeg24bug
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -493,6 +495,9 @@ fi || :
 
 
 %changelog
+* Thu Nov 06 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.5-7
+- Fix for flv - rfbz#3401
+
 * Wed Nov 05 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.5-6
 - Rebuilt for vaapi 0.36
 
