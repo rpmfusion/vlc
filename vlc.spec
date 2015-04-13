@@ -246,7 +246,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-rpi-omxil			\
 	--enable-mmal-codec			\
 	--enable-mmal-vout			\
-}
+} \
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
