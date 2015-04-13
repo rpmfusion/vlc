@@ -11,10 +11,7 @@
 %global _with_libmpeg2 1
 %global _with_twolame 1
 %global _with_x264 1
-%ifarch x86_64 i686
-# Currenly broken on armhfp
 %global _with_x265 1
-%endif
 %global _with_xvidcore 1
 %global _with_live555 1
 %global _with_vaapi 1
@@ -34,7 +31,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.0
+Version:	2.2.1
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -245,11 +242,11 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_vcdimager:--enable-vcdx}		\
 	--enable-omxil				\
 	--enable-omxil-vout			\
-%ifarch armv6hl
+%{?_with_rpi:
 	--enable-rpi-omxil			\
 	--enable-mmal-codec			\
 	--enable-mmal-vout			\
-%endif
+}
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
@@ -473,6 +470,11 @@ fi || :
 
 
 %changelog
+* Mon Apr 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-1
+- Update to 2.2.1
+- Enable x265 on armhfp
+- Add --with rpi conditional for raspberrypi and mmal
+
 * Fri Feb 27 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.0-1
 - Update to 2.2.0
 
