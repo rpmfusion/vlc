@@ -32,11 +32,12 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+Patch0:         vlc-backport-freerdp.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -222,6 +223,8 @@ JACK audio plugin for the VLC media player.
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 }
+
+%patch0 -p1
 
 
 %build
@@ -470,6 +473,9 @@ fi || :
 
 
 %changelog
+* Sun Apr 26 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-3
+- Fix build with freerdp for f22
+
 * Thu Apr 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-2
 - Rebuilt for x265
 

@@ -1,0 +1,54 @@
+commit 5c07f87a773153c128b3a771ed61e7915cd8fe18
+Author: Vinson Lee <vlee@freedesktop.org>
+Date:   Fri Feb 20 06:05:09 2015 +0000
+
+    rdp: Support FreeRDP-1.2.0-beta1-android9
+    
+    Fix build errors.
+    
+      CC       access/librdp_plugin_la-rdp.lo
+    access/rdp.c: In function ‘Open’:
+    access/rdp.c:431:5: error: implicit declaration of function ‘freerdp_channels_global_init’ [-Werror=implicit-function-declaration]
+         freerdp_channels_global_init();
+         ^
+    access/rdp.c: In function ‘Close’:
+    access/rdp.c:507:5: error: implicit declaration of function ‘freerdp_channels_global_uninit’ [-Werror=implicit-function-declaration]
+         freerdp_channels_global_uninit();
+         ^
+    
+    freerdp channels global functions were removed from FreeRDP repository
+    in commit 2a82684521dc8b23ae92e284e866227e5194a7bb.
+    
+    commit 2a82684521dc8b23ae92e284e866227e5194a7bb
+    Author: Marc-André Moreau <marcandre.moreau@gmail.com>
+    Date:   Wed Jun 11 16:27:31 2014 -0400
+    
+        channels: cleanup unused freerdp channels global functions
+    
+    Signed-off-by: Vinson Lee <vlee@freedesktop.org>
+    Signed-off-by: Jean-Baptiste Kempf <jb@videolan.org>
+
+diff --git a/modules/access/rdp.c b/modules/access/rdp.c
+index 1dca8ae..769ba60 100644
+--- a/modules/access/rdp.c
++++ b/modules/access/rdp.c
+@@ -428,7 +428,9 @@ static int Open( vlc_object_t *p_this )
+     if ( p_sys->f_fps <= 0 ) p_sys->f_fps = 1.0;
+     p_sys->i_frame_interval = 1000000 / p_sys->f_fps;
+ 
++#if FREERDP_VERSION_MAJOR == 1 && FREERDP_VERSION_MINOR < 2
+     freerdp_channels_global_init();
++#endif
+ 
+     p_sys->p_instance = freerdp_new();
+     if ( !p_sys->p_instance )
+@@ -504,7 +506,9 @@ static void Close( vlc_object_t *p_this )
+ 
+     freerdp_disconnect( p_sys->p_instance );
+     freerdp_free( p_sys->p_instance );
++#if FREERDP_VERSION_MAJOR == 1 && FREERDP_VERSION_MINOR < 2
+     freerdp_channels_global_uninit();
++#endif
+ 
+     if ( p_sys->p_block )
+         block_Release( p_sys->p_block );
