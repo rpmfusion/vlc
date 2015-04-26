@@ -38,6 +38,8 @@ Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-backport-freerdp.patch
+Patch1:         vlc-backport-chroma_dead_CYUV.patch
+Patch2:         vlc-video_chroma-sse2.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -219,6 +221,8 @@ JACK audio plugin for the VLC media player.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1 -b .sse2
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap

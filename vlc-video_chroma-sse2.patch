@@ -1,0 +1,33 @@
+commit 0dd405cca1425b3496e0659c7b124cb188cf3166
+Author: Nicolas Chauvet <kwizart@gmail.com>
+Date:   Sun Apr 26 23:01:57 2015 +0200
+
+    Fix SSE caling convention without SSE/SSE2 enabled
+    
+    video_chroma/i420_yuy2.c: In function 'I420_YVYU_Filter':
+    video_chroma/i420_yuy2.c:187:23: error: calling 'I420_YVYU.isra.1'
+    with SSE caling convention without SSE/SSE2 enabled
+     VIDEO_FILTER_WRAPPER( I420_YVYU )
+                           ^
+    ../include/vlc_filter.h:266:13: note: in definition of macro 'VIDEO_FILTER_WRAPPER'
+                 name( p_filter, p_pic, p_outpic );                          \
+                 ^
+
+diff --git a/modules/video_chroma/Makefile.am b/modules/video_chroma/Makefile.am
+index aa1a826..b1bb426 100644
+--- a/modules/video_chroma/Makefile.am
++++ b/modules/video_chroma/Makefile.am
+@@ -84,11 +84,11 @@ libi420_rgb_sse2_plugin_la_SOURCES = video_chroma/i420_rgb.c video_chroma/i420_r
+ libi420_rgb_sse2_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) -DSSE2
+ 
+ libi420_yuy2_sse2_plugin_la_SOURCES = video_chroma/i420_yuy2.c video_chroma/i420_yuy2.h
+-libi420_yuy2_sse2_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) \
++libi420_yuy2_sse2_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) -DSSE2 \
+ 	-DMODULE_NAME_IS_i420_yuy2_sse2
+ 
+ libi422_yuy2_sse2_plugin_la_SOURCES = video_chroma/i422_yuy2.c video_chroma/i422_yuy2.h
+-libi422_yuy2_sse2_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) \
++libi422_yuy2_sse2_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) -DSSE2 \
+ 	-DMODULE_NAME_IS_i422_yuy2_sse2
+ 
+ if HAVE_SSE2
