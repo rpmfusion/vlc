@@ -39,7 +39,6 @@ URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:         vlc-backport-freerdp.patch
 Patch1:         vlc-backport-chroma_dead_CYUV.patch
-Patch2:         vlc-video_chroma-sse2.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -222,7 +221,6 @@ JACK audio plugin for the VLC media player.
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1 -b .sse2
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -235,6 +233,12 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 
 %configure \
 	--disable-dependency-tracking		\
+	--disable-optimizations			\
+%if 0%{?fedora} >= 22
+%ifarch i686
+	--disable-mmx --disable-sse		\
+%endif
+%endif
 	--disable-silent-rules			\
 	--with-pic				\
 	--disable-rpath				\
@@ -478,6 +482,8 @@ fi || :
 %changelog
 * Sun Apr 26 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-3
 - Fix build with freerdp for f22
+- Disable optimizations
+- Disable mmx and sse on fedora >= 22
 
 * Thu Apr 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-2
 - Rebuilt for x265
