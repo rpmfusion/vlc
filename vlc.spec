@@ -317,6 +317,9 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
 #Fix unowned directories
 rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
 
+#Ghost the plugins cache
+touch $RPM_BUILD_ROOT%{_libdir}/vlc/plugins.dat
+
 
 %find_lang %{name}
 
@@ -326,6 +329,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %post
+%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null
 touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
@@ -335,6 +339,7 @@ fi
 %post core -p /sbin/ldconfig
 
 %postun
+%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null
 touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
@@ -454,6 +459,7 @@ fi || :
 }
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
+%ghost %{_libdir}/vlc/plugins.dat
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
 
@@ -491,6 +497,10 @@ fi || :
 
 
 %changelog
+* Wed May 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.1.6-2
+- Recreate the plugins cache on post for main - rfbz#3639
+- %%ghost the cache plugins
+
 * Fri Apr 03 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.1.6-1
 - Update to 2.1.6
 
