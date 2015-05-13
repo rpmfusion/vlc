@@ -1,0 +1,1883 @@
+diff --git a/NEWS b/NEWS
+index a97c82b..9483432 100644
+--- a/NEWS
++++ b/NEWS
+@@ -1,3 +1,28 @@
++Changes between 2.2.1 and 2.2.2:
++--------------------------------
++
++Access:
++ * Fix SetupFormat for continuous framesize in v4l2
++
++Demux:
++ * Fix support for ms-dvr files
++ * HLS: fix hang on stop, crashes and small improvements
++ * Fix mp4 NULL dereference reported by by Fortinet's FortiGuard Labs
++
++Decoders:
++ * Fix importing surface from main memory in VDPAU
++
++Audio output:
++ * Fix audio drop after a flush with pulseaudio
++
++Skins2:
++ * Fix video control that fails to show up
++
++Misc:
++ * Fix build if one disables XCB but activate VDPAU on Unix
++ * Fix build with recent FreeRDP versions
++
++
+ Changes between 2.2.0 and 2.2.1:
+ --------------------------------
+ 
+@@ -8,7 +33,7 @@ Codec:
+  * Fix lpcm channel ordering
+  * Fix potential NULL dereference in dmo
+  * Fix teletext framing code in DVB PES packets
+- * Fix potential buffer overflow in schroendinger decoder
++ * Fix potential buffer overflow in schroendinger decoder (CVE-2014-9629)
+  * Fix AAC samplerate
+ 
+ Demuxers:
+@@ -244,13 +269,14 @@ Audio output:
+ 
+ Security:
+  * Fix heap overflow in decomp stream filter
+- * Fix buffer overflow in updater
++ * Fix buffer overflow in updater (CVE-2014-9625)
+  * Fix potential buffer overflow in schroedinger encoder
+  * Fix null-pointer dereference in DMO decoder
+- * Fix buffer overflow in parsing of string boxes in mp4 demuxer
++ * Fix buffer overflow in parsing of string boxes in mp4 demuxer (CVE-2014-9626,9627,9628)
+  * Fix SRTP integer overflow
+  * Fix potential crash in zip access
+  * Fix read overflow in Ogg demuxer
++ * Fix RTP overflow (CVE-2014-9630)
+ 
+ Win32 installer:
+  * Update translations and greek encoding
+diff --git a/configure.ac b/configure.ac
+index 121e8c9..35fb2df 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2,10 +2,10 @@ dnl Autoconf settings for vlc
+ 
+ AC_COPYRIGHT([Copyright 1999-2015 VLC authors and VideoLAN])
+ 
+-AC_INIT(vlc, 2.2.1)
++AC_INIT(vlc, 2.2.2)
+ VERSION_MAJOR=2
+ VERSION_MINOR=2
+-VERSION_REVISION=1
++VERSION_REVISION=2
+ VERSION_EXTRA=0
+ VERSION_DEV=
+ 
+@@ -13,7 +13,7 @@ PKGDIR="vlc"
+ AC_SUBST(PKGDIR)
+ 
+ CONFIGURE_LINE="`echo "$0 $ac_configure_args" | sed -e 's/\\\/\\\\\\\/g'`"
+-CODENAME="Terry Pratchett (Weatherwax)"
++CODENAME="Weatherwax"
+ COPYRIGHT_YEARS="1996-2015"
+ 
+ AC_CONFIG_SRCDIR(src/libvlc.c)
+diff --git a/contrib/src/dvdnav/rules.mak b/contrib/src/dvdnav/rules.mak
+index bb5f958..9080930 100644
+--- a/contrib/src/dvdnav/rules.mak
++++ b/contrib/src/dvdnav/rules.mak
+@@ -8,7 +8,7 @@ ifdef GPL
+ PKGS += dvdnav
+ endif
+ endif
+-ifeq ($(call need_pkg,"dvdnav > 5.0.0"),)
++ifeq ($(call need_pkg,"dvdnav >= 5.0.3"),)
+ PKGS_FOUND += dvdnav
+ endif
+ 
+diff --git a/contrib/src/dvdread/rules.mak b/contrib/src/dvdread/rules.mak
+index 14bfe3e..157c4a9 100644
+--- a/contrib/src/dvdread/rules.mak
++++ b/contrib/src/dvdread/rules.mak
+@@ -7,7 +7,7 @@ ifdef GPL
+ PKGS += dvdread
+ endif
+ endif
+-ifeq ($(call need_pkg,"dvdread > 5.0.2 "),)
++ifeq ($(call need_pkg,"dvdread >= 5.0.3"),)
+ PKGS_FOUND += dvdread
+ endif
+ 
+diff --git a/contrib/src/ebml/rules.mak b/contrib/src/ebml/rules.mak
+index 9d87c29..4a5ac16 100644
+--- a/contrib/src/ebml/rules.mak
++++ b/contrib/src/ebml/rules.mak
+@@ -14,10 +14,10 @@ libebml: libebml-$(EBML_VERSION).tar.bz2 .sum-ebml
+ 	$(MOVE)
+ 
+ # libebml requires exceptions
+-EBML_EXTRA_FLAGS = CXXFLAGS="${CXXFLAGS} -fexceptions" \
++EBML_EXTRA_FLAGS = CXXFLAGS="${CXXFLAGS} -fexceptions -fvisibility=hidden" \
+ 					CPPFLAGS=""
+ 
+ .ebml: libebml
+-	cd $< && $(HOSTVARS) ./configure $(HOSTCONF)
++	cd $< && $(HOSTVARS) ./configure $(HOSTCONF) $(EBML_EXTRA_FLAGS)
+ 	cd $< && $(MAKE) install
+ 	touch $@
+diff --git a/contrib/src/matroska/rules.mak b/contrib/src/matroska/rules.mak
+index b8d0165..c71ee83 100644
+--- a/contrib/src/matroska/rules.mak
++++ b/contrib/src/matroska/rules.mak
+@@ -16,7 +16,9 @@ libmatroska: libmatroska-$(MATROSKA_VERSION).tar.bz2 .sum-matroska
+ 	$(UNPACK)
+ 	$(MOVE)
+ 
++MATROSKA_EXTRA_FLAGS = CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
++
+ .matroska: libmatroska
+-	cd $< && $(HOSTVARS) ./configure $(HOSTCONF)
++	cd $< && $(HOSTVARS) ./configure $(HOSTCONF) $(MATROSKA_EXTRA_FLAGS)
+ 	cd $< && $(MAKE) install
+ 	touch $@
+diff --git a/contrib/src/upnp/missing_win32.patch b/contrib/src/upnp/missing_win32.patch
+new file mode 100644
+index 0000000..c5f80d0
+--- /dev/null
++++ b/contrib/src/upnp/missing_win32.patch
+@@ -0,0 +1,13 @@
++--- upnp_clean/upnp/inc/upnp.h	2015-04-30 14:37:26.962425889 +0200
+++++ upnp/upnp/inc/upnp.h	2015-04-30 14:41:48.099528162 +0200
++@@ -41,6 +41,10 @@
++  * \file
++  */
++ 
+++#ifdef _WIN32
+++# define WIN32
+++#endif
+++
++ #include "ixml.h"
++ #include "upnpconfig.h"
++ #include "UpnpGlobal.h"
+diff --git a/contrib/src/upnp/rules.mak b/contrib/src/upnp/rules.mak
+index f6706b1..14d05c0 100644
+--- a/contrib/src/upnp/rules.mak
++++ b/contrib/src/upnp/rules.mak
+@@ -25,6 +25,7 @@ ifdef HAVE_WIN32
+ endif
+ 	$(APPLY) $(SRC)/upnp/libupnp-ipv6.patch
+ 	$(APPLY) $(SRC)/upnp/miniserver.patch
++	$(APPLY) $(SRC)/upnp/missing_win32.patch
+ 	$(UPDATE_AUTOCONFIG) && cd $(UNPACK_DIR) && mv config.guess config.sub build-aux/
+ 	$(MOVE)
+ 
+diff --git a/contrib/src/vpx/SHA512SUMS b/contrib/src/vpx/SHA512SUMS
+index 84d2a30..7923cbc 100644
+--- a/contrib/src/vpx/SHA512SUMS
++++ b/contrib/src/vpx/SHA512SUMS
+@@ -1 +1 @@
+-af26766a3336155c5bc7b8cce7c23228de054287b990f9cacdc35273384a7af4999c01bb623d12143f40107036308a8b3207081efe67936748503c30c985fd6b  libvpx-v1.3.0.tar.bz2
++70234220e0ed64db000689ec8bea02dadef938a4f4dea96e5781d361c15245456212c1b6aec2b698d32ed423e73917d2303009e49224a2237669cab416dd6984  libvpx-1.4.0.tar.bz2
+diff --git a/contrib/src/vpx/libvpx-ios.patch b/contrib/src/vpx/libvpx-ios.patch
+index 852792d..504860c 100644
+--- a/contrib/src/vpx/libvpx-ios.patch
++++ b/contrib/src/vpx/libvpx-ios.patch
+@@ -1,78 +1,75 @@
+-diff -ru libvpx/build/make/configure.sh libvpx/build/make/configure.sh
+---- libvpx/build/make/configure.sh	2014-11-04 21:34:04.000000000 +0100
+-+++ libvpx/build/make/configure.sh	2014-11-04 21:36:12.000000000 +0100
+-@@ -714,59 +714,6 @@
+-     # PIC is probably what we want when building shared libs
+-     enabled shared && soft_enable pic
++--- libvpx-1.4.0/build/make/configure.sh.orig	2015-05-05 16:10:54.667129298 +0200
+++++ libvpx-1.4.0/build/make/configure.sh	2015-05-05 16:13:53.650560142 +0200
++@@ -745,58 +745,6 @@
++   # Minimum iOS version for all target platforms (darwin and iphonesimulator).
++   IOS_VERSION_MIN="6.0"
+  
+--    # Handle darwin variants. Newer SDKs allow targeting older
+--    # platforms, so find the newest SDK available.
+--    case ${toolchain} in
+--        *-darwin*)
+--            if [ -z "${DEVELOPER_DIR}" ]; then
+--                DEVELOPER_DIR=`xcode-select -print-path 2> /dev/null`
+--                [ $? -ne 0 ] && OSX_SKIP_DIR_CHECK=1
+--            fi
+--            if [ -z "${OSX_SKIP_DIR_CHECK}" ]; then
+--                OSX_SDK_ROOTS="${DEVELOPER_DIR}/SDKs"
+--                OSX_SDK_VERSIONS="MacOSX10.4u.sdk MacOSX10.5.sdk MacOSX10.6.sdk"
+--                OSX_SDK_VERSIONS="${OSX_SDK_VERSIONS} MacOSX10.7.sdk"
+--                for v in ${OSX_SDK_VERSIONS}; do
+--                    if [ -d "${OSX_SDK_ROOTS}/${v}" ]; then
+--                        osx_sdk_dir="${OSX_SDK_ROOTS}/${v}"
+--                    fi
+--                done
+--            fi
+--            ;;
+--    esac
+--
+--    if [ -d "${osx_sdk_dir}" ]; then
++-  # Handle darwin variants. Newer SDKs allow targeting older
++-  # platforms, so use the newest one available.
++-  case ${toolchain} in
++-    *-darwin*)
++-      osx_sdk_dir="$(show_darwin_sdk_path macosx)"
++-      if [ -d "${osx_sdk_dir}" ]; then
+ -        add_cflags  "-isysroot ${osx_sdk_dir}"
+ -        add_ldflags "-isysroot ${osx_sdk_dir}"
+--    fi
++-      fi
++-      ;;
++-  esac
+ -
+--    case ${toolchain} in
+--        *-darwin8-*)
+--            add_cflags  "-mmacosx-version-min=10.4"
+--            add_ldflags "-mmacosx-version-min=10.4"
+--            ;;
+--        *-darwin9-*)
+--            add_cflags  "-mmacosx-version-min=10.5"
+--            add_ldflags "-mmacosx-version-min=10.5"
+--            ;;
+--        *-darwin10-*)
+--            add_cflags  "-mmacosx-version-min=10.6"
+--            add_ldflags "-mmacosx-version-min=10.6"
+--            ;;
+--        *-darwin11-*)
+--            add_cflags  "-mmacosx-version-min=10.7"
+--            add_ldflags "-mmacosx-version-min=10.7"
+--            ;;
+--        *-darwin12-*)
+--            add_cflags  "-mmacosx-version-min=10.8"
+--            add_ldflags "-mmacosx-version-min=10.8"
+--            ;;
+--        *-darwin13-*)
+--            add_cflags  "-mmacosx-version-min=10.9"
+--            add_ldflags "-mmacosx-version-min=10.9"
+--            ;;
+--    esac
++-  case ${toolchain} in
++-    *-darwin8-*)
++-      add_cflags  "-mmacosx-version-min=10.4"
++-      add_ldflags "-mmacosx-version-min=10.4"
++-      ;;
++-    *-darwin9-*)
++-      add_cflags  "-mmacosx-version-min=10.5"
++-      add_ldflags "-mmacosx-version-min=10.5"
++-      ;;
++-    *-darwin10-*)
++-      add_cflags  "-mmacosx-version-min=10.6"
++-      add_ldflags "-mmacosx-version-min=10.6"
++-      ;;
++-    *-darwin11-*)
++-      add_cflags  "-mmacosx-version-min=10.7"
++-      add_ldflags "-mmacosx-version-min=10.7"
++-      ;;
++-    *-darwin12-*)
++-      add_cflags  "-mmacosx-version-min=10.8"
++-      add_ldflags "-mmacosx-version-min=10.8"
++-      ;;
++-    *-darwin13-*)
++-      add_cflags  "-mmacosx-version-min=10.9"
++-      add_ldflags "-mmacosx-version-min=10.9"
++-      ;;
++-    *-darwin14-*)
++-      add_cflags  "-mmacosx-version-min=10.10"
++-      add_ldflags "-mmacosx-version-min=10.10"
++-      ;;
++-    *-iphonesimulator-*)
++-      add_cflags  "-miphoneos-version-min=${IOS_VERSION_MIN}"
++-      add_ldflags "-miphoneos-version-min=${IOS_VERSION_MIN}"
++-      iossim_sdk_dir="$(show_darwin_sdk_path iphonesimulator)"
++-      if [ -d "${iossim_sdk_dir}" ]; then
++-        add_cflags  "-isysroot ${iossim_sdk_dir}"
++-        add_ldflags "-isysroot ${iossim_sdk_dir}"
++-      fi
++-      ;;
++-  esac
+ -
+-     # Handle Solaris variants. Solaris 10 needs -lposix4
+-     case ${toolchain} in
+-         sparc-solaris-*)
+-@@ -1070,7 +1017,13 @@
+-             ;;
+-             gcc*)
+-                 add_cflags -m${bits}
+--                add_ldflags -m${bits}
+-+                case ${tgt_os} in
+-+                    darwin*)
+-+                    ;;
+-+                    *)
+-+                    add_ldflags -m${bits}
+-+                    ;;
+-+                esac
+-                 link_with_cc=gcc
+-                 tune_cflags="-march="
+-                 setup_gnu_toolchain
++   # Handle Solaris variants. Solaris 10 needs -lposix4
++   case ${toolchain} in
++     sparc-solaris-*)
++@@ -1149,6 +1097,13 @@
++       case ${tgt_cc} in
++         gcc*)
++           add_cflags -m${bits}
+++          case ${tgt_os} in
+++              darwin*)
+++              ;;
+++              *)
+++              add_ldflags -m${bits}
+++              ;;
+++          esac
++           add_ldflags -m${bits}
++           ;;
++       esac
+diff --git a/contrib/src/vpx/libvpx-mac.patch b/contrib/src/vpx/libvpx-mac.patch
+index ebb868a..7e41283 100644
+--- a/contrib/src/vpx/libvpx-mac.patch
++++ b/contrib/src/vpx/libvpx-mac.patch
+@@ -1,18 +1,43 @@
+-libvpx's configure script hard-codes the SDK location of previous Xcode release in the /Developer folder. However, starting with Xcode 4.3, the SDKs moved to /Applications/Xcode.app/blabla
+-VLC's contrib system is clever enough to detect this, but libvpx fails miserably. However, they are providing a work-around for iOS and Android, which is expanded by this patch.
+-
+-diff -ru libvpx/build/make/configure.sh libvpx/build/make/configure.sh
+---- libvpx/build/make/configure.sh	2012-06-08 10:26:47.000000000 +0200
+-+++ libvpx-fixed/build/make/configure.sh	2012-06-08 10:26:07.000000000 +0200
+-@@ -628,6 +628,11 @@
+-     if [ -d "/Developer/SDKs/MacOSX10.7.sdk" ]; then
+-         osx_sdk_dir="/Developer/SDKs/MacOSX10.7.sdk"
+-     fi
++--- libvpx-1.4.0/build/make/configure.sh.orig	2015-05-05 16:03:00.504713016 +0200
+++++ libvpx-1.4.0/build/make/configure.sh	2015-05-05 16:05:52.358003947 +0200
++@@ -751,6 +751,12 @@
++       ;;
++   esac
++ 
+++  if [ -d "${sdk_path}" ]; then
+++      case "${sdk_path}" in
+++         darwin*) osx_sdk_dir=${sdk_path} ;;
+++      esac
+++  fi
+++
++   case ${toolchain} in
++     *-darwin8-*)
++       add_cflags  "-mmacosx-version-min=10.4"
++--- libvpx-1.4.0/build/make/configure.sh.orig	2015-05-05 16:06:31.502087047 +0200
+++++ libvpx-1.4.0/build/make/configure.sh	2015-05-05 16:09:41.525727635 +0200
++@@ -651,6 +651,12 @@
++         ;;
++     esac
++ 
+ +    if [ -d "${sdk_path}" ]; then
+ +        case "${sdk_path}" in
+ +           darwin*) osx_sdk_dir=${sdk_path} ;;
+ +        esac
+ +    fi
+++
++     # detect tgt_os
++     case "$gcctarget" in
++       *darwin8*)
++@@ -751,12 +757,6 @@
++       ;;
++   esac
+  
+-     case ${toolchain} in
+-         *-darwin8-*)
++-  if [ -d "${sdk_path}" ]; then
++-      case "${sdk_path}" in
++-         darwin*) osx_sdk_dir=${sdk_path} ;;
++-      esac
++-  fi
++-
++   case ${toolchain} in
++     *-darwin8-*)
++       add_cflags  "-mmacosx-version-min=10.4"
+diff --git a/contrib/src/vpx/libvpx-no-cross.patch b/contrib/src/vpx/libvpx-no-cross.patch
+index e261dc7..9881624 100644
+--- a/contrib/src/vpx/libvpx-no-cross.patch
++++ b/contrib/src/vpx/libvpx-no-cross.patch
+@@ -1,10 +1,10 @@
+---- libvpx-v1.0.0/build/make/configure.sh.orig	2012-01-29 04:59:36.976441000 -0500
+-+++ libvpx-v1.0.0/build/make/configure.sh	2012-01-29 04:59:46.684441001 -0500
+-@@ -680,7 +680,6 @@
++--- libvpx-1.4.0/build/make/configure.sh.orig	2015-05-05 16:00:58.682380921 +0200
+++++ libvpx-1.4.0/build/make/configure.sh	2015-05-05 16:02:13.537147158 +0200
++@@ -831,7 +831,6 @@
+  
+-         case ${tgt_cc} in
++       case ${tgt_cc} in
+          gcc)
+--            CROSS=${CROSS:-arm-none-linux-gnueabi-}
+-             link_with_cc=gcc
+-             setup_gnu_toolchain
+-             arch_int=${tgt_isa##armv}
++-          CROSS=${CROSS:-arm-none-linux-gnueabi-}
++           link_with_cc=gcc
++           setup_gnu_toolchain
++           arch_int=${tgt_isa##armv}
+diff --git a/contrib/src/vpx/libvpx-sysroot.patch b/contrib/src/vpx/libvpx-sysroot.patch
+index 9b84338..0ba43dc 100644
+--- a/contrib/src/vpx/libvpx-sysroot.patch
++++ b/contrib/src/vpx/libvpx-sysroot.patch
+@@ -8,24 +8,19 @@ correct sysroot.
+ 
+ See also https://code.google.com/p/webm/issues/detail?id=809
+ 
+-diff --git a/build/make/configure.sh b/build/make/configure.sh
+-index d4124c7..c420d25 100755
+---- a/build/make/configure.sh
+-+++ b/build/make/configure.sh
+-@@ -939,8 +939,11 @@ EOF
+-                           awk '{ print $1 }' | tail -1`
+-             fi
++--- libvpx-1.4.0/build/make/configure.sh.orig	2015-05-05 15:57:26.568321902 +0200
+++++ libvpx-1.4.0/build/make/configure.sh	2015-05-05 15:59:04.860202562 +0200
++@@ -941,8 +941,11 @@
++                 awk '{ print $1 }' | tail -1`
++           fi
+  
+--            add_cflags "--sysroot=${alt_libc}"
+--            add_ldflags "--sysroot=${alt_libc}"
+-+            # this may happen if toolchain binaries are outside the ndk dir
+-+            if [ "${alt_libc}" ]; then
+-+                add_cflags "--sysroot=${alt_libc}"
+-+                add_ldflags "--sysroot=${alt_libc}"
+-+            fi
++-          add_cflags "--sysroot=${alt_libc}"
++-          add_ldflags "--sysroot=${alt_libc}"
+++          # this may happen if toolchain binaries are outside the ndk dir
+++          if [ "${alt_libc}" ]; then
+++              add_cflags "--sysroot=${alt_libc}"
+++              add_ldflags "--sysroot=${alt_libc}"
+++          fi
+  
+-             # linker flag that routes around a CPU bug in some
+-             # Cortex-A8 implementations (NDK Dev Guide)
+--- 
+-1.8.3.2
+-
++           # linker flag that routes around a CPU bug in some
++           # Cortex-A8 implementations (NDK Dev Guide)
+diff --git a/contrib/src/vpx/rules.mak b/contrib/src/vpx/rules.mak
+index b55199d..ac3eace 100644
+--- a/contrib/src/vpx/rules.mak
++++ b/contrib/src/vpx/rules.mak
+@@ -1,7 +1,7 @@
+ # libvpx
+ 
+-VPX_VERSION := v1.3.0
+-VPX_URL := http://webm.googlecode.com/files/libvpx-$(VPX_VERSION).tar.bz2
++VPX_VERSION := 1.4.0
++VPX_URL := http://storage.googleapis.com/downloads.webmproject.org/releases/webm/libvpx-$(VPX_VERSION).tar.bz2
+ 
+ $(TARBALLS)/libvpx-$(VPX_VERSION).tar.bz2:
+ 	$(call download,$(VPX_URL))
+diff --git a/extras/package/macosx/build-package.sh b/extras/package/macosx/build-package.sh
+index a693c4f..fe4a52a 100644
+--- a/extras/package/macosx/build-package.sh
++++ b/extras/package/macosx/build-package.sh
+@@ -248,13 +248,12 @@ done
+ 
+ ##########################
+ # Build the lib folder
+-vlc_install "lib/${prefix}" "libvlc.5.dylib" "${target_lib}" "library"
+-vlc_install "src/${prefix}" "libvlccore.7.dylib" "${target_lib}" "library"
+-pushd `pwd` > /dev/null
+-cd ${target_lib}
+-ln -sf libvlc.5.dylib libvlc.dylib
+-ln -sf libvlccore.7.dylib libvlccore.dylib
+-popd > /dev/null
++vlc_install "lib/${prefix}" "libvlc.*.dylib" "${target_lib}" "library"
++vlc_install "src/${prefix}" "libvlccore.*.dylib" "${target_lib}" "library"
++
++# copy symlinks
++cp -RP "lib/${prefix}/libvlc.dylib" "${target_lib}"
++cp -RP "src/${prefix}/libvlccore.dylib" "${target_lib}"
+ 
+ ##########################
+ # Build the share folder
+diff --git a/extras/package/npapi.am b/extras/package/npapi.am
+index e778f7d..da8a4f0 100644
+--- a/extras/package/npapi.am
++++ b/extras/package/npapi.am
+@@ -9,8 +9,11 @@ fetch-npapi:
+ 		cd npapi-vlc && \
+ 		git fetch origin && \
+ 		git reset --hard origin/master; \
++		git submodule update; \
+ 	else \
+-		git clone git://git.videolan.org/npapi-vlc.git npapi-vlc ; \
++		git clone git://git.videolan.org/npapi-vlc.git npapi-vlc && \
++		cd npapi-vlc && \
++		git submodule update --init; \
+ 	fi
+ 	git --git-dir=npapi-vlc/.git describe --long --always > stamp-npapi.tmp
+ 	if diff stamp-npapi.tmp stamp-npapi >/dev/null 2>&1; then \
+diff --git a/include/vlc_input.h b/include/vlc_input.h
+index 6ec305b..13a944a 100644
+--- a/include/vlc_input.h
++++ b/include/vlc_input.h
+@@ -53,6 +53,8 @@ struct seekpoint_t
+ static inline seekpoint_t *vlc_seekpoint_New( void )
+ {
+     seekpoint_t *point = (seekpoint_t*)malloc( sizeof( seekpoint_t ) );
++    if( !point )
++        return NULL;
+     point->i_byte_offset =
+     point->i_time_offset = -1;
+     point->psz_name = NULL;
+@@ -96,6 +98,8 @@ typedef struct input_title_t
+ static inline input_title_t *vlc_input_title_New(void)
+ {
+     input_title_t *t = (input_title_t*)malloc( sizeof( input_title_t ) );
++    if( !t )
++        return NULL;
+ 
+     t->psz_name = NULL;
+     t->b_menu = false;
+diff --git a/modules/access/rdp.c b/modules/access/rdp.c
+index a7280a59..0a11f42 100644
+--- a/modules/access/rdp.c
++++ b/modules/access/rdp.c
+@@ -428,7 +428,9 @@ static int Open( vlc_object_t *p_this )
+     if ( p_sys->f_fps <= 0 ) p_sys->f_fps = 1.0;
+     p_sys->i_frame_interval = 1000000 / p_sys->f_fps;
+ 
++#if FREERDP_VERSION_MAJOR == 1 && FREERDP_VERSION_MINOR < 2
+     freerdp_channels_global_init();
++#endif
+ 
+     p_sys->p_instance = freerdp_new();
+     if ( !p_sys->p_instance )
+@@ -504,7 +506,9 @@ static void Close( vlc_object_t *p_this )
+ 
+     freerdp_disconnect( p_sys->p_instance );
+     freerdp_free( p_sys->p_instance );
++#if FREERDP_VERSION_MAJOR == 1 && FREERDP_VERSION_MINOR < 2
+     freerdp_channels_global_uninit();
++#endif
+ 
+     if ( p_sys->p_block )
+         block_Release( p_sys->p_block );
+diff --git a/modules/access/rtsp/rtsp.c b/modules/access/rtsp/rtsp.c
+index 7b1e606..f1aabc5 100644
+--- a/modules/access/rtsp/rtsp.c
++++ b/modules/access/rtsp/rtsp.c
+@@ -88,7 +88,7 @@ const char rtsp_protocol_version[]="RTSP/1.0";
+  
+ static char *rtsp_get( rtsp_client_t *rtsp )
+ {
+-  char *psz_buffer = malloc( BUF_SIZE );
++  char *psz_buffer = xmalloc( BUF_SIZE );
+   char *psz_string = NULL;
+ 
+   if( rtsp->pf_read_line( rtsp->p_userdata, (uint8_t*)psz_buffer, (unsigned int)BUF_SIZE ) >= 0 )
+@@ -109,7 +109,7 @@ static char *rtsp_get( rtsp_client_t *rtsp )
+ static int rtsp_put( rtsp_client_t *rtsp, const char *psz_string )
+ {
+     unsigned int i_buffer = strlen( psz_string );
+-    char *psz_buffer = malloc( i_buffer + 3 );
++    char *psz_buffer = xmalloc( i_buffer + 3 );
+     int i_ret;
+ 
+     strcpy( psz_buffer, psz_string );
+@@ -162,7 +162,7 @@ static int rtsp_send_request( rtsp_client_t *rtsp, const char *psz_type,
+     char *psz_buffer;
+     int i_ret;
+ 
+-    psz_buffer = malloc( strlen(psz_type) + strlen(psz_what) +
++    psz_buffer = xmalloc( strlen(psz_type) + strlen(psz_what) +
+                          sizeof("RTSP/1.0") + 2 );
+ 
+     sprintf( psz_buffer, "%s %s %s", psz_type, psz_what, "RTSP/1.0" );
+@@ -195,7 +195,7 @@ static void rtsp_schedule_standard( rtsp_client_t *rtsp )
+     if( rtsp->p_private->session )
+     {
+         char *buf;
+-        buf = malloc( strlen(rtsp->p_private->session) + 15 );
++        buf = xmalloc( strlen(rtsp->p_private->session) + 15 );
+         sprintf( buf, "Session: %s", rtsp->p_private->session );
+         rtsp_schedule_field( rtsp, buf );
+         free( buf );
+@@ -239,14 +239,14 @@ static int rtsp_get_answers( rtsp_client_t *rtsp )
+       }
+       if( !strncasecmp( answer, "Server:", 7 ) )
+       {
+-          char *buf = malloc( strlen(answer) );
++          char *buf = xmalloc( strlen(answer) );
+           sscanf( answer, "%*s %s", buf );
+           free( rtsp->p_private->server );
+           rtsp->p_private->server = buf;
+       }
+       if( !strncasecmp( answer, "Session:", 8 ) )
+       {
+-          char *buf = malloc( strlen(answer) );
++          char *buf = xmalloc( strlen(answer) );
+           sscanf( answer, "%*s %s", buf );
+           if( rtsp->p_private->session )
+           {
+@@ -305,7 +305,7 @@ int rtsp_request_options( rtsp_client_t *rtsp, const char *what )
+     if( what ) buf = strdup(what);
+     else
+     {
+-        buf = malloc( strlen(rtsp->p_private->host) + 16 );
++        buf = xmalloc( strlen(rtsp->p_private->host) + 16 );
+         sprintf( buf, "rtsp://%s:%i", rtsp->p_private->host,
+                  rtsp->p_private->port );
+     }
+@@ -325,7 +325,7 @@ int rtsp_request_describe( rtsp_client_t *rtsp, const char *what )
+     }
+     else
+     {
+-        buf = malloc( strlen(rtsp->p_private->host) +
++        buf = xmalloc( strlen(rtsp->p_private->host) +
+                       strlen(rtsp->p_private->path) + 16 );
+         sprintf( buf, "rtsp://%s:%i/%s", rtsp->p_private->host,
+                  rtsp->p_private->port, rtsp->p_private->path );
+@@ -352,7 +352,7 @@ int rtsp_request_setparameter( rtsp_client_t *rtsp, const char *what )
+     }
+     else
+     {
+-        buf = malloc( strlen(rtsp->p_private->host) +
++        buf = xmalloc( strlen(rtsp->p_private->host) +
+                       strlen(rtsp->p_private->path) + 16 );
+         sprintf( buf, "rtsp://%s:%i/%s", rtsp->p_private->host,
+                  rtsp->p_private->port, rtsp->p_private->path );
+@@ -374,7 +374,7 @@ int rtsp_request_play( rtsp_client_t *rtsp, const char *what )
+     }
+     else
+     {
+-        buf = malloc( strlen(rtsp->p_private->host) +
++        buf = xmalloc( strlen(rtsp->p_private->host) +
+                       strlen(rtsp->p_private->path) + 16 );
+         sprintf( buf, "rtsp://%s:%i/%s", rtsp->p_private->host,
+                  rtsp->p_private->port, rtsp->p_private->path );
+@@ -431,7 +431,7 @@ int rtsp_read_data( rtsp_client_t *rtsp, uint8_t *buffer, unsigned int size )
+ 
+             /* lets make the server happy */
+             rtsp_put( rtsp, "RTSP/1.0 451 Parameter Not Understood" );
+-            rest = malloc(17);
++            rest = xmalloc(17);
+             sprintf( rest,"CSeq: %u", seq );
+             rtsp_put( rtsp, rest );
+             rtsp_put( rtsp, "" );
+@@ -464,7 +464,7 @@ int rtsp_connect( rtsp_client_t *rtsp, const char *psz_mrl,
+     unsigned int hostend, pathbegin, i;
+ 
+     if( !psz_mrl ) return -1;
+-    s = malloc( sizeof(rtsp_t) );
++    s = xmalloc( sizeof(rtsp_t) );
+     rtsp->p_private = s;
+ 
+     if( !strncmp( psz_mrl, "rtsp://", 7 ) ) psz_mrl += 7;
+@@ -502,7 +502,7 @@ int rtsp_connect( rtsp_client_t *rtsp, const char *psz_mrl,
+     pathbegin = slash - mrl_ptr;
+     hostend = colon - mrl_ptr;
+ 
+-    s->host = malloc(hostend+1);
++    s->host = xmalloc(hostend+1);
+     strncpy( s->host, mrl_ptr, hostend );
+     s->host[hostend] = 0;
+ 
+diff --git a/modules/access/v4l2/video.c b/modules/access/v4l2/video.c
+index fe5d1c9..b8544ea 100644
+--- a/modules/access/v4l2/video.c
++++ b/modules/access/v4l2/video.c
+@@ -508,7 +508,7 @@ int SetupFormat (vlc_object_t *obj, int fd, uint32_t fourcc,
+                           width <= fse.stepwise.max_width;
+                           width += fse.stepwise.step_width)
+                 for (uint32_t height =  fse.stepwise.min_height;
+-                              height <= fse.stepwise.max_width;
++                              height <= fse.stepwise.max_height;
+                               height += fse.stepwise.step_height)
+                 {
+                     struct v4l2_fract cur_it;
+diff --git a/modules/audio_output/audiounit_ios.c b/modules/audio_output/audiounit_ios.c
+index 4645306..48e0c6d 100644
+--- a/modules/audio_output/audiounit_ios.c
++++ b/modules/audio_output/audiounit_ios.c
+@@ -252,13 +252,6 @@ static int StartAnalog(audio_output_t *p_aout, audio_sample_format_t *fmt)
+         return false;
+     }
+ 
+-    /* AU init */
+-    status = AudioUnitInitialize(p_sys->au_unit);
+-    if (status != noErr) {
+-        msg_Err(p_aout, "failed to init AudioUnit (%i)", (int)status);
+-        return false;
+-    }
+-
+     /* setup circular buffer */
+     TPCircularBufferInit(&p_sys->circular_buffer, AUDIO_BUFFER_SIZE_IN_SECONDS * fmt->i_rate * fmt->i_bytes_per_frame);
+ 
+@@ -268,10 +261,17 @@ static int StartAnalog(audio_output_t *p_aout, audio_sample_format_t *fmt)
+                             NULL,
+                             NULL);
+ 
+-	/* Set audio session to mediaplayback */
+-	UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+-	AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory),&sessionCategory);
+-	AudioSessionSetActive(true);
++    /* Set audio session to mediaplayback */
++    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
++    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory),&sessionCategory);
++    AudioSessionSetActive(true);
++
++    /* AU init */
++    status = AudioUnitInitialize(p_sys->au_unit);
++    if (status != noErr) {
++        msg_Err(p_aout, "failed to init AudioUnit (%i)", (int)status);
++        return false;
++    }
+ 
+     /* start the unit */
+     status = AudioOutputUnitStart(p_sys->au_unit);
+@@ -292,6 +292,10 @@ static void Stop(audio_output_t *p_aout)
+         if (status != noErr)
+             msg_Warn(p_aout, "failed to stop AudioUnit (%i)", (int)status);
+ 
++        status = AudioUnitUninitialize(p_sys->au_unit);
++        if (status != noErr)
++            msg_Warn(p_aout, "failed to uninit AudioUnit (%i)", (int)status);
++
+         status = AudioComponentInstanceDispose(p_sys->au_unit);
+         if (status != noErr)
+             msg_Warn(p_aout, "failed to dispose Audio Component instance (%i)", (int)status);
+@@ -340,10 +344,10 @@ static void Pause (audio_output_t *p_aout, bool pause, mtime_t date)
+         AudioOutputUnitStop(p_sys->au_unit);
+         AudioSessionSetActive(false);
+     } else {
+-        AudioOutputUnitStart(p_sys->au_unit);
+         UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+         AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory),&sessionCategory);
+         AudioSessionSetActive(true);
++        AudioOutputUnitStart(p_sys->au_unit);
+     }
+ }
+ 
+@@ -411,11 +415,13 @@ static OSStatus RenderCallback(vlc_object_t *p_obj,
+     /* Pull audio from buffer */
+     int32_t availableBytes;
+     Float32 *buffer = TPCircularBufferTail(&p_sys->circular_buffer, &availableBytes);
++    if (unlikely(bytesRequested == 0)) /* cannot be negative */
++        return noErr;
+ 
+     /* check if we have enough data */
+     if (!availableBytes || p_sys->b_paused) {
+         /* return an empty buffer so silence is played until we have data */
+-        memset(targetBuffer, 0, ioData->mBuffers[0].mDataByteSize);
++        memset(targetBuffer, 0, bytesRequested);
+     } else {
+         int32_t bytesToCopy = __MIN(bytesRequested, availableBytes);
+ 
+diff --git a/modules/audio_output/pulse.c b/modules/audio_output/pulse.c
+index 069cf6a..231769d 100644
+--- a/modules/audio_output/pulse.c
++++ b/modules/audio_output/pulse.c
+@@ -561,6 +561,9 @@ static void Flush(audio_output_t *aout, bool wait)
+         op = pa_stream_flush(s, NULL, NULL);
+     if (op != NULL)
+         pa_operation_unref(op);
++    sys->first_pts = VLC_TS_INVALID;
++    stream_stop(s, aout);
++
+     pa_threaded_mainloop_unlock(sys->mainloop);
+ }
+ 
+diff --git a/modules/codec/png.c b/modules/codec/png.c
+index 33f7515..36ed444 100644
+--- a/modules/codec/png.c
++++ b/modules/codec/png.c
+@@ -372,6 +372,11 @@ static block_t *EncodeBlock(encoder_t *p_enc, picture_t *p_pic)
+         return NULL;
+     }
+ 
++    /* Disable filtering to speed-up encoding */
++    png_set_filter( p_png, 0, PNG_NO_FILTERS );
++    /* 1 == best speed */
++    png_set_compression_level( p_png, 1 );
++
+     /* save buffer start */
+     uint8_t *p_start = p_block->p_buffer;
+     size_t i_start = p_block->i_buffer;
+diff --git a/modules/demux/asf/asf.c b/modules/demux/asf/asf.c
+index b133410..f8406ed 100644
+--- a/modules/demux/asf/asf.c
++++ b/modules/demux/asf/asf.c
+@@ -1344,7 +1344,7 @@ static int DemuxInit( demux_t *p_demux )
+             if( fmt.i_codec == VLC_FOURCC( 'D','V','R',' ') )
+             {
+                 /* DVR-MS special ASF */
+-                fmt.i_codec = VLC_FOURCC( 'm','p','g','2' ) ;
++                fmt.i_codec = VLC_CODEC_MPGV;
+                 fmt.b_packetized = false;
+             }
+ 
+diff --git a/modules/demux/image.c b/modules/demux/image.c
+index 5b56913..7809312 100644
+--- a/modules/demux/image.c
++++ b/modules/demux/image.c
+@@ -147,8 +147,7 @@ static block_t *Decode(demux_t *demux,
+ 
+     size_t size = 0;
+     for (int i = 0; i < image->i_planes; i++)
+-        size += image->p[i].i_visible_pitch *
+-                image->p[i].i_visible_lines;
++        size += image->p[i].i_pitch * image->p[i].i_lines;
+ 
+     data = block_Alloc(size);
+     if (!data) {
+diff --git a/modules/demux/mp4/libmp4.c b/modules/demux/mp4/libmp4.c
+index 3912e7e..331262b 100644
+--- a/modules/demux/mp4/libmp4.c
++++ b/modules/demux/mp4/libmp4.c
+@@ -3576,6 +3576,15 @@ static MP4_Box_t *MP4_ReadBox( stream_t *p_stream, MP4_Box_t *p_father )
+         free( p_box );
+         return NULL;
+     }
++
++    if( p_father && p_father->i_size > 0 &&
++        p_father->i_pos + p_father->i_size < p_box->i_pos + p_box->i_size )
++    {
++        msg_Dbg( p_stream, "out of bound child" );
++        free( p_box );
++        return NULL;
++    }
++
+     if( !p_box->i_size )
+     {
+         msg_Dbg( p_stream, "found an empty box (null size)" );
+diff --git a/modules/demux/mp4/mp4.c b/modules/demux/mp4/mp4.c
+index 7a52103..46c5f9a 100644
+--- a/modules/demux/mp4/mp4.c
++++ b/modules/demux/mp4/mp4.c
+@@ -4864,13 +4864,16 @@ static int LeafParseTRUN( demux_t *p_demux, mp4_track_t *p_track,
+             es_out_Control( p_demux->out, ES_OUT_SET_PCR, VLC_TS_0 + i_nzdts );
+         }
+ 
+-        if ( p_track->p_es )
++        if ( p_block )
+         {
+-            p_block->i_dts = VLC_TS_0 + i_nzdts;
+-            p_block->i_pts = VLC_TS_0 + i_nzpts;
+-            es_out_Send( p_demux->out, p_track->p_es, p_block );
++            if ( p_track->p_es )
++            {
++                p_block->i_dts = VLC_TS_0 + i_nzdts;
++                p_block->i_pts = VLC_TS_0 + i_nzpts;
++                es_out_Send( p_demux->out, p_track->p_es, p_block );
++            }
++            else block_Release( p_block );
+         }
+-        else free( p_block );
+ 
+         chunk_size += len;
+     }
+diff --git a/modules/gui/macosx/CoreInteraction.m b/modules/gui/macosx/CoreInteraction.m
+index 1fc4d6e..b749512 100644
+--- a/modules/gui/macosx/CoreInteraction.m
++++ b/modules/gui/macosx/CoreInteraction.m
+@@ -258,12 +258,14 @@ static VLCCoreInteraction *_o_sharedInstance = nil;
+         return nil;
+     }
+ 
+-    NSString *o_name;
++    NSString *o_name = @"";
+     char *format = var_InheritString(VLCIntf, "input-title-format");
+-    char *formated = str_format_meta(p_input, format);
+-    free(format);
+-    o_name = [NSString stringWithUTF8String:formated];
+-    free(formated);
++    if (format) {
++        char *formated = str_format_meta(p_input, format);
++        free(format);
++        o_name = toNSStr(formated);
++        free(formated);
++    }
+ 
+     NSURL * o_url = [NSURL URLWithString:[NSString stringWithUTF8String:psz_uri]];
+     free(psz_uri);
+diff --git a/modules/gui/macosx/ExtensionsDialogProvider.m b/modules/gui/macosx/ExtensionsDialogProvider.m
+index c7d6d08..d15966c 100644
+--- a/modules/gui/macosx/ExtensionsDialogProvider.m
++++ b/modules/gui/macosx/ExtensionsDialogProvider.m
+@@ -111,6 +111,7 @@ static NSView *createControlFromWidget(extension_widget_t *widget, id self)
+             VLCDialogList *list = [[VLCDialogList alloc] init];
+             [list setUsesAlternatingRowBackgroundColors:YES];
+             [list setHeaderView:nil];
++            [list setAllowsMultipleSelection:YES];
+             [scrollView setDocumentView:list];
+             [scrollView setAutoresizingMask:NSViewHeightSizable | NSViewWidthSizable];
+ 
+@@ -203,7 +204,8 @@ static void updateControlFromWidget(NSView *control, extension_widget_t *widget,
+             [popup removeAllItems];
+             struct extension_widget_value_t *value;
+             for (value = widget->p_values; value != NULL; value = value->p_next)
+-                [popup addItemWithTitle:[NSString stringWithUTF8String:value->psz_text]];
++                [[popup menu] addItemWithTitle:toNSStr(value->psz_text) action:nil keyEquivalent:@""];
++
+             [popup synchronizeTitleAndSelectedItem];
+             [self popUpSelectionChanged:popup];
+             break;
+@@ -365,8 +367,9 @@ static ExtensionsDialogProvider *_o_sharedInstance = nil;
+ 
+     struct extension_widget_value_t *value;
+     unsigned i = 0;
++    NSIndexSet *selectedIndexes = [list selectedRowIndexes];
+     for (value = [list widget]->p_values; value != NULL; value = value->p_next, i++)
+-        value->b_selected = (i == [list selectedRow]);
++        value->b_selected = (YES == [selectedIndexes containsIndex:i]);
+ }
+ 
+ - (void)popUpSelectionChanged:(id)sender
+diff --git a/modules/gui/macosx/MainWindow.m b/modules/gui/macosx/MainWindow.m
+index 875c71f..b712413 100644
+--- a/modules/gui/macosx/MainWindow.m
++++ b/modules/gui/macosx/MainWindow.m
+@@ -695,14 +695,16 @@ static VLCMainWindow *_o_sharedInstance = nil;
+     input_thread_t * p_input;
+     p_input = pl_CurrentInput(VLCIntf);
+     if (p_input) {
+-        NSString *aString;
++        NSString *aString = @"";
+ 
+         if (!config_GetPsz(VLCIntf, "video-title")) {
+             char *format = var_InheritString(VLCIntf, "input-title-format");
+-            char *formated = str_format_meta(p_input, format);
+-            free(format);
+-            aString = [NSString stringWithUTF8String:formated];
+-            free(formated);
++            if (format) {
++                char *formated = str_format_meta(p_input, format);
++                free(format);
++                aString = toNSStr(formated);
++                free(formated);
++            }
+         } else
+             aString = [NSString stringWithUTF8String:config_GetPsz(VLCIntf, "video-title")];
+ 
+diff --git a/modules/gui/macosx/simple_prefs.m b/modules/gui/macosx/simple_prefs.m
+index ddc0957..43bbe82 100644
+--- a/modules/gui/macosx/simple_prefs.m
++++ b/modules/gui/macosx/simple_prefs.m
+@@ -105,6 +105,7 @@ static const char *const ppsz_language[] =
+     "es",
+     "es_MX",
+     "sv",
++    "ta",
+     "te",
+     "th",
+     "tr",
+@@ -179,6 +180,7 @@ static const char *const ppsz_language_text[] =
+     "Español",
+     "Español mexicano",
+     "Svenska",
++    "தமிழ்",
+     "తెలుగు",
+     "ภาษาไทย",
+     "Türkçe",
+diff --git a/modules/gui/qt4/components/simple_preferences.cpp b/modules/gui/qt4/components/simple_preferences.cpp
+index 831ccdf..8feeecd 100644
+--- a/modules/gui/qt4/components/simple_preferences.cpp
++++ b/modules/gui/qt4/components/simple_preferences.cpp
+@@ -119,6 +119,7 @@ static const char *const ppsz_language[] =
+     "es",
+     "es_MX",
+     "sv",
++    "ta",
+     "te",
+     "th",
+     "tr",
+@@ -193,6 +194,7 @@ static const char *const ppsz_language_text[] =
+     "Español",
+     "Español mexicano",
+     "Svenska",
++    "தமிழ்",
+     "తెలుగు",
+     "ภาษาไทย",
+     "Türkçe",
+diff --git a/modules/gui/qt4/input_manager.cpp b/modules/gui/qt4/input_manager.cpp
+index 8283fdc..16c89fe 100644
+--- a/modules/gui/qt4/input_manager.cpp
++++ b/modules/gui/qt4/input_manager.cpp
+@@ -512,10 +512,17 @@ void InputManager::UpdateName()
+ 
+     /* Try to get the nowplaying */
+     char *format = var_InheritString( p_intf, "input-title-format" );
+-    char *formated = str_format_meta( p_input, format );
+-    free( format );
+-    name = qfu(formated);
+-    free( formated );
++    char *formatted = NULL;
++    if (format != NULL)
++    {
++        formatted = str_format_meta( p_input, format );
++        free( format );
++        if( formatted != NULL )
++        {
++            name = qfu(formatted);
++            free( formatted );
++        }
++    }
+ 
+     /* If we have Nothing */
+     if( name.simplified().isEmpty() )
+diff --git a/modules/gui/skins2/controls/ctrl_video.cpp b/modules/gui/skins2/controls/ctrl_video.cpp
+index 7c9dcae..c722755 100644
+--- a/modules/gui/skins2/controls/ctrl_video.cpp
++++ b/modules/gui/skins2/controls/ctrl_video.cpp
+@@ -113,6 +113,7 @@ void CtrlVideo::setLayout( GenericLayout *pLayout,
+ {
+     CtrlGeneric::setLayout( pLayout, rPosition );
+     m_pLayout->getActiveVar().addObserver( this );
++    getWindow()->getVisibleVar().addObserver( this );
+ 
+     // register Video Control
+     VoutManager::instance( getIntf() )->registerCtrlVideo( this );
+@@ -125,6 +126,7 @@ void CtrlVideo::setLayout( GenericLayout *pLayout,
+ void CtrlVideo::unsetLayout()
+ {
+     m_pLayout->getActiveVar().delObserver( this );
++    getWindow()->getVisibleVar().delObserver( this );
+     CtrlGeneric::unsetLayout();
+ }
+ 
+@@ -162,27 +164,28 @@ void CtrlVideo::resizeControl( int width, int height )
+ void CtrlVideo::onUpdate( Subject<VarBool> &rVariable, void *arg  )
+ {
+     (void)arg;
++    VarBool &rFullscreen = VlcProc::instance( getIntf() )->getFullscreenVar();
+ 
+-    // Visibility changed
+     if( &rVariable == m_pVisible )
+     {
+-        msg_Dbg( getIntf(), "VideoCtrl : Visibility changed (visible=%d)",
+-                                  isVisible() );
++        msg_Dbg( getIntf(), "VideoCtrl(%p) : control visibility changed (%i)",
++                      this, isVisible() );
+         notifyLayout();
+     }
+-
+-    // Active Layout changed
+-    if( &rVariable == &m_pLayout->getActiveVar() )
++    else if( &rVariable == &m_pLayout->getActiveVar() )
+     {
+-        msg_Dbg( getIntf(), "VideoCtrl : Active Layout changed (isActive=%d)",
+-                      m_pLayout->getActiveVar().get() );
++        msg_Dbg( getIntf(), "VideoCtrl(%p) : Active Layout changed (%i)",
++                      this, m_pLayout->getActiveVar().get() );
+     }
+-
+-    VarBool &rFullscreen = VlcProc::instance( getIntf() )->getFullscreenVar();
+-    if( &rVariable == &rFullscreen )
++    else if( &rVariable == &getWindow()->getVisibleVar() )
++    {
++        msg_Dbg( getIntf(), "VideoCtrl(%p) : Window visibility changed (%i)",
++                      this, getWindow()->getVisibleVar().get() );
++    }
++    else if( &rVariable == &rFullscreen )
+     {
+-        msg_Dbg( getIntf(), "VideoCtrl : fullscreen toggled (fullscreen = %d)",
+-                      rFullscreen.get() );
++        msg_Dbg( getIntf(), "VideoCtrl(%p) : fullscreen toggled (%i)",
++                      this, rFullscreen.get() );
+     }
+ 
+     if( isUseable() && !isUsed() )
+@@ -232,9 +235,10 @@ bool CtrlVideo::isUseable( ) const
+ {
+     VarBool &rFullscreen = VlcProc::instance( getIntf() )->getFullscreenVar();
+ 
+-    return isVisible() &&                 // video control is visible
+-           m_pLayout->isVisible() &&      // layout is visible
+-           !rFullscreen.get();            // fullscreen is off
++    return isVisible()                           // video control is visible
++           && m_pLayout->getActiveVar().get()    // layout is active
++           && getWindow()->getVisibleVar().get() // window is visible
++           && !rFullscreen.get();                // fullscreen is off
+ }
+ 
+ 
+diff --git a/modules/gui/skins2/src/vlcproc.cpp b/modules/gui/skins2/src/vlcproc.cpp
+index dcf3b30..f490737 100644
+--- a/modules/gui/skins2/src/vlcproc.cpp
++++ b/modules/gui/skins2/src/vlcproc.cpp
+@@ -738,9 +738,15 @@ void VlcProc::update_current_input()
+     {
+         // Update short name (as defined by --input-title-format)
+         char *psz_fmt = var_InheritString( getIntf(), "input-title-format" );
+-        char *psz_name = str_format_meta( pInput, psz_fmt );
+-        SET_TEXT( m_cVarStreamName, UString( getIntf(), psz_name ) );
+-        free( psz_fmt );
++        char *psz_name = NULL;
++        if( psz_fmt != NULL )
++        {
++            psz_name = str_format_meta( pInput, psz_fmt );
++            free( psz_fmt );
++        }
++
++        SET_TEXT( m_cVarStreamName, UString( getIntf(),
++                                             psz_name ? psz_name : "" ) );
+         free( psz_name );
+ 
+         // Update local path (if possible) or full uri
+diff --git a/modules/gui/skins2/src/vout_manager.cpp b/modules/gui/skins2/src/vout_manager.cpp
+index f6ea8eb..5c9e67c 100644
+--- a/modules/gui/skins2/src/vout_manager.cpp
++++ b/modules/gui/skins2/src/vout_manager.cpp
+@@ -182,15 +182,6 @@ CtrlVideo* VoutManager::getBestCtrlVideo( )
+         }
+     }
+ 
+-    // as a fallback, look up any video control that is unused
+-    for( it = m_pCtrlVideoVec.begin(); it != m_pCtrlVideoVec.end(); ++it )
+-    {
+-        if( !(*it)->isUsed() )
+-        {
+-            return (*it);
+-        }
+-    }
+-
+     return NULL;
+ }
+ 
+diff --git a/modules/hw/vdpau/Makefile.am b/modules/hw/vdpau/Makefile.am
+index 731eb3d..4d112e7 100644
+--- a/modules/hw/vdpau/Makefile.am
++++ b/modules/hw/vdpau/Makefile.am
+@@ -51,4 +51,6 @@ libvdpau_display_plugin_la_CFLAGS = $(AM_CFLAGS) $(XCB_CFLAGS)
+ libvdpau_display_plugin_la_LIBADD = libvlc_vdpau.la \
+ 	../../video_output/libvlc_xcb_events.la \
+ 	$(AM_LIBADD) $(X_LIBS) $(X_PRE_LIBS) -lX11 $(XCB_LIBS)
++if HAVE_XCB
+ vdpau_LTLIBRARIES += libvdpau_display_plugin.la
++endif
+diff --git a/modules/hw/vdpau/chroma.c b/modules/hw/vdpau/chroma.c
+index 1fe511c..00f5ad7 100644
+--- a/modules/hw/vdpau/chroma.c
++++ b/modules/hw/vdpau/chroma.c
+@@ -65,7 +65,8 @@ static VdpStatus MixerSetupColors(filter_t *filter, const VdpProcamp *procamp,
+ {
+     filter_sys_t *sys = filter->p_sys;
+     VdpStatus err;
+-    VdpColorStandard std = (filter->fmt_in.video.i_height > 576)
++    /* XXX: add some margin for padding... */
++    VdpColorStandard std = (filter->fmt_in.video.i_height > 576 + 16)
+                          ? VDP_COLOR_STANDARD_ITUR_BT_709
+                          : VDP_COLOR_STANDARD_ITUR_BT_601;
+ 
+@@ -95,7 +96,7 @@ static VdpStatus MixerSetupColors(filter_t *filter, const VdpProcamp *procamp,
+ }
+ 
+ /** Create VDPAU video mixer */
+-static VdpVideoMixer MixerCreate(filter_t *filter)
++static VdpVideoMixer MixerCreate(filter_t *filter, bool import)
+ {
+     filter_sys_t *sys = filter->p_sys;
+     VdpVideoMixer mixer;
+@@ -187,7 +188,8 @@ static VdpVideoMixer MixerCreate(filter_t *filter)
+         VDP_VIDEO_MIXER_PARAMETER_CHROMA_TYPE,
+     };
+     uint32_t width = filter->fmt_in.video.i_width;
+-    uint32_t height = filter->fmt_in.video.i_height;
++    uint32_t height = import ? filter->fmt_in.video.i_visible_height
++                             : filter->fmt_in.video.i_height;
+     const void *values[3] = { &width, &height, &sys->chroma, };
+ 
+     err = vdp_video_mixer_create(sys->vdp, sys->device, featc, featv,
+@@ -279,6 +281,8 @@ static void Flush(filter_t *filter)
+         }
+ }
+ 
++static picture_t *YCbCrRender(filter_t *filter, picture_t *src);
++
+ /** Get a VLC picture for a VDPAU output surface */
+ static picture_t *OutputAllocate(filter_t *filter)
+ {
+@@ -300,7 +304,7 @@ static picture_t *OutputAllocate(filter_t *filter)
+     /* First picture: get the context and allocate the mixer */
+     sys->vdp = vdp_hold_x11(psys->vdp, NULL);
+     sys->device = psys->device;
+-    sys->mixer = MixerCreate(filter);
++    sys->mixer = MixerCreate(filter, filter->pf_video_filter == YCbCrRender);
+     if (sys->mixer != VDP_INVALID_HANDLE)
+         return pic;
+ 
+@@ -362,7 +366,8 @@ static picture_t *VideoImport(filter_t *filter, picture_t *src)
+     /* Create surface (TODO: reuse?) */
+     err = vdp_video_surface_create(sys->vdp, sys->device, sys->chroma,
+                                    filter->fmt_in.video.i_width,
+-                                   filter->fmt_in.video.i_height, &surface);
++                                   filter->fmt_in.video.i_visible_height,
++                                   &surface);
+     if (err != VDP_STATUS_OK)
+     {
+         msg_Err(filter, "video %s %s failure: %s", "surface", "creation",
+@@ -375,7 +380,8 @@ static picture_t *VideoImport(filter_t *filter, picture_t *src)
+     uint32_t pitches[3];
+     for (int i = 0; i < src->i_planes; i++)
+     {
+-        planes[i] = src->p[i].p_pixels;
++        planes[i] = src->p[i].p_pixels
++                  + filter->fmt_in.video.i_y_offset * src->p[i].i_pitch;
+         pitches[i] = src->p[i].i_pitch;
+     }
+     if (src->format.i_chroma == VLC_CODEC_I420)
+@@ -385,6 +391,15 @@ static picture_t *VideoImport(filter_t *filter, picture_t *src)
+         pitches[1] = src->p[2].i_pitch;
+         pitches[2] = src->p[1].i_pitch;
+     }
++    if (src->format.i_chroma == VLC_CODEC_I420
++     || src->format.i_chroma == VLC_CODEC_YV12
++     || src->format.i_chroma == VLC_CODEC_NV12)
++    {
++        for (int i = 1; i < src->i_planes; i++)
++            planes[i] = ((const uint8_t *)planes[i])
++                + (filter->fmt_in.video.i_y_offset / 2) * src->p[i].i_pitch;
++    }
++
+     err = vdp_video_surface_put_bits_y_cb_cr(sys->vdp, surface, sys->format,
+                                              planes, pitches);
+     if (err != VDP_STATUS_OK)
+@@ -399,6 +414,7 @@ static picture_t *VideoImport(filter_t *filter, picture_t *src)
+     fmt.i_chroma = (sys->chroma == VDP_CHROMA_TYPE_420)
+         ? VLC_CODEC_VDPAU_VIDEO_420 : VLC_CODEC_VDPAU_VIDEO_422;
+ 
++
+     picture_t *dst = picture_NewFromFormat(&fmt);
+     if (unlikely(dst == NULL))
+         goto error;
+@@ -425,7 +441,7 @@ static inline VdpVideoSurface picture_GetVideoSurface(const picture_t *pic)
+     return field->frame->surface;
+ }
+ 
+-static picture_t *VideoRender(filter_t *filter, picture_t *src)
++static picture_t *Render(filter_t *filter, picture_t *src, bool import)
+ {
+     filter_sys_t *sys = filter->p_sys;
+     VdpStatus err;
+@@ -608,9 +624,11 @@ static picture_t *VideoRender(filter_t *filter, picture_t *src)
+     VdpVideoSurface future[MAX_FUTURE];
+     VdpRect src_rect = {
+         filter->fmt_in.video.i_x_offset, filter->fmt_in.video.i_y_offset,
+-        filter->fmt_in.video.i_x_offset, filter->fmt_in.video.i_y_offset
++        filter->fmt_in.video.i_x_offset, filter->fmt_in.video.i_y_offset,
+     };
+ 
++    if (import)
++        src_rect.y0 = src_rect.y1 = 0;
+     if (hflip)
+         src_rect.x0 += filter->fmt_in.video.i_visible_width;
+     else
+@@ -678,6 +696,12 @@ error:
+     goto skip;
+ }
+ 
++static picture_t *VideoRender(filter_t *filter, picture_t *src)
++{
++    return Render(filter, src, false);
++}
++
++
+ static picture_t *YCbCrRender(filter_t *filter, picture_t *src)
+ {
+     /* FIXME: Define a way to initialize the mixer in Open() instead. */
+@@ -689,7 +713,7 @@ static picture_t *YCbCrRender(filter_t *filter, picture_t *src)
+     }
+ 
+     src = VideoImport(filter, src);
+-    return (src != NULL) ? VideoRender(filter, src) : NULL;
++    return (src != NULL) ? Render(filter, src, true) : NULL;
+ }
+ 
+ static int OutputOpen(vlc_object_t *obj)
+diff --git a/modules/mux/mp4.c b/modules/mux/mp4.c
+index 9b39eb2..0cf146d 100644
+--- a/modules/mux/mp4.c
++++ b/modules/mux/mp4.c
+@@ -479,7 +479,7 @@ static int Mux(sout_mux_t *p_mux)
+                 block_t *p_next = block_FifoShow(p_input->p_fifo);
+                 if ( p_next->i_flags & BLOCK_FLAG_DISCONTINUITY )
+                 { /* we have no way to know real length except by decoding */
+-                    if ( p_stream->fmt.i_cat == VIDEO_ES )
++                    if ( p_stream->fmt.i_cat == VIDEO_ES && p_stream->fmt.video.i_frame_rate )
+                     {
+                         p_data->i_length = CLOCK_FREQ *
+                                            p_stream->fmt.video.i_frame_rate_base /
+@@ -489,7 +489,7 @@ static int Mux(sout_mux_t *p_mux)
+                     }
+                     else if ( p_stream->fmt.i_cat == AUDIO_ES &&
+                               p_stream->fmt.audio.i_rate &&
+-                              p_data->i_nb_samples )
++                              p_data->i_nb_samples && p_stream->fmt.audio.i_rate )
+                     {
+                         p_data->i_length = CLOCK_FREQ * p_data->i_nb_samples /
+                                            p_stream->fmt.audio.i_rate;
+diff --git a/modules/stream_filter/Makefile.am b/modules/stream_filter/Makefile.am
+index 158b46a..527a26a 100644
+--- a/modules/stream_filter/Makefile.am
++++ b/modules/stream_filter/Makefile.am
+@@ -106,7 +106,7 @@ stream_filter_LTLIBRARIES += libsmooth_plugin.la
+ 
+ libhttplive_plugin_la_SOURCES = stream_filter/httplive.c
+ libhttplive_plugin_la_CFLAGS = $(AM_CFLAGS) $(GCRYPT_CFLAGS)
+-libhttplive_plugin_la_LIBADD = $(GCRYPT_LIBS) -lgpg-error
++libhttplive_plugin_la_LIBADD = $(GCRYPT_LIBS) -lgpg-error $(LIBPTHREAD)
+ if HAVE_GCRYPT
+ stream_filter_LTLIBRARIES += libhttplive_plugin.la
+ endif
+diff --git a/modules/stream_filter/httplive.c b/modules/stream_filter/httplive.c
+index 72abf15..e94dad5 100644
+--- a/modules/stream_filter/httplive.c
++++ b/modules/stream_filter/httplive.c
+@@ -42,6 +42,7 @@
+ #include <vlc_stream.h>
+ #include <vlc_memory.h>
+ #include <vlc_gcrypt.h>
++#include <vlc_atomic.h>
+ 
+ /*****************************************************************************
+  * Module descriptor
+@@ -153,6 +154,8 @@ struct stream_sys_t
+     vlc_cond_t   wait;
+     vlc_mutex_t  lock;
+     bool         paused;
++    atomic_bool  closing;
++    atomic_bool  eof;
+ };
+ 
+ /****************************************************************************
+@@ -1588,13 +1591,16 @@ static int hls_DownloadSegmentData(stream_t *s, hls_stream_t *hls, segment_t *se
+     }
+ 
+     mtime_t start = mdate();
+-    if (hls_Download(s, segment) != VLC_SUCCESS)
++
++    int i_ret = hls_Download(s, segment);
++    if (i_ret != VLC_SUCCESS)
+     {
+         msg_Err(s, "downloading segment %d from stream %d failed",
+                     segment->sequence, *cur_stream);
+         vlc_mutex_unlock(&segment->lock);
+-        return VLC_EGENERIC;
++        return i_ret;
+     }
++
+     mtime_t duration = mdate() - start;
+     if (hls->bandwidth == 0 && segment->duration > 0)
+     {
+@@ -1603,14 +1609,13 @@ static int hls_DownloadSegmentData(stream_t *s, hls_stream_t *hls, segment_t *se
+     }
+ 
+     /* If the segment is encrypted, decode it */
+-    if (hls_DecodeSegmentData(s, hls, segment) != VLC_SUCCESS)
+-    {
+-        vlc_mutex_unlock(&segment->lock);
+-        return VLC_EGENERIC;
+-    }
++    i_ret = hls_DecodeSegmentData(s, hls, segment);
+ 
+     vlc_mutex_unlock(&segment->lock);
+ 
++    if(i_ret != VLC_SUCCESS)
++        return i_ret;
++
+     msg_Dbg(s, "downloaded segment %d from stream %d",
+                 segment->sequence, *cur_stream);
+ 
+@@ -1636,9 +1641,7 @@ static void* hls_Thread(void *p_this)
+     stream_t *s = (stream_t *)p_this;
+     stream_sys_t *p_sys = s->p_sys;
+ 
+-    int canc = vlc_savecancel();
+-
+-    while (vlc_object_alive(s))
++    for( ;; )
+     {
+         hls_stream_t *hls = hls_Get(p_sys->hls_stream, p_sys->download.stream);
+         assert(hls);
+@@ -1654,42 +1657,56 @@ static void* hls_Thread(void *p_this)
+         {
+             /* wait */
+             vlc_mutex_lock(&p_sys->download.lock_wait);
++            mutex_cleanup_push(&p_sys->download.lock_wait); //CO
+             while (((p_sys->download.segment - p_sys->playback.segment > 6) ||
+                     (p_sys->download.segment >= count)) &&
+                    (p_sys->download.seek == -1))
+             {
++
++                if(!p_sys->b_live && p_sys->download.segment >= count)
++                {
++                    /* this was last segment to read */
++                    atomic_store(&p_sys->eof, true);
++                }
++
+                 vlc_cond_wait(&p_sys->download.wait, &p_sys->download.lock_wait);
+                 if (p_sys->b_live /*&& (mdate() >= p_sys->playlist.wakeup)*/)
+                     break;
+-                if (!vlc_object_alive(s))
+-                    break;
+             }
++            vlc_cleanup_pop( ); //CO
++
+             /* */
+             if (p_sys->download.seek >= 0)
+             {
+                 p_sys->download.segment = p_sys->download.seek;
+                 p_sys->download.seek = -1;
++                atomic_store(&p_sys->eof, false);
+             }
++
+             vlc_mutex_unlock(&p_sys->download.lock_wait);
+         }
+ 
+-        if (!vlc_object_alive(s)) break;
++        vlc_mutex_lock(&p_sys->lock);
++        mutex_cleanup_push(&p_sys->lock); //C1
++        while (p_sys->paused)
++            vlc_cond_wait(&p_sys->wait, &p_sys->lock);
++        vlc_cleanup_run( ); //C1 vlc_mutex_unlock(&p_sys->lock);
+ 
+         vlc_mutex_lock(&hls->lock);
+         segment_t *segment = segment_GetSegment(hls, p_sys->download.segment);
+         vlc_mutex_unlock(&hls->lock);
+ 
++        int i_canc = vlc_savecancel();
+         if ((segment != NULL) &&
+             (hls_DownloadSegmentData(s, hls, segment, &p_sys->download.stream) != VLC_SUCCESS))
+         {
+-            if (!vlc_object_alive(s)) break;
+-
+             if (!p_sys->b_live)
+             {
+                 p_sys->b_error = true;
+                 break;
+             }
+         }
++        vlc_restorecancel(i_canc);
+ 
+         /* download succeeded */
+         /* determine next segment to download */
+@@ -1708,9 +1725,10 @@ static void* hls_Thread(void *p_this)
+         vlc_mutex_lock(&p_sys->read.lock_wait);
+         vlc_cond_signal(&p_sys->read.wait);
+         vlc_mutex_unlock(&p_sys->read.lock_wait);
++
++        vlc_testcancel();
+     }
+ 
+-    vlc_restorecancel(canc);
+     return NULL;
+ }
+ 
+@@ -1721,14 +1739,14 @@ static void* hls_Reload(void *p_this)
+ 
+     assert(p_sys->b_live);
+ 
+-    int canc = vlc_savecancel();
+-
+     double wait = 1.0;
+-    while (vlc_object_alive(s))
++    for ( ;; )
+     {
+         mtime_t now = mdate();
+         if (now >= p_sys->playlist.wakeup)
+         {
++            int canc = vlc_savecancel();
++
+             /* reload the m3u8 if there are less than 3 segments what aren't downloaded */
+             if ( ( p_sys->download.segment - p_sys->playback.segment < 3 ) &&
+                  ( hls_ReloadPlaylist(s) != VLC_SUCCESS) )
+@@ -1752,6 +1770,8 @@ static void* hls_Reload(void *p_this)
+                 wait = 1.0;
+             }
+ 
++            vlc_restorecancel(canc);
++
+             hls_stream_t *hls = hls_Get(p_sys->hls_stream, p_sys->download.stream);
+             assert(hls);
+ 
+@@ -1768,7 +1788,6 @@ static void* hls_Reload(void *p_this)
+         mwait(p_sys->playlist.wakeup);
+     }
+ 
+-    vlc_restorecancel(canc);
+     return NULL;
+ }
+ 
+@@ -1788,7 +1807,7 @@ static int Prefetch(stream_t *s, int *current)
+ 
+     /* Download ~10s worth of segments of this HLS stream if they exist */
+     unsigned segment_amount = (0.5f + 10/hls->duration);
+-    for (int i = 0; i < __MIN(vlc_array_count(hls->segments), segment_amount); i++)
++    for (unsigned i = 0; i < __MIN((unsigned)vlc_array_count(hls->segments), segment_amount); i++)
+     {
+         segment_t *segment = segment_GetSegment(hls, p_sys->download.segment);
+         if (segment == NULL )
+@@ -1824,138 +1843,124 @@ static int Prefetch(stream_t *s, int *current)
+ /****************************************************************************
+  *
+  ****************************************************************************/
++#define HLS_READ_SIZE 65536
++
+ static int hls_Download(stream_t *s, segment_t *segment)
+ {
+     stream_sys_t *p_sys = s->p_sys;
+     assert(segment);
+ 
+-    vlc_mutex_lock(&p_sys->lock);
+-    while (p_sys->paused)
+-        vlc_cond_wait(&p_sys->wait, &p_sys->lock);
+-    vlc_mutex_unlock(&p_sys->lock);
+-
+     stream_t *p_ts = stream_UrlNew(s, segment->url);
+     if (p_ts == NULL)
+         return VLC_EGENERIC;
+ 
+-    segment->size = stream_Size(p_ts);
+-
+-    if (segment->size == 0) {
+-        int chunk_size = 65536;
+-        segment->data = block_Alloc(chunk_size);
+-        if (!segment->data)
+-            goto nomem;
+-        do {
+-            if (segment->data->i_buffer - segment->size < chunk_size) {
+-                chunk_size *= 2;
+-                block_t *p_block = block_Realloc(segment->data, 0, segment->data->i_buffer + chunk_size);
+-                if (!p_block) {
+-                    block_Release(segment->data);
+-                    segment->data = NULL;
+-                    goto nomem;
+-                }
+-                segment->data = p_block;
+-            }
++    int64_t size = stream_Size(p_ts);
++    if (size < 0)
++        size = 0;
+ 
+-            ssize_t length = stream_Read(p_ts, segment->data->p_buffer + segment->size, chunk_size);
+-            if (length <= 0) {
+-                segment->data->i_buffer = segment->size;
+-                break;
+-            }
+-            segment->size += length;
+-        } while (vlc_object_alive(s));
++    unsigned i_total_read = 0;
++    int i_return = VLC_SUCCESS;
+ 
+-        stream_Delete(p_ts);
+-        return VLC_SUCCESS;
++    block_t *p_segment_data = block_Alloc(size ? size : HLS_READ_SIZE);
++    if (!p_segment_data)
++    {
++        i_return = VLC_ENOMEM;
++        goto end;
+     }
+-
+-    segment->data = block_Alloc(segment->size);
+-    if (segment->data == NULL)
+-        goto nomem;
+-
+-    assert(segment->data->i_buffer == segment->size);
+-
+-    ssize_t curlen = 0;
+-    do
++    for( ;; )
+     {
+         /* NOTE: Beware the size reported for a segment by the HLS server may not
+          * be correct, when downloading the segment data. Therefore check the size
+          * and enlarge the segment data block if necessary.
+          */
+-        uint64_t size = stream_Size(p_ts);
+-        if (size > segment->size)
++        uint64_t i_toread = (size > 0) ? (uint64_t) size - i_total_read: HLS_READ_SIZE;
++
++        if (i_total_read + i_toread > p_segment_data->i_buffer)
+         {
+-            msg_Dbg(s, "size changed %"PRIu64, segment->size);
+-            block_t *p_block = block_Realloc(segment->data, 0, size);
+-            if (p_block == NULL)
++            msg_Dbg(s, "size changed to %"PRIu64, i_total_read + i_toread);
++            block_t *p_realloc_block = block_Realloc(p_segment_data, 0, i_total_read + i_toread);
++            if (p_realloc_block == NULL)
+             {
+-                block_Release(segment->data);
+-                segment->data = NULL;
+-                goto nomem;
++                if(p_segment_data)
++                    block_Release(p_segment_data);
++                i_return = VLC_ENOMEM;
++                goto end;
+             }
+-            segment->data = p_block;
+-            segment->size = size;
+-            assert(segment->data->i_buffer == segment->size);
+-            p_block = NULL;
++            p_segment_data = p_realloc_block;
+         }
+-        ssize_t length = stream_Read(p_ts, segment->data->p_buffer + curlen, segment->size - curlen);
+-        if (length <= 0)
++
++        int i_canc = vlc_savecancel();
++        int i_length = stream_Read(p_ts, &p_segment_data->p_buffer[i_total_read],
++                                   (i_toread >= HLS_READ_SIZE) ? HLS_READ_SIZE : i_toread);
++        vlc_restorecancel(i_canc);
++
++        if (i_length <= 0)
++        {
++            if(size > 0 && i_total_read < size)
++                msg_Warn(s, "segment read %"PRIu64"/%"PRIu64, size - i_total_read, size );
++            p_segment_data->i_buffer = i_total_read;
+             break;
+-        curlen += length;
+-    } while (vlc_object_alive(s));
++        }
+ 
+-    stream_Delete(p_ts);
+-    return VLC_SUCCESS;
++        i_total_read += i_length;
++
++        if (atomic_load(&p_sys->closing))
++            break;
++    };
++
++    segment->data = p_segment_data;
++    segment->size = p_segment_data->i_buffer;
+ 
+-nomem:
++end:
+     stream_Delete(p_ts);
+-    return VLC_ENOMEM;
++    return i_return;
+ }
+ 
+ /* Read M3U8 file */
+ static ssize_t read_M3U8_from_stream(stream_t *s, uint8_t **buffer)
+ {
+-    int64_t total_bytes = 0;
+-    int64_t total_allocated = 0;
+     uint8_t *p = NULL;
++    int64_t size = stream_Size(s);
++    size = VLC_CLIP(size, 0, INT64_MAX - 1);
++    int64_t i_alloc_size = 0;
++    ssize_t i_total_read = 0;
++    unsigned i_chunk_size = HLS_READ_SIZE;
+ 
+-    while (1)
++    for( ;; )
+     {
+-        char buf[4096];
+-        int64_t bytes;
++        int i_toread = (size) ? size - i_total_read : i_chunk_size;
++        if(i_toread + i_total_read > INT64_MAX - 1)
++            break;
++        if(i_alloc_size < i_toread)
++        {
++            i_alloc_size += i_toread;
++            p = realloc_or_free(p, 1 + i_alloc_size);
++            if (p == NULL)
++                return VLC_ENOMEM;
++            if (i_chunk_size < (1 << 26))
++                i_chunk_size <<= 1;
++        }
+ 
+-        bytes = stream_Read(s, buf, sizeof(buf));
+-        if (bytes == 0)
++        int i_read = stream_Read(s, & p[i_total_read], i_toread);
++        if (i_read == 0)
++        {
+             break;      /* EOF ? */
+-        else if (bytes < 0)
++        }
++        else if (i_read < 0)
+         {
+             free (p);
+-            return bytes;
++            return i_read;
+         }
+-
+-        if ( (total_bytes + bytes + 1) > total_allocated )
++        else
+         {
+-            if (total_allocated)
+-                total_allocated *= 2;
+-            else
+-                total_allocated = __MIN((uint64_t)bytes+1, sizeof(buf));
+-
+-            p = realloc_or_free(p, total_allocated);
+-            if (p == NULL)
+-                return VLC_ENOMEM;
++            i_total_read += i_read;
+         }
+-
+-        memcpy(p+total_bytes, buf, bytes);
+-        total_bytes += bytes;
+     }
+ 
+-    if (total_allocated == 0)
+-        return VLC_EGENERIC;
+-
+-    p[total_bytes] = '\0';
++    p[i_total_read] = '\0';
+     *buffer = p;
+ 
+-    return total_bytes;
++    return i_total_read;
+ }
+ 
+ static ssize_t read_M3U8_from_url(stream_t *s, const char* psz_url, uint8_t **buffer)
+@@ -2068,6 +2073,8 @@ static int Open(vlc_object_t *p_this)
+     s->pf_control = Control;
+ 
+     p_sys->paused = false;
++    atomic_init(&p_sys->closing, false);
++    atomic_init(&p_sys->eof, false);
+ 
+     vlc_cond_init(&p_sys->wait);
+     vlc_mutex_init(&p_sys->lock);
+@@ -2128,7 +2135,10 @@ static int Open(vlc_object_t *p_this)
+     if (vlc_clone(&p_sys->thread, hls_Thread, s, VLC_THREAD_PRIORITY_INPUT))
+     {
+         if (p_sys->b_live)
++        {
++            vlc_cancel(p_sys->reload);
+             vlc_join(p_sys->reload, NULL);
++        }
+         goto fail_thread;
+     }
+ 
+@@ -2171,6 +2181,7 @@ static void Close(vlc_object_t *p_this)
+ 
+     vlc_mutex_lock(&p_sys->lock);
+     p_sys->paused = false;
++    atomic_store(&p_sys->closing, true);
+     vlc_cond_signal(&p_sys->wait);
+     vlc_mutex_unlock(&p_sys->lock);
+ 
+@@ -2182,10 +2193,18 @@ static void Close(vlc_object_t *p_this)
+     vlc_cond_signal(&p_sys->download.wait);
+     vlc_mutex_unlock(&p_sys->download.lock_wait);
+ 
++    vlc_cond_signal(&p_sys->read.wait); /* set closing first */
++
+     /* */
+     if (p_sys->b_live)
++    {
++        vlc_cancel(p_sys->reload);
+         vlc_join(p_sys->reload, NULL);
++    }
++
++    vlc_cancel(p_sys->thread);
+     vlc_join(p_sys->thread, NULL);
++
+     vlc_mutex_destroy(&p_sys->download.lock_wait);
+     vlc_cond_destroy(&p_sys->download.wait);
+ 
+@@ -2387,7 +2406,7 @@ static int Read(stream_t *s, void *buffer, unsigned int i_read)
+     while (length == 0)
+     {
+         // In case an error occurred or the stream was closed return 0
+-        if (p_sys->b_error || !vlc_object_alive(s))
++        if (p_sys->b_error || atomic_load(&p_sys->closing))
+             return 0;
+ 
+         // Lock the mutex before trying to read to avoid a race condition with the download thread
+@@ -2411,6 +2430,12 @@ static int Read(stream_t *s, void *buffer, unsigned int i_read)
+         // running this read operation is also responsible for closing the stream
+         if (length == 0)
+         {
++            if(atomic_load(&p_sys->eof)) /* finished reading last segment */
++            {
++                vlc_mutex_unlock(&p_sys->read.lock_wait);
++                return 0;
++            }
++
+             mtime_t start = mdate();
+ 
+             // Wait for 10 seconds
+@@ -2666,7 +2691,8 @@ static int segment_Seek(stream_t *s, const uint64_t pos)
+                 (p_sys->download.segment < count)))
+         {
+             vlc_cond_wait(&p_sys->download.wait, &p_sys->download.lock_wait);
+-            if (!vlc_object_alive(s) || s->b_error) break;
++            if (p_sys->b_error || atomic_load(&p_sys->closing))
++                break;
+         }
+         vlc_mutex_unlock(&p_sys->download.lock_wait);
+ 
+diff --git a/modules/video_output/fb.c b/modules/video_output/fb.c
+index 1251b85..5248b57 100644
+--- a/modules/video_output/fb.c
++++ b/modules/video_output/fb.c
+@@ -68,10 +68,7 @@
+     "the values 0=QCIF 1=CIF 2=NTSC 3=PAL, 4=auto (default 4=auto)")
+ 
+ #define HW_ACCEL_TEXT N_("Framebuffer uses hw acceleration")
+-#define HW_ACCEL_LONGTEXT N_(\
+-    "If your framebuffer supports hardware acceleration or does double buffering " \
+-    "in hardware then you must disable this option. It then does double buffering " \
+-    "in software.")
++#define HW_ACCEL_LONGTEXT N_("Disable for double buffering in software.")
+ 
+ #define CHROMA_TEXT N_("Image format (default RGB)")
+ #define CHROMA_LONGTEXT N_("Chroma fourcc used by the framebuffer. Default is RGB since the fb device has no way to report its chroma.")
+diff --git a/po/vlc.pot b/po/vlc.pot
+index 3d5108d..219ad0e 100644
+--- a/po/vlc.pot
++++ b/po/vlc.pot
+@@ -6,9 +6,9 @@
+ #, fuzzy
+ msgid ""
+ msgstr ""
+-"Project-Id-Version: vlc 2.2.1\n"
++"Project-Id-Version: vlc 2.2.2\n"
+ "Report-Msgid-Bugs-To: vlc-devel@videolan.org\n"
+-"POT-Creation-Date: 2015-04-13 00:13+0200\n"
++"POT-Creation-Date: 2015-04-15 07:39-0400\n"
+ "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+ "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+ "Language-Team: LANGUAGE <LL@li.org>\n"
+@@ -25692,11 +25692,8 @@ msgstr ""
+ msgid "Framebuffer uses hw acceleration"
+ msgstr ""
+ 
+-#: modules/video_output/fb.c:72
+-msgid ""
+-"If your framebuffer supports hardware acceleration or does double buffering "
+-"in hardware then you must disable this option. It then does double buffering "
+-"in software."
++#: modules/video_output/fb.c:71
++msgid "Disable for double buffering in software."
+ msgstr ""
+ 
+ #: modules/video_output/fb.c:76
+diff --git a/src/misc/messages.c b/src/misc/messages.c
+index f75fd67..3f4122c 100644
+--- a/src/misc/messages.c
++++ b/src/misc/messages.c
+@@ -120,9 +120,11 @@ void vlc_vaLog (vlc_object_t *obj, int type, const char *module,
+ #endif
+ 
+     if (priv) {
++        int canc = vlc_savecancel ();
+         vlc_rwlock_rdlock (&priv->log.lock);
+         priv->log.cb (priv->log.opaque, type, &msg, format, args);
+         vlc_rwlock_unlock (&priv->log.lock);
++        vlc_restorecancel (canc);
+     }
+ }
+ 
+diff --git a/src/text/strings.c b/src/text/strings.c
+index d864211..398c8bc 100644
+--- a/src/text/strings.c
++++ b/src/text/strings.c
+@@ -548,6 +548,8 @@ char *str_format_meta(input_thread_t *input, const char *s)
+     bool b_is_format = false;
+     bool b_empty_if_na = false;
+ 
++    assert(s != NULL);
++
+     while ((c = *s) != '\0')
+     {
+         s++;

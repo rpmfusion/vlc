@@ -32,13 +32,12 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.2.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-Patch0:         vlc-backport-freerdp.patch
-Patch1:         vlc-backport-chroma_dead_CYUV.patch
+Patch0:         vlc-2.2x-bugfix-20150513.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -220,7 +219,6 @@ JACK audio plugin for the VLC media player.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
 %patch0 -p1
-%patch1 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -486,6 +484,9 @@ fi || :
 
 
 %changelog
+* Wed May 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-5
+- Update to current bugfix
+
 * Sat May 09 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-4
 - Recreate the plugins cache on post for main - rfbz#3639
 - %%ghost the cache plugins
