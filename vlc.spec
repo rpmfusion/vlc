@@ -1,4 +1,4 @@
-#global vlc_rc			-rc2
+%global vlc_rc			-pre20151006
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -31,13 +31,12 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.1
-Release:	6%{?dist}
+Version:	2.2.2
+Release:	0.1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-Patch0:         vlc-2.2x-bugfix-20150513.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -218,7 +217,6 @@ JACK audio plugin for the VLC media player.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
-%patch0 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -484,6 +482,9 @@ fi || :
 
 
 %changelog
+* Tue Oct 06 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.2-0.1
+- Update to 2.2.2 pre-version
+
 * Sat May 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-6
 - Rebuilt for x265
 
