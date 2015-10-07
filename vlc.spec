@@ -216,7 +216,8 @@ JACK audio plugin for the VLC media player.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc}
+#setup -q -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{name}-%{version}
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
