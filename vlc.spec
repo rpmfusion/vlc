@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.2.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -110,7 +110,6 @@ BuildRequires:	lirc-devel
 BuildRequires:  kernel-headers
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
-BuildRequires:	libmusicbrainz-devel
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 BuildRequires:	lua-devel
@@ -482,6 +481,9 @@ fi || :
 
 
 %changelog
+* Fri Apr 08 2016 Adrian Reber <adrian@lisas.de> - 2.2.2-2
+- remove BR: libmusicbrainz-devel; package retired
+
 * Sat Feb 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.2-1
 - Update to 2.2.2
 
