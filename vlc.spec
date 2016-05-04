@@ -31,7 +31,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.2
+Version:	2.2.3
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -110,7 +110,9 @@ BuildRequires:	lirc-devel
 BuildRequires:  kernel-headers
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
+%if 0%{?fedora} < 24
 BuildRequires:	libmusicbrainz-devel
+%endif
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 BuildRequires:	lua-devel
@@ -482,6 +484,9 @@ fi || :
 
 
 %changelog
+* Wed May 04 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.3-1
+- Update to 2.2.3
+
 * Sat Feb 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.2-1
 - Update to 2.2.2
 
