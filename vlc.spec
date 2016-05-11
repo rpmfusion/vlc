@@ -19,9 +19,11 @@
 %global _with_bluray    1
 %global _with_opencv    1
 %global _with_fluidsynth 1
-%if 0%{?fedora}
-%global _with_freerdp 1
+%if 0%{?fedora} <= 23
 %global _with_projectm  1
+%global _with_freerdp 1
+%endif
+%if 0%{?fedora}
 %global _with_schroedinger 1
 %endif
 %ifarch x86_64 i686
@@ -32,7 +34,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.2.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -484,6 +486,9 @@ fi || :
 
 
 %changelog
+* Wed May 11 2016 Adrian Reber <adrian@lisas.de> - 2.2.3-2
+- Disable freedrp and projectm on Fedora >= 24; fails compilation
+
 * Wed May 04 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.3-1
 - Update to 2.2.3
 
