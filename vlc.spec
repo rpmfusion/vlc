@@ -31,7 +31,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.3
+Version:	2.2.4
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
@@ -484,6 +484,9 @@ fi || :
 
 
 %changelog
+* Mon Jun 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.4-1
+- Update to 2.2.4
+
 * Wed May 04 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.3-1
 - Update to 2.2.3
 
