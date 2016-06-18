@@ -1,4 +1,4 @@
-#global vlc_rc			-pre20151006
+%global vlc_rc			-git
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -31,12 +31,14 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.4
-Release:	1%{?dist}
+Version:	3.0.0
+Release:	0.1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+#Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+# nightly for 3.0
+Source0:    http://nightlies.videolan.org/build/source/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 
 BuildRequires:	desktop-file-utils
 
@@ -60,6 +62,7 @@ BuildRequires:	fribidi-devel
 %{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
+BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	kde-filesystem
 BuildRequires:	game-music-emu-devel
@@ -123,8 +126,16 @@ BuildRequires:	ncurses-devel
 BuildRequires:	openslp-devel
 Buildrequires:	opus-devel
 BuildRequires:	pcre-devel
+BuildRequires:	pkgconfig(libarchive) >= 3.1.0
 BuildRequires:	pkgconfig(libpulse) >= 0.9.8
-BuildRequires:	qt4-devel >= 4.5.2
+BuildRequires:	pkgconfig(libsecret-1) >= 0.18
+BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
+BuildRequires:	pkgconfig(Qt5Core) >= 5.2
+BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.2
+BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
+BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
+BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
+BuildRequires:	pkgconfig(wayland-egl)
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
 BuildRequires:	SDL_image-devel
@@ -381,7 +392,7 @@ fi || :
 %{_datadir}/vlc/skins2/
 %{_bindir}/qvlc
 %{_bindir}/svlc
-%{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
@@ -410,7 +421,7 @@ fi || :
 %exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
 %{_libdir}/*.so.*
-%exclude %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %{?_with_gnomevfs:
 %exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
@@ -484,6 +495,11 @@ fi || :
 
 
 %changelog
+* Tue Jun 14 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.1
+- Update to 3.0.0 - snapshot 20160614
+- Switch to qt5
+- Update Build Dependencies
+
 * Mon Jun 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.4-1
 - Update to 2.2.4
 
