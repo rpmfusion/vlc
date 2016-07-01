@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.1%{?dist}
+Release:	0.2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -175,7 +175,6 @@ Requires: kde-filesystem
 Requires: dejavu-sans-fonts
 Requires: dejavu-sans-mono-fonts
 Requires: dejavu-serif-fonts
-Requires: qt4%{?_isa} >= %{_qt4_version}
 
 #For xdg-sreensaver
 Requires: xdg-utils
@@ -398,13 +397,18 @@ fi || :
 }
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
+%{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
+%{_libdir}/vlc/plugins/video_output/libgl_plugin.so
+%{_libdir}/vlc/plugins/video_output/libglx_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 %{!?_without_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-#{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
@@ -444,11 +448,16 @@ fi || :
 %endif
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-#{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
@@ -495,6 +504,9 @@ fi || :
 
 
 %changelog
+* Fri Jul 01 2016 Nicolas Chauvet <nicolas.chauvet@kwizart.fr> - 3.0.0-0.2
+- Update to today snapshot
+
 * Tue Jun 14 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.1
 - Update to 3.0.0 - snapshot 20160614
 - Switch to qt5
