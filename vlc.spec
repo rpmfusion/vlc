@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.4%{?dist}
+Release:	0.5%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -334,8 +334,8 @@ touch $RPM_BUILD_ROOT%{_libdir}/vlc/plugins.dat
 
 
 %post
-%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null
-touch --no-create %{_datadir}/icons/hicolor
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null
+%{_bindir}/touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
 fi 
@@ -344,9 +344,9 @@ fi
 %post core -p /sbin/ldconfig
 
 %postun
-%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null
-touch --no-create %{_datadir}/icons/hicolor
+%{_bindir}/touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
 fi || :
@@ -354,26 +354,26 @@ fi || :
 %postun core -p /sbin/ldconfig
 
 %posttrans core
-%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
 
 %post extras
 if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
 fi
 
 %post plugin-jack
 if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
 fi
 
 %postun extras
 if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
 fi
 
 %postun plugin-jack
 if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
 fi
 
 %preun core
@@ -504,6 +504,9 @@ fi || :
 
 
 %changelog
+* Thu Aug 04 2016 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.5
+- Remove -f from vlc-cache-gen scriptlets rfbz#4167
+
 * Sat Jul 30 2016 Julian Sikorski <belegdol@fedoraproject.org> - 3.0.0-0.4
 - Rebuilt for ffmpeg-3.1.1
 
