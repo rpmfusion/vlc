@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.5%{?dist}
+Release:	0.6%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -179,6 +179,7 @@ Requires: dejavu-serif-fonts
 #For xdg-sreensaver
 Requires: xdg-utils
 
+Requires:       hicolor-icon-theme
 
 
 %description
@@ -302,32 +303,32 @@ sed -i -e 's! -shared ! -Wl,--as-needed\0!g' libtool
 
 
 
-make %{?_smp_mflags}
+%make_build
 
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p" CPPROG="cp -p"
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
-find $RPM_BUILD_ROOT -name '*.a' -exec rm -f {} ';'
+%make_install INSTALL="install -p" CPPROG="cp -p"
+find %{buildroot} -name '*.la' -exec rm -f {} ';'
+find %{buildroot} -name '*.a' -exec rm -f {} ';'
 
 desktop-file-install --vendor ""			\
-	--dir $RPM_BUILD_ROOT%{_datadir}/applications	\
+	--dir %{buildroot}%{_datadir}/applications	\
 	--delete-original				\
 	--mode 644					\
-	$RPM_BUILD_ROOT%{_datadir}/applications/vlc.desktop
+	%{buildroot}%{_datadir}/applications/vlc.desktop
 
 # Remove installed fonts for skins2
-rm -f $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/*.ttf
+rm -f %{buildroot}%{_datadir}/vlc/skins2/fonts/*.ttf
 ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
-  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
+  %{buildroot}%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
 ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
-  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
+  %{buildroot}%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
 
 #Fix unowned directories
-rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
+rm -rf %{buildroot}%{_docdir}/vlc
 
 #Ghost the plugins cache
-touch $RPM_BUILD_ROOT%{_libdir}/vlc/plugins.dat
+touch %{buildroot}%{_libdir}/vlc/plugins.dat
 
 
 %find_lang %{name}
@@ -383,7 +384,8 @@ fi || :
 
 
 %files
-%doc AUTHORS COPYING ChangeLog NEWS README THANKS
+%doc AUTHORS ChangeLog NEWS README THANKS
+%license COPYING
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
@@ -504,6 +506,9 @@ fi || :
 
 
 %changelog
+* Thu Aug 18 2016 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.6
+- Clean spec, Vascom patches series, rfbz #4196, add license tag
+
 * Thu Aug 04 2016 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.5
 - Remove -f from vlc-cache-gen scriptlets rfbz#4167
 
