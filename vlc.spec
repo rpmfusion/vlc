@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.6%{?dist}
+Release:	0.7%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -328,14 +328,14 @@ ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
 rm -rf %{buildroot}%{_docdir}/vlc
 
 #Ghost the plugins cache
-touch %{buildroot}%{_libdir}/vlc/plugins.dat
+touch %{buildroot}%{_libdir}/vlc/plugins/plugins.dat
 
 
 %find_lang %{name}
 
 
 %post
-%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
 %{_bindir}/touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
@@ -345,7 +345,7 @@ fi
 %post core -p /sbin/ldconfig
 
 %postun
-%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null
 %{_bindir}/touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
@@ -355,26 +355,26 @@ fi || :
 %postun core -p /sbin/ldconfig
 
 %posttrans core
-%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 
 %post extras
 if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %post plugin-jack
 if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %postun extras
 if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %postun plugin-jack
 if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %preun core
@@ -471,7 +471,7 @@ fi || :
 }
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
-%ghost %{_libdir}/vlc/plugins.dat
+%ghost %{_libdir}/vlc/plugins/plugins.dat
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
 
@@ -506,6 +506,10 @@ fi || :
 
 
 %changelog
+* Fri Sep 02 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.7
+- Bump to 20160901 nightly
+- Fix plugins.dat path - rfbz#4184
+
 * Thu Aug 18 2016 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.6
 - Clean spec, Vascom patches series, rfbz #4196, add license tag
 
@@ -515,10 +519,10 @@ fi || :
 * Sat Jul 30 2016 Julian Sikorski <belegdol@fedoraproject.org> - 3.0.0-0.4
 - Rebuilt for ffmpeg-3.1.1
 
-* Fri Jul 29 2016 Nicolas Chauvet <nicolas.chauvet@kwizart.fr> - 3.0.0-0.3
+* Fri Jul 29 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.3
 - Update to today snapshoot
 
-* Fri Jul 01 2016 Nicolas Chauvet <nicolas.chauvet@kwizart.fr> - 3.0.0-0.2
+* Fri Jul 01 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.2
 - Update to today snapshot
 
 * Tue Jun 14 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.1
