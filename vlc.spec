@@ -1,5 +1,5 @@
 %global vlc_rc			-20160901-0221-git
-#global _with_bootstrap		1
+%global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
 %global _with_a52dec 1
@@ -38,7 +38,7 @@ Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 #Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 # nightly for 3.0
-Source0:    http://nightlies.videolan.org/build/source/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
 
 BuildRequires:	desktop-file-utils
 
@@ -290,7 +290,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-lirc
 
 
-%if 1
+%if 0
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -507,7 +507,7 @@ fi || :
 
 %changelog
 * Thu Sep 08 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.8
-- Re-enable cleaning and rpath fix as we don't rebootstrap
+- Re-enable bootstrap
 
 * Fri Sep 02 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.7
 - Bump to 20160901 nightly
