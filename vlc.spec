@@ -290,13 +290,13 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-lirc
 
 
-%if 0
+%if 1
 # remove rpath from libtool
 sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 %endif
 
-%if 0
+%if 1
 # clean unused-direct-shlib-dependencies
 sed -i -e 's! -shared ! -Wl,--as-needed\0!g' libtool
 %endif
