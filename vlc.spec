@@ -506,7 +506,7 @@ fi || :
 
 
 %changelog
-* Thu Sep 08 2016 Nicolas Chauvet <nicolas.chauvet@kwizart.fr> - 3.0.0-0.8
+* Thu Sep 08 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.8
 - Re-enable cleaning and rpath fix as we don't rebootstrap
 
 * Fri Sep 02 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.7
