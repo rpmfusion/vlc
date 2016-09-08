@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.7%{?dist}
+Release:	0.8%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -506,6 +506,9 @@ fi || :
 
 
 %changelog
+* Thu Sep 08 2016 Nicolas Chauvet <nicolas.chauvet@kwizart.fr> - 3.0.0-0.8
+- Re-enable cleaning and rpath fix as we don't rebootstrap
+
 * Fri Sep 02 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.7
 - Bump to 20160901 nightly
 - Fix plugins.dat path - rfbz#4184
