@@ -1,4 +1,4 @@
-%global vlc_rc			-20160901-0221-git
+%global vlc_rc			-20161026-0238-git
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.8%{?dist}
+Release:	0.9%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -181,6 +181,10 @@ Requires: xdg-utils
 
 Requires:       hicolor-icon-theme
 
+#Merge back jack plugin into main
+Obsoletes: vlc-plugin-jack < %{version}-%{release}
+Provides: vlc-plugin-jack = %{version}-%{release}
+
 
 %description
 VLC media player is a highly portable multimedia player and multimedia framework
@@ -218,14 +222,6 @@ Requires:	vlc-core%{_isa} = %{version}-%{release}
 
 %description extras
 VLC media player extras modules.
-
-%package plugin-jack
-Summary:	JACK audio plugin for VLC
-Group:		Applications/Multimedia
-Requires:	vlc-core%{_isa} = %{version}-%{release}
-
-%description plugin-jack
-JACK audio plugin for the VLC media player.
 
 
 %prep
@@ -362,17 +358,7 @@ if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
-%post plugin-jack
-if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
-fi
-
 %postun extras
-if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
-fi
-
-%postun plugin-jack
 if [ $1 == 0 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
@@ -416,7 +402,12 @@ fi || :
 %{?_with_projectm:
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 }
+%{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
+%{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
+%{?_with_fluidsynth:
+%{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
+}
 
 %files core -f %{name}.lang
 %{_bindir}/vlc
@@ -475,12 +466,6 @@ fi || :
 %{_libdir}/vlc/
 %{_mandir}/man1/vlc*.1*
 
-%files plugin-jack
-%{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
-%{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
-%{?_with_fluidsynth:
-%{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
-}
 
 %files extras
 %{?_with_opencv:
@@ -506,6 +491,10 @@ fi || :
 
 
 %changelog
+* Fri Oct 28 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.9
+- Updateto 3.0.0 20161026-0238-git
+- Merge vlc-plugin-jack into main
+
 * Thu Sep 08 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.8
 - Re-enable bootstrap
 
