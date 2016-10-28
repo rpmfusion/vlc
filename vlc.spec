@@ -41,6 +41,7 @@ URL:		http://www.videolan.org
 Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
 
 BuildRequires:	desktop-file-utils
+BuildRequires:  libappstream-glib
 
 %{?_with_bootstrap:
 BuildRequires:	gettext-devel
@@ -326,6 +327,10 @@ rm -rf %{buildroot}%{_docdir}/vlc
 #Ghost the plugins cache
 touch %{buildroot}%{_libdir}/vlc/plugins/plugins.dat
 
+#Appdata
+appstream-util validate-relax --nonet \
+  %{buildroot}/%{_datadir}/appdata/*.appdata.xml
+
 
 %find_lang %{name}
 
@@ -372,6 +377,7 @@ fi || :
 %files
 %doc AUTHORS ChangeLog NEWS README THANKS
 %license COPYING
+%{_datadir}/appdata/vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
@@ -494,6 +500,7 @@ fi || :
 * Fri Oct 28 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.9
 - Updateto 3.0.0 20161026-0238-git
 - Merge vlc-plugin-jack into main
+- Add support for appdata
 
 * Thu Sep 08 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.8
 - Re-enable bootstrap
