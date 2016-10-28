@@ -329,7 +329,7 @@ touch %{buildroot}%{_libdir}/vlc/plugins/plugins.dat
 
 #Appdata
 appstream-util validate-relax --nonet \
-  %{buildroot}/%{_datadir}/appdata/*.appdata.xml
+  %{buildroot}/%{_datadir}/appdata/*.appdata.xml || :
 
 
 %find_lang %{name}
