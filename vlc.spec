@@ -32,13 +32,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.10%{?dist}
+Release:	0.11%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 #Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 # nightly for 3.0
 Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
+Patch0:		disable_hidpi_scaling.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -227,6 +228,7 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
+%patch0 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -497,6 +499,9 @@ fi || :
 
 
 %changelog
+* Tue Nov 22 2016 leigh scott <leigh123linux@googlemail.com> - 3.0.0-0.11
+- add patch to disable HIDPI scaling - rfbz#4272
+
 * Tue Nov 08 2016 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.10
 - Rebuild for x265-2.1
 

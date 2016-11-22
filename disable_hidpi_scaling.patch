@@ -1,0 +1,14 @@
+--- a/modules/gui/qt/qt.cpp	2016-11-18 02:24:10.000000000 +0000
++++ b/modules/gui/qt/qt.cpp	2016-11-22 14:28:23.503056877 +0000
+@@ -478,9 +478,10 @@ static void *Thread( void *obj )
+ 
+     Q_INIT_RESOURCE( vlc );
+ 
++    /* Disable scaling as it's broken
+ #if HAS_QT56
+     QApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
+-#endif
++#endif  */
+ 
+     /* Start the QApplication here */
+     QVLCApp app( argc, argv );
