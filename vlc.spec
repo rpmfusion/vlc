@@ -1,4 +1,4 @@
-%global vlc_rc			-20161026-0238-git
+%global vlc_rc			-20161212-0236-git
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.11%{?dist}
+Release:	0.12%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -87,9 +87,11 @@ BuildRequires:	libid3tag-devel
 BuildRequires:	libkate-devel
 %{?_with_libmad:BuildRequires: libmad-devel}
 BuildRequires:	libmatroska-devel >= 0.7.6
+BuildRequires:	libmfx-devel
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
+BuildRequires:	libmpg123-devel
 BuildRequires:	libmtp-devel >= 1.0.0
 %{?_with_projectm:BuildRequires: libprojectM-qt-devel}
 BuildRequires:	libproxy-devel
@@ -109,6 +111,7 @@ BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
 BuildRequires:  pkgconfig(vdpau)
 BuildRequires:	pkgconfig(vorbis)
+BuildRequires:	pkgconfig(vpx)
 BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	lirc-devel
 %{?_with_live555:BuildRequires: live555-devel >= 0-0.33}
@@ -401,7 +404,6 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 %{!?_without_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
@@ -455,7 +457,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
@@ -499,6 +500,10 @@ fi || :
 
 
 %changelog
+* Mon Dec 12 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.12
+- Update to 20161212 snapshot
+- Add BR: vpx, mpg123 and mfx
+
 * Tue Nov 22 2016 leigh scott <leigh123linux@googlemail.com> - 3.0.0-0.11
 - add patch to disable HIDPI scaling - rfbz#4272
 
