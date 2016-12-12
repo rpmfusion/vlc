@@ -87,7 +87,9 @@ BuildRequires:	libid3tag-devel
 BuildRequires:	libkate-devel
 %{?_with_libmad:BuildRequires: libmad-devel}
 BuildRequires:	libmatroska-devel >= 0.7.6
+%ifarch x86_64 i686
 BuildRequires:	libmfx-devel
+%endif
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
