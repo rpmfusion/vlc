@@ -1,44 +1,42 @@
-#global vlc_rc			-rc1
+#global vlc_rc			-pre20151006
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
-%global _with_a52dec --with-a52dec
-%global _with_faad2 --with-faad2
-%global _with_ffmpeg --with-ffmpeg
-%global _with_libdca --with-libdca
-%global _with_libdvbpsi	--with-libdvbpsi
-%global _with_libmad --with-libmad
-%global _with_libmpeg2 --with-libmpeg2
-%global _with_twolame --with-twolame
-%global _with_x264 --with-x264
-%global _with_xvidcore --with-xvidcore
-%global _with_live555 --with-live555
-%global _with_vaapi --with-vaapi
+%global _with_a52dec 1
+%global _with_faad2 1
+%global _with_ffmpeg 1
+%global _with_libdca 1
+%global _with_libdvbpsi	1
+%global _with_libmad 1
+%global _with_libmpeg2 1
+%global _with_twolame 1
+%global _with_x264 1
+%global _with_x265 1
+%global _with_xvidcore 1
+%global _with_live555 1
+%global _with_vaapi 1
 %endif
-%if 0%{?fedora}
-%global _with_fluidsynth 1
 %global _with_bluray    1
 %global _with_opencv    1
-%ifarch x86_64 i686
-%global _with_crystalhd 1
-%endif
+%global _with_fluidsynth 1
+%if 0%{?fedora}
+%global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
 %endif
-%if 0%{?fedora} < 21
-%global _with_freerdp 1
+%ifarch x86_64 i686
+%global _with_crystalhd 1
 %endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.1.6
-Release:	2%{?dist}
+Version:	2.2.4
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	desktop-file-utils
 
@@ -53,7 +51,6 @@ BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
 BuildRequires:	pkgconfig(dbus-1)
-BuildRequires:	dirac-devel >= 1.0.0
 %{?_with_faad2:BuildRequires: faad2-devel}
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
@@ -113,7 +110,9 @@ BuildRequires:	lirc-devel
 BuildRequires:  kernel-headers
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
+%if 0%{?fedora} < 24
 BuildRequires:	libmusicbrainz-devel
+%endif
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 BuildRequires:	lua-devel
@@ -135,6 +134,7 @@ BuildRequires:	taglib-devel
 %{?_with_twolame:BuildRequires:	twolame-devel}
 %{?_with_vcdimager:BuildRequires: vcdimager-devel >= 0.7.21}
 %{?_with_x264:BuildRequires: x264-devel >= 0-0.8.20061028}
+%{?_with_x265:BuildRequires: x265-devel}
 %{?_with_xvidcore:BuildRequires: xvidcore-devel}
 BuildRequires:	zlib-devel
 BuildRequires:	zvbi-devel
@@ -194,9 +194,6 @@ Summary:	VLC media player core
 Group:		Applications/Multimedia
 Provides:	vlc-nox = %{version}-%{release}
 Obsoletes:	vlc-nox < 1.1.5-2
-#Deprecated since F-19, can be dropped by F-21/EL-7
-%{?live555date:Requires: live555date%{_isa} = %{live555date}}
-#Introduced in F-19
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 
 %description core
@@ -222,11 +219,11 @@ JACK audio plugin for the VLC media player.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
-
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 }
+
 
 
 %build
@@ -234,6 +231,12 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 
 %configure \
 	--disable-dependency-tracking		\
+	--disable-optimizations			\
+%if 0%{?fedora} >= 22
+%ifarch i686
+	--disable-mmx --disable-sse		\
+%endif
+%endif
 	--disable-silent-rules			\
 	--with-pic				\
 	--disable-rpath				\
@@ -246,10 +249,12 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_gnomevfs:--enable-gnomevfs}		\
 %{?_with_vcdimager:--enable-vcdx}		\
 	--enable-omxil				\
-%ifarch armv5tel armv6l armv6hl
 	--enable-omxil-vout			\
+%{?_with_rpi:
 	--enable-rpi-omxil			\
-%endif
+	--enable-mmal-codec			\
+	--enable-mmal-vout			\
+} \
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
@@ -261,7 +266,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-tremor				\
 	--enable-speex				\
 	--enable-theora				\
-	--enable-dirac				\
 	--enable-libass				\
 	--enable-shout				\
 %{!?_without_xcb:--enable-xcb --enable-xvideo} 	\
@@ -272,10 +276,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-jack				\
 	--enable-pulse				\
 	--enable-ncurses			\
-	--enable-lirc				\
-%if 0%{?fedora} < 19
-	--disable-vdpau				\
-%endif
+	--enable-lirc
 
 
 %if 0
@@ -295,8 +296,6 @@ make %{?_smp_mflags}
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p" CPPROG="cp -p"
 find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 find $RPM_BUILD_ROOT -name '*.a' -exec rm -f {} ';'
@@ -322,10 +321,6 @@ touch $RPM_BUILD_ROOT%{_libdir}/vlc/plugins.dat
 
 
 %find_lang %{name}
-
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 
 %post
@@ -378,7 +373,6 @@ fi || :
 
 
 %files
-%defattr(-,root,root,-)
 %doc AUTHORS COPYING ChangeLog NEWS README THANKS
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
@@ -395,14 +389,11 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{!?_without_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%if 0%{?fedora} < 17
-%{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
-%endif
 %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-%{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
+#{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
@@ -411,7 +402,6 @@ fi || :
 %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 
 %files core -f %{name}.lang
-%defattr(-,root,root,-)
 %{_bindir}/vlc
 %{_bindir}/cvlc
 %{_bindir}/nvlc
@@ -447,7 +437,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
+#{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
@@ -464,7 +454,6 @@ fi || :
 %{_mandir}/man1/vlc*.1*
 
 %files plugin-jack
-%defattr(-,root,root,-)
 %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %{?_with_fluidsynth:
@@ -472,7 +461,6 @@ fi || :
 }
 
 %files extras
-%defattr(-,root,root,-)
 %{?_with_opencv:
 %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
 %{_libdir}/vlc/plugins/video_filter/libopencv_wrapper_plugin.so
@@ -487,7 +475,6 @@ fi || :
 }
 
 %files devel
-%defattr(-,root,root,-)
 %dir %{_includedir}/vlc
 %{_includedir}/vlc/*
 %{_libdir}/*.so
@@ -497,12 +484,58 @@ fi || :
 
 
 %changelog
-* Wed May 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.1.6-2
+* Mon Jun 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.4-1
+- Update to 2.2.4
+
+* Wed May 04 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.3-1
+- Update to 2.2.3
+
+* Sat Feb 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.2-1
+- Update to 2.2.2
+
+* Tue Oct 06 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.2-0.1
+- Update to 2.2.2 pre-version
+
+* Sat May 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-6
+- Rebuilt for x265
+
+* Wed May 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-5
+- Update to current bugfix
+
+* Sat May 09 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-4
 - Recreate the plugins cache on post for main - rfbz#3639
 - %%ghost the cache plugins
 
-* Fri Apr 03 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.1.6-1
-- Update to 2.1.6
+* Sun Apr 26 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-3
+- Fix build with freerdp for f22
+- Disable optimizations
+- Disable mmx and sse on fedora >= 22
+
+* Thu Apr 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-2
+- Rebuilt for x265
+
+* Mon Apr 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-1
+- Update to 2.2.1
+- Enable x265 on armhfp
+- Add --with rpi conditional for raspberrypi and mmal
+
+* Fri Feb 27 2015 Nicolas Chauvet <kwizart@gmail.com> - 2.2.0-1
+- Update to 2.2.0
+
+* Tue Nov 25 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.2.0-0.2
+- Update to 2.2.0-rc2
+
+* Fri Nov 14 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.2.0-0.1
+- Update to 2.2.0-rc1
+
+* Sun Sep 28 2014 kwizart <kwizart@gmail.com> - 2.1.5-4
+- Allow build with ffmpeg24
+
+* Fri Sep 26 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.5-3
+- Rebuilt for FFmpeg 2.4.x
+
+* Thu Aug 07 2014 Sérgio Basto <sergio@serjux.com> - 2.1.5-2
+- Rebuilt for ffmpeg-2.3
 
 * Sat Jul 26 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.1.5-1
 - Update to 2.1.5
