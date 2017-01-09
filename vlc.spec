@@ -141,8 +141,10 @@ BuildRequires:	pkgconfig(Qt5Core) >= 5.2
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.2
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
+%{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
+}
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
 BuildRequires:	SDL_image-devel
@@ -283,6 +285,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-theora				\
 	--enable-libass				\
 	--enable-shout				\
+%{!?_with_wayland: --disable-wayland} 		\
 %{!?_without_xcb:--enable-xcb --enable-xvideo} 	\
 %{?_without_xcb:--disable-xcb --disable-xvideo} \
 	--enable-svg				\
@@ -392,18 +395,21 @@ fi || :
 %{_datadir}/vlc/skins2/
 %{_bindir}/qvlc
 %{_bindir}/svlc
+%{_libdir}/vlc/*.so*
 %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%{?_with_wayland:
 %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
+}
 %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
 %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 %{!?_without_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
@@ -453,12 +459,14 @@ fi || :
 %endif
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
+%{?_with_wayland:
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
+}
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
@@ -474,7 +482,10 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 %ghost %{_libdir}/vlc/plugins/plugins.dat
-%{_libdir}/vlc/
+%dir %{_libdir}/vlc/
+%{_libdir}/vlc/vlc-cache-gen
+%{_libdir}/vlc/plugins
+%{_libdir}/vlc/lua
 %{_mandir}/man1/vlc*.1*
 
 
@@ -504,6 +515,8 @@ fi || :
 %changelog
 * Mon Jan 09 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.14
 - Update to 20170109
+- Disable wayland for now - rhbz#4380
+- Move libvlc pulse,vdpau,xcb from -core to main
 
 * Tue Jan 03 2017 Dominik Mierzejewski <rpm@greysector.net> - 3.0.0-0.13
 - rebuild for x265
