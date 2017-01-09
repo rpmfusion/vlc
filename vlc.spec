@@ -1,4 +1,4 @@
-%global vlc_rc			-20161212-0236-git
+%global vlc_rc			-20170109-0241-git
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.13%{?dist}
+Release:	0.14%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -502,6 +502,9 @@ fi || :
 
 
 %changelog
+* Mon Jan 09 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.14
+- Update to 20170109
+
 * Tue Jan 03 2017 Dominik Mierzejewski <rpm@greysector.net> - 3.0.0-0.13
 - rebuild for x265
 
