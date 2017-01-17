@@ -1,0 +1,32 @@
+From 72846370b9f0e93a51838b567064c6a6b62c37be Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet <kwizart@gmail.com>
+Date: Mon, 16 Jan 2017 12:09:10 +0100
+Subject: [PATCH] Fix lirc activation after detection
+
+This fix build time activation of lirc.
+"true" isn't "yes", so the HAVE_LIRC condition isn't met
+
+This bug was initialy reported as
+https://bugzilla.rpmfusion.org/4420
+
+Signed-off-by: Nicolas Chauvet <kwizart@gmail.com>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 29eaed9..864ff98 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3931,7 +3931,7 @@ have_lirc="no"
+ AS_IF([test "${enable_lirc}" = "yes"], [
+   AC_CHECK_HEADER(lirc/lirc_client.h, [
+     AC_CHECK_LIB(lirc_client, lirc_init, [
+-      have_lirc="true"
++      have_lirc="yes"
+     ])
+   ])
+ ])
+-- 
+2.7.4
+

@@ -23,6 +23,7 @@
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
+%global _with_wayland 1
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
@@ -32,7 +33,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.14%{?dist}
+Release:	0.15%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -40,6 +41,8 @@ URL:		http://www.videolan.org
 # nightly for 3.0
 Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:		disable_hidpi_scaling.patch
+Patch1:         0001-Fix-lirc-activation-after-detection.patch
+Patch2:         0001-Revert-qt-add-Wayland-run-time-detection.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -236,6 +239,8 @@ VLC media player extras modules.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -513,6 +518,10 @@ fi || :
 
 
 %changelog
+* Tue Jan 17 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.15
+- Fix lirc activation - rhbz#4420
+- Revert upstream commit 785b0f18d7 for wayland detection - rfbz#4380
+
 * Mon Jan 09 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.14
 - Update to 20170109
 - Disable wayland for now - rhbz#4380
