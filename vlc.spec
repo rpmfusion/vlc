@@ -58,7 +58,7 @@ BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
 BuildRequires:	dbus-devel
 BuildRequires:	dirac-devel >= 1.0.0
-%{!?_without_directfb:BuildRequires: directfb-devel}
+%{?_with_directfb:BuildRequires: directfb-devel}
 %{?_with_faad2:BuildRequires: faad2-devel}
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
@@ -284,7 +284,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_xcb:--enable-xcb --enable-xvideo} 	\
 %{!?_with_xcb:--disable-xcb --disable-xvideo} 	\
 	--enable-svg				\
-%{!?_without_directfb:--enable-directfb}	\
+%{?_with_directfb:--enable-directfb}		\
 	--enable-aa				\
 	--enable-caca				\
 	--enable-jack				\
@@ -478,7 +478,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
-%{!?_without_directfb:
+%{?_with_directfb:
 %exclude %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
@@ -506,7 +506,7 @@ fi || :
 
 %files extras
 %defattr(-,root,root,-)
-%{!?_without_directfb:
+%{?_with_directfb:
 %{_libdir}/vlc/plugins/video_output/libdirectfb_plugin.so
 }
 %{?_with_opencv:
@@ -535,6 +535,7 @@ fi || :
 %changelog
 * Thu Jan 19 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.0.10-2
 - Rebuild for epel libdvbpsi
+- Opt-out directfb
 
 * Fri Feb 21 2014 Nicolas Chauvet <kwizart@gmail.com> - 2.0.10-1
 - Update to 2.0.10
