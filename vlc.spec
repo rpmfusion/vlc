@@ -31,7 +31,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.0.10
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -533,6 +533,9 @@ fi || :
 
 
 %changelog
+* Mon Jan 30 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.0.10-3
+- Rebuild for libdvbpsi#2
+
 * Thu Jan 19 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.0.10-2
 - Rebuild for epel libdvbpsi
 - Opt-out directfb
