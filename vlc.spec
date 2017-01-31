@@ -33,7 +33,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.15%{?dist}
+Release:	0.16%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -79,6 +79,8 @@ BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
 BuildRequires:	pkgconfig(libchromaprint)
 %{?_with_crystalhd:BuildRequires: libcrystalhd-devel}
+BuildRequires:	pkgconfig(daaladec)
+BuildRequires:	pkgconfig(daalaenc)
 BuildRequires:	libdc1394-devel >= 2.1.0
 %{?_with_libdca:BuildRequires: libdca-devel}
 BuildRequires:	libdv-devel
@@ -518,6 +520,9 @@ fi || :
 
 
 %changelog
+* Tue Jan 31 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.16
+- Add daala support
+
 * Tue Jan 17 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.15
 - Fix lirc activation - rhbz#4420
 - Revert upstream commit 785b0f18d7 for wayland detection - rfbz#4380
