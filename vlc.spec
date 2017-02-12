@@ -1,4 +1,4 @@
-#global vlc_rc			-pre20151006
+%global vlc_rc			-20170212-0224
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -31,12 +31,13 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.4
+Version:	2.2.5
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+#Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
 
 BuildRequires:	desktop-file-utils
 
@@ -218,7 +219,7 @@ JACK audio plugin for the VLC media player.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{name}-%{version}
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -484,6 +485,9 @@ fi || :
 
 
 %changelog
+* Sun Feb 12 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.5-1
+- Update to 2.2.5
+
 * Mon Jun 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.4-1
 - Update to 2.2.4
 
