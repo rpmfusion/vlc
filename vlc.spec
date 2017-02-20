@@ -1,4 +1,9 @@
 %global vlc_rc			-20170220-0237-git
+%if 0%{?vlc_rc:1}
+%global vlc_url http://nightlies.videolan.org/build/source/
+%else
+%global vlc_url http://download.videolan.org/pub/videolan/vlc/
+%endif
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -37,9 +42,7 @@ Release:	0.16%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-#Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-# nightly for 3.0
-Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:		disable_hidpi_scaling.patch
 Patch1:         0001-Fix-lirc-activation-after-detection.patch
 Patch2:         0001-Revert-qt-add-Wayland-run-time-detection.patch
