@@ -151,6 +151,7 @@ BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
+BuildRequires:	pkgconfig(wayland-protocols)
 }
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
@@ -412,8 +413,9 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{?_with_wayland:
 %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
 %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
+
 }
 %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
@@ -472,7 +474,7 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
 %{?_with_wayland:
 %exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
