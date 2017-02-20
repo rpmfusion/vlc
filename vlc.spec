@@ -1,4 +1,4 @@
-%global vlc_rc			-20170109-0241-git
+%global vlc_rc			-20170220-0237-git
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
