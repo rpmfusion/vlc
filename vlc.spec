@@ -350,6 +350,9 @@ touch %{buildroot}%{_libdir}/vlc/plugins/plugins.dat
 appstream-util validate-relax --nonet \
   %{buildroot}/%{_datadir}/appdata/*.appdata.xml || :
 
+#Fixup
+rm -rf %{buildroot}/%{_datadir}/macosx
+
 
 %find_lang %{name}
 
