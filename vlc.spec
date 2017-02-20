@@ -44,7 +44,6 @@ Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
 Patch0:		disable_hidpi_scaling.patch
-Patch1:         0001-Fix-lirc-activation-after-detection.patch
 Patch2:         0001-Revert-qt-add-Wayland-run-time-detection.patch
 
 BuildRequires:	desktop-file-utils
@@ -244,8 +243,7 @@ VLC media player extras modules.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
+#patch2 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
