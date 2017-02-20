@@ -38,7 +38,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.16%{?dist}
+Release:	0.17%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -521,6 +521,11 @@ fi || :
 
 
 %changelog
+* Mon Feb 20 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.17
+- Update to 20170220 snapshot
+- Clean merged patch, unrevert wayland runtime detection
+- Switch source url on purpose
+
 * Tue Jan 31 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.16
 - Add daala support
 
