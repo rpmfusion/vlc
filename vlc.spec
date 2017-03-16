@@ -1,4 +1,4 @@
-%global vlc_rc			-20170220-0237-git
+%global vlc_rc			-20170316-0243-git
 %if 0%{?vlc_rc:1}
 %global vlc_url http://nightlies.videolan.org/build/source/
 %else
@@ -38,13 +38,11 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.18%{?dist}
+Release:	0.19%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
-Patch0:		disable_hidpi_scaling.patch
-Patch2:         0001-Revert-qt-add-Wayland-run-time-detection.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -184,6 +182,12 @@ BuildRequires:	xorg-x11-proto-devel
 
 %{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
+# Fedora 25 Workstation default to wayland but not all
+# Boolean deps will handle this better when allowed
+%if 0%{?fedora} >= 25
+Recommends: qt5-qtwayland%{_isa}
+%endif
+
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
 Requires: vlc-core%{_isa} = %{version}-%{release}
@@ -243,8 +247,6 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
-%patch0 -p1
-#patch2 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -526,6 +528,11 @@ fi || :
 
 
 %changelog
+* Thu Mar 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.19
+- Update to 20170318 snapshoot
+- Drop hidpi revert rfbz#4272
+- Recommends qt5-wayland
+
 * Thu Feb 23 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.18
 - Rebuild for libvncserver .so version bump
 
