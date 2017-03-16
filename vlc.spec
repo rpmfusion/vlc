@@ -531,7 +531,7 @@ fi || :
 * Thu Mar 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.19
 - Update to 20170318 snapshoot
 - Drop hidpi revert rfbz#4272
-- Recommends qt5-wayland
+- Recommends qt5-qtwayland
 
 * Thu Feb 23 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.18
 - Rebuild for libvncserver .so version bump
