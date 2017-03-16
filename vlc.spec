@@ -1,4 +1,4 @@
-%global vlc_rc			-20170212-0224
+#global vlc_rc			-20170212-0224
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
