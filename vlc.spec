@@ -31,13 +31,12 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.5
+Version:	2.2.5.1
 Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-#Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
 
 BuildRequires:	desktop-file-utils
 
@@ -485,6 +484,9 @@ fi || :
 
 
 %changelog
+* Thu Mar 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.5.1-1
+- Update to 2.2.5.1
+
 * Sun Feb 12 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.5-1
 - Update to 2.2.5
 
