@@ -1,4 +1,4 @@
-%global vlc_rc			-20170316-0243-git
+%global vlc_rc			-20170405-0244-git
 %if 0%{?vlc_rc:1}
 %global vlc_url http://nightlies.videolan.org/build/source/
 %else
@@ -38,7 +38,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.20%{?dist}
+Release:	0.21%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -417,6 +417,7 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{?_with_wayland:
+%{_libdir}/vlc/plugins/access/libwl_screenshooter_plugin.so
 %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
 %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
 %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
@@ -430,17 +431,27 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+%{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
+%{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 }
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 }
+#jack in main
 %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
-%{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
+#pulseaudio in main
+%{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
+%{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
+%{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
 %{?_with_fluidsynth:
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
+#vdpau in main
+%dir %{_libdir}/vlc/plugins/vdpau
+%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
+
 
 %files core -f %{name}.lang
 %{_bindir}/vlc
@@ -472,19 +483,22 @@ fi || :
 %if 0%{?fedora} < 17
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %endif
+%exclude %{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
+%exclude %{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%{?_with_wayland:
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
-}
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+}
+%{?_with_wayland:
+%exclude %{_libdir}/vlc/plugins/access/libwl_screenshooter_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
@@ -496,6 +510,9 @@ fi || :
 }
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
+%exclude %{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
+%exclude %{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
+%exclude %{_libdir}/vlc/plugins/vdpau
 %ghost %{_libdir}/vlc/plugins/plugins.dat
 %dir %{_libdir}/vlc/
 %{_libdir}/vlc/vlc-cache-gen
@@ -528,6 +545,10 @@ fi || :
 
 
 %changelog
+* Wed Apr 05 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.21
+- Update to 20170405 snapshoot
+- Rework main -core library split
+
 * Mon Mar 20 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 3.0.0-0.20
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
