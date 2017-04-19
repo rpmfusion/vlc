@@ -385,15 +385,21 @@ fi || :
 %{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
+%{_libdir}/vlc/plugins/codec/libsdl_image_plugin.so
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
+%{_libdir}/vlc/plugins/video_output/libgl_plugin.so
+%{_libdir}/vlc/plugins/video_output/libglx_plugin.so
+%{_libdir}/vlc/plugins/video_output/libvout_sdl_plugin.so
 %{!?_without_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
+%{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
+%{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-#{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
@@ -426,18 +432,23 @@ fi || :
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
+%exclude %{_libdir}/vlc/plugins/codec/libsdl_image_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libvout_sdl_plugin.so
 %{!?_without_xcb:
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%if 0%{?fedora} < 17
-%exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
-%endif
+%exclude %{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
+%exclude %{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-#{_libdir}/vlc/plugins/video_filter/libpanoramix_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
