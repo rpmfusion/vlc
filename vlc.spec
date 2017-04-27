@@ -1,4 +1,4 @@
-%global vlc_rc			-20170405-0244-git
+%global vlc_rc			-20170427-0240-git
 %if 0%{?vlc_rc:1}
 %global vlc_url http://nightlies.videolan.org/build/source/
 %else
@@ -545,6 +545,9 @@ fi || :
 
 
 %changelog
+* Thu Apr 27 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.22
+- Update ot 20170427 snapshot
+
 * Wed Apr 05 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.21
 - Update to 20170405 snapshoot
 - Rework main -core library split
