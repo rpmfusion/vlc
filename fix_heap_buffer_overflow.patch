@@ -1,0 +1,42 @@
+--- a/modules/demux/subtitle.c
++++ b/modules/demux/subtitle.c
+@@ -1690,7 +1690,8 @@
+         if( !s )
+             return VLC_EGENERIC;
+ 
+-        psz_orig = malloc( strlen( s ) + 1 );
++        size_t line_length = strlen( s );
++        psz_orig = malloc( line_length + 1 );
+         if( !psz_orig )
+             return VLC_ENOMEM;
+         psz_text = psz_orig;
+@@ -1730,6 +1731,8 @@
+             {
+             case 'S':
+                  shift = isalpha( (unsigned char)psz_text[2] ) ? 6 : 2 ;
++                 if ( shift > line_length )
++                     continue;
+ 
+                  if( sscanf( &psz_text[shift], "%d", &h ) )
+                  {
+@@ -1767,6 +1770,8 @@
+ 
+             case 'T':
+                 shift = isalpha( (unsigned char)psz_text[2] ) ? 8 : 2 ;
++                if ( shift > line_length )
++                    continue;
+ 
+                 sscanf( &psz_text[shift], "%d", &p_sys->jss.i_time_resolution );
+                 break;
+@@ -1884,8 +1889,8 @@
+             if( (*(psz_text + 1 ) ) == '~' || (*(psz_text + 1 ) ) == '{' ||
+                 (*(psz_text + 1 ) ) == '\\' )
+                 psz_text++;
+-            else if( *(psz_text + 1 ) == '\r' ||  *(psz_text + 1 ) == '\n' ||
+-                     *(psz_text + 1 ) == '\0' )
++            else if( ( *(psz_text + 1 ) == '\r' ||  *(psz_text + 1 ) == '\n' ) &&
++                     *(psz_text + 1 ) != '\0' )
+             {
+                 psz_text++;
+             }
+
