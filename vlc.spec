@@ -1,4 +1,9 @@
-%global vlc_rc			-20170109-0241-git
+%global vlc_rc			-20170523-0239-git
+%if 0%{?vlc_rc:1}
+%global vlc_url http://nightlies.videolan.org/build/source/
+%else
+%global vlc_url http://download.videolan.org/pub/videolan/vlc/
+%endif
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -33,16 +38,11 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.16%{?dist}
+Release:	0.25%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-#Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-# nightly for 3.0
-Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar.xz
-Patch0:		disable_hidpi_scaling.patch
-Patch1:         0001-Fix-lirc-activation-after-detection.patch
-Patch2:         0001-Revert-qt-add-Wayland-run-time-detection.patch
+Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -149,6 +149,7 @@ BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
+BuildRequires:	pkgconfig(wayland-protocols)
 }
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
@@ -180,6 +181,12 @@ BuildRequires:	xorg-x11-proto-devel
 
 
 %{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
+
+# Fedora 25 Workstation default to wayland but not all
+# Boolean deps will handle this better when allowed
+%if 0%{?fedora} >= 25
+Recommends: qt5-qtwayland%{_isa}
+%endif
 
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
@@ -240,9 +247,6 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -348,6 +352,9 @@ touch %{buildroot}%{_libdir}/vlc/plugins/plugins.dat
 appstream-util validate-relax --nonet \
   %{buildroot}/%{_datadir}/appdata/*.appdata.xml || :
 
+#Fixup
+rm -rf %{buildroot}/%{_datadir}/macosx
+
 
 %find_lang %{name}
 
@@ -410,9 +417,11 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{?_with_wayland:
+%{_libdir}/vlc/plugins/access/libwl_screenshooter_plugin.so
 %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
 %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
+
 }
 %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
@@ -422,17 +431,27 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+%{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
+%{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 }
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 }
+#jack in main
 %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
-%{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
+#pulseaudio in main
+%{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
+%{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
+%{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
 %{?_with_fluidsynth:
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
+#vdpau in main
+%dir %{_libdir}/vlc/plugins/vdpau
+%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
+
 
 %files core -f %{name}.lang
 %{_bindir}/vlc
@@ -464,19 +483,22 @@ fi || :
 %if 0%{?fedora} < 17
 %exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
 %endif
+%exclude %{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
+%exclude %{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%{?_with_wayland:
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_surface_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
-}
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+}
+%{?_with_wayland:
+%exclude %{_libdir}/vlc/plugins/access/libwl_screenshooter_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
@@ -488,6 +510,9 @@ fi || :
 }
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
+%exclude %{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
+%exclude %{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
+%exclude %{_libdir}/vlc/plugins/vdpau
 %ghost %{_libdir}/vlc/plugins/plugins.dat
 %dir %{_libdir}/vlc/
 %{_libdir}/vlc/vlc-cache-gen
@@ -520,6 +545,38 @@ fi || :
 
 
 %changelog
+* Thu May 25 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.25
+- Rebuilt for live555
+
+* Tue May 23 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.24
+- Update to 20170523 snapshot
+
+* Sat Apr 29 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.23
+- Rebuild for ffmpeg update
+
+* Thu Apr 27 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.22
+- Update ot 20170427 snapshot
+
+* Wed Apr 05 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.21
+- Update to 20170405 snapshoot
+- Rework main -core library split
+
+* Mon Mar 20 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 3.0.0-0.20
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Thu Mar 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.19
+- Update to 20170318 snapshoot
+- Drop hidpi revert rfbz#4272
+- Recommends qt5-qtwayland
+
+* Thu Feb 23 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.18
+- Rebuild for libvncserver .so version bump
+
+* Mon Feb 20 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.17
+- Update to 20170220 snapshot
+- Clean merged patch, unrevert wayland runtime detection
+- Switch source url on purpose
+
 * Tue Jan 31 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.16
 - Add daala support
 
