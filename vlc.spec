@@ -33,7 +33,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.17%{?dist}
+Release:	0.16%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -43,10 +43,6 @@ Source0:	http://nightlies.videolan.org/build/source/vlc-%{version}%{?vlc_rc}.tar
 Patch0:		disable_hidpi_scaling.patch
 Patch1:         0001-Fix-lirc-activation-after-detection.patch
 Patch2:         0001-Revert-qt-add-Wayland-run-time-detection.patch
-# Fix potential heap buffer overflow
-# https://git.videolan.org/?p=vlc.git;a=commit;h=611398fc8d32f3fe4331f60b220c52ba3557beaa
-# https://git.videolan.org/?p=vlc.git;a=commit;h=f2b1f9e3538fc30ecc22b90bcb4300f68d703d30
-Patch3:         fix_heap_buffer_overflow.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -247,7 +243,6 @@ VLC media player extras modules.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -525,9 +520,6 @@ fi || :
 
 
 %changelog
-* Sat May 27 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.17
-- Add patch to fix potential heap buffer overflow
-
 * Tue Jan 31 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.16
 - Add daala support
 
