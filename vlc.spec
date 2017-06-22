@@ -1,5 +1,5 @@
-%global vlc_date		20170601
-%global vlc_rc			-%{?vlc_date}-0240-git
+%global vlc_date		20170622
+%global vlc_rc			-%{?vlc_date}-0939-git
 %if 0%{?vlc_rc:1}
 %global vlc_url http://nightlies.videolan.org/build/source/
 %else
@@ -29,7 +29,7 @@
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
-%global _with_wayland 1
+%global _with_wayland 0
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
@@ -39,7 +39,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.26%{?vlc_date:snap.%{vlc_date}git}%{?dist}
+Release:	0.28%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -183,11 +183,13 @@ BuildRequires:	xorg-x11-proto-devel
 
 %{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
+%{?_with_wayland:
 # Fedora 25 Workstation default to wayland but not all
 # Boolean deps will handle this better when allowed
 %if 0%{?fedora} >= 25
 Recommends: qt5-qtwayland%{_isa}
 %endif
+}
 
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
@@ -546,6 +548,11 @@ fi || :
 
 
 %changelog
+* Thu Jun 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.28.git20170622
+- Update snapshoot
+- Disable wayland support for now
+- Update release field
+
 * Thu Jun 01 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.2620170601git
 - Update to 20170601 snapshot
 
