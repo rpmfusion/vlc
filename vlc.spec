@@ -39,7 +39,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.28%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.29%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -551,6 +551,9 @@ fi || :
 
 
 %changelog
+* Sat Jun 24 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.29.git20170622
+- Restore wayland with a patch - rhbz#4552
+
 * Thu Jun 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.28.git20170622
 - Update snapshoot
 - Disable wayland support for now
