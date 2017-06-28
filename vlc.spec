@@ -39,11 +39,13 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.28%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.29%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
+#https://trac.videolan.org/vlc/ticket/18383
+Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -250,6 +252,7 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
+%patch0 -p1 -b .wl
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -548,6 +551,9 @@ fi || :
 
 
 %changelog
+* Sat Jun 24 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.29.git20170622
+- Restore wayland with a patch - rhbz#4552
+
 * Thu Jun 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.28.git20170622
 - Update snapshoot
 - Disable wayland support for now
