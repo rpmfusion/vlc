@@ -1,9 +1,9 @@
-%global vlc_date		20170622
-%global vlc_rc			-%{?vlc_date}-0939-git
+%global vlc_date		20170704
+%global vlc_rc			-%{?vlc_date}-0240-git
 %if 0%{?vlc_rc:1}
-%global vlc_url http://nightlies.videolan.org/build/source/
+%global vlc_url https://nightlies.videolan.org/build/source/
 %else
-%global vlc_url http://download.videolan.org/pub/videolan/vlc/
+%global vlc_url https://download.videolan.org/pub/videolan/vlc/
 %endif
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
@@ -39,7 +39,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.29%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.30%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -551,6 +551,10 @@ fi || :
 
 
 %changelog
+* Tue Jul 04 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.30.git20170704
+- Update snapshot
+- Use https for downloads - rhbz#4584
+
 * Sat Jun 24 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.29.git20170622
 - Restore wayland with a patch - rhbz#4552
 
