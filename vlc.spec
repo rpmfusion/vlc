@@ -1,5 +1,5 @@
-%global vlc_date		20170704
-%global vlc_rc			-%{?vlc_date}-0240-git
+%global vlc_date		20170717
+%global vlc_rc			-%{?vlc_date}-0244-git
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -39,7 +39,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.30%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.31%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -551,6 +551,9 @@ fi || :
 
 
 %changelog
+* Mon Jul 17 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.31.git20170717
+- Update snapshot
+
 * Tue Jul 04 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.30.git20170704
 - Update snapshot
 - Use https for downloads - rhbz#4584
