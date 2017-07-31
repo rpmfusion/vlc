@@ -29,7 +29,7 @@
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
-%global _with_wayland 1
+%global _with_wayland 0
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
