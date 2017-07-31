@@ -46,6 +46,7 @@ URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
 #https://trac.videolan.org/vlc/ticket/18383
 Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
+Patch1:         0001-Revert-lua-don-t-call-directly-config_GetLibDir.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -253,6 +254,7 @@ VLC media player extras modules.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
 %patch0 -p1 -b .wl
+%patch1 -p1 -b .lua
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
