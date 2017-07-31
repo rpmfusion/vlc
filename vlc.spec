@@ -237,6 +237,7 @@ Group:		Applications/Multimedia
 Provides:	vlc-nox = %{version}-%{release}
 Obsoletes:	vlc-nox < 1.1.5-2
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
+Requires:	lua(abi) = %{lua_version}
 
 %description core
 VLC media player core components
