@@ -1,0 +1,38 @@
+From 9bec043da70def3adf0a69747ebe3601f1886fe1 Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet <kwizart@gmail.com>
+Date: Mon, 31 Jul 2017 10:42:39 +0200
+Subject: [PATCH] Revert "lua: don't call directly config_GetLibDir"
+
+libdir and datadir are different kind of directories on Linux.
+So they are unrelated
+
+This reverts commit d5ac6c4ce3d9f50b7bf9e9325b8c9f93b376c574.
+---
+ modules/lua/vlc.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/modules/lua/vlc.c b/modules/lua/vlc.c
+index 512d9e505c..57dc7d8e49 100644
+--- a/modules/lua/vlc.c
++++ b/modules/lua/vlc.c
+@@ -214,6 +214,17 @@ int vlclua_dir_list( const char *luadirname, char ***pppsz_dir_list )
+         i++;
+     free( datadir );
+ 
++#if !(defined(__APPLE__) || defined(_WIN32))
++    char *psz_libpath = config_GetLibDir();
++    if( likely(psz_libpath != NULL) )
++    {
++        if( likely(asprintf( &ppsz_dir_list[i], "%s"DIR_SEP"lua"DIR_SEP"%s",
++                             psz_libpath, luadirname ) != -1) )
++            i++;
++        free( psz_libpath );
++    }
++#endif
++
+     char *psz_datapath = config_GetDataDir();
+     if( likely(psz_datapath != NULL) )
+     {
+-- 
+2.13.3
+
