@@ -1,5 +1,5 @@
-%global vlc_date		20170717
-%global vlc_rc			-%{?vlc_date}-0244-git
+%global vlc_date		20170823
+%global vlc_rc			-%{?vlc_date}-0243-git
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -39,14 +39,13 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.33%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.34%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
 #https://trac.videolan.org/vlc/ticket/18383
 Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
-Patch1:         0001-Revert-lua-don-t-call-directly-config_GetLibDir.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -157,7 +156,6 @@ BuildRequires:	pkgconfig(wayland-protocols)
 }
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
-BuildRequires:	SDL_image-devel
 %{?_with_sidplay:BuildRequires: pkgconfig(libsidplay2)}
 BuildRequires:	speex-devel >= 1.1.5
 BuildRequires:	taglib-devel
@@ -255,7 +253,6 @@ VLC media player extras modules.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
 %patch0 -p1 -b .wl
-%patch1 -p1 -b .lua
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -554,6 +551,9 @@ fi || :
 
 
 %changelog
+* Wed Aug 23 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.34.git20170823
+- Update snapshot
+
 * Mon Jul 31 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.33.git20170717
 - Fix lua directory search path
 
