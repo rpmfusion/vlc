@@ -523,7 +523,6 @@ fi || :
 %dir %{_libdir}/vlc/
 %{_libdir}/vlc/vlc-cache-gen
 %{_libdir}/vlc/plugins
-%{_libdir}/vlc/lua
 %{_mandir}/man1/vlc*.1*
 
 
