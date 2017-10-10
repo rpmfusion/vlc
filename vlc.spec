@@ -1,5 +1,5 @@
-%global vlc_date		20170922
-%global vlc_rc			-%{?vlc_date}-0239-git
+%global vlc_date		20171009
+%global vlc_rc			-%{?vlc_date}-0241-git
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -39,13 +39,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.36%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.37%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
 #https://trac.videolan.org/vlc/ticket/18383
 Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
+Patch1:         libvlc_remove_xid.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -253,6 +254,7 @@ VLC media player extras modules.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
 %patch0 -p1 -b .wl
+%patch1 -p1 -b .xid
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -356,7 +358,7 @@ touch %{buildroot}%{_libdir}/vlc/plugins/plugins.dat
 
 #Appdata
 appstream-util validate-relax --nonet \
-  %{buildroot}/%{_datadir}/appdata/*.appdata.xml || :
+  %{buildroot}/%{_datadir}/metainfo/*.appdata.xml || :
 
 #Fixup
 rm -rf %{buildroot}/%{_datadir}/macosx
@@ -407,7 +409,7 @@ fi || :
 %files
 %doc AUTHORS ChangeLog NEWS README THANKS
 %license COPYING
-%{_datadir}/appdata/vlc.appdata.xml
+%{_datadir}/metainfo/vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
@@ -550,6 +552,10 @@ fi || :
 
 
 %changelog
+* Mon Oct 09 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.37.git20171009
+- Update snapshot
+- Fix libvlc vdpau issue (rfbz #4678)
+
 * Mon Sep 25 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.36.git20170922
 - Rebuilt for live555
 

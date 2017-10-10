@@ -1,0 +1,29 @@
+From 0014603e717efc39242acc5c3dafc9390304415b Mon Sep 17 00:00:00 2001
+From: Thomas Guillem <thomas@gllm.fr>
+Date: Tue, 10 Oct 2017 15:01:26 +0200
+Subject: [PATCH] libvlc: don't force the xid "vout display"
+
+libvlc_media_player_set_xwindow() should only force the embed-xid "vout window"
+plugin but not the xid "vout display" plugin.
+
+This allows to use the GL "vout display" via EGL/GLX (with full hardware
+acceleration) with an embedded X window.
+
+Fixes #18907
+---
+ lib/media_player.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/media_player.c b/lib/media_player.c
+index 7247cdea857..ef34125aa5a 100644
+--- a/lib/media_player.c
++++ b/lib/media_player.c
+@@ -1175,7 +1175,7 @@ void libvlc_media_player_set_xwindow( libvlc_media_player_t *p_mi,
+     assert (p_mi != NULL);
+ 
+     var_SetString (p_mi, "avcodec-hw", "");
+-    var_SetString (p_mi, "vout", drawable ? "xid" : "");
++    var_SetString (p_mi, "vout", "");
+     var_SetString (p_mi, "window", drawable ? "embed-xid,any" : "");
+     var_SetInteger (p_mi, "drawable-xid", drawable);
+ }
