@@ -39,7 +39,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.37%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.38%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -552,6 +552,9 @@ fi || :
 
 
 %changelog
+* Mon Oct 16 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.38.git20171009
+- Rebuild for ffmpeg update
+
 * Mon Oct 09 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.37.git20171009
 - Update snapshot
 - Fix libvlc vdpau issue (rfbz #4678)
