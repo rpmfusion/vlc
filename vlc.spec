@@ -1,5 +1,5 @@
-%global vlc_date		20171009
-%global vlc_rc			-%{?vlc_date}-0241-git
+%global vlc_date		20171103
+%global vlc_rc			-%{?vlc_date}-0240-git
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -39,14 +39,13 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.38%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.39%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
 #https://trac.videolan.org/vlc/ticket/18383
 Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
-Patch1:         libvlc_remove_xid.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -146,9 +145,10 @@ BuildRequires:	pkgconfig(libarchive) >= 3.1.0
 BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
-BuildRequires:	pkgconfig(Qt5Core) >= 5.2
-BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.2
+BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
+BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
+BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
@@ -254,7 +254,6 @@ VLC media player extras modules.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-git}
 %patch0 -p1 -b .wl
-%patch1 -p1 -b .xid
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -552,6 +551,9 @@ fi || :
 
 
 %changelog
+* Fri Nov 03 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.39.git20171103
+- Update to 20171103 snapshoot
+
 * Mon Oct 16 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.38.git20171009
 - Rebuild for ffmpeg update
 
