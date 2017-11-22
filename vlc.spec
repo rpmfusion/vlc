@@ -1,5 +1,5 @@
-%global vlc_date		20171103
-%global vlc_rc			-%{?vlc_date}-0240-git
+%global vlc_date		20171122
+%global vlc_rc			-%{?vlc_date}-0234-git
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -367,7 +367,10 @@ rm -rf %{buildroot}/%{_datadir}/macosx
 
 
 %post
-%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
+if [ $1 == 1 ] ; then
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
+fi || :
+
 %{_bindir}/touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
@@ -551,6 +554,9 @@ fi || :
 
 
 %changelog
+* Wed Nov 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.40.git20171122
+- Update to 20171122 snapshot
+
 * Thu Nov 16 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.40.git20171103
 - Rebuild for new protobuf version
 
