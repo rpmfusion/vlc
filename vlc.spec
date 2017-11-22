@@ -31,14 +31,12 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.6
-Release:	2%{?dist}
+Version:	2.2.8
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-
-Patch0:	0001-codec-flac-fix-heap-write-overflow-on-frame-format-c.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -221,7 +219,6 @@ JACK audio plugin for the VLC media player.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch0 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -498,6 +495,9 @@ fi || :
 
 
 %changelog
+* Wed Nov 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-1
+- Update to 2.2.8
+
 * Thu Jun 01 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.6-2
 - Backport fix for flac crash
 
