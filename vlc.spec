@@ -1,5 +1,5 @@
 %global vlc_date		20171208
-%global vlc_rc			-%{?vlc_date}-0233-rc1
+%global vlc_rc			-%{?vlc_date}-0223-rc1
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
