@@ -1,5 +1,6 @@
-%global vlc_date		20171208
-%global vlc_rc			-%{?vlc_date}-0223-rc1
+%global vlc_date	20171215
+%global vlc_rc		rc2
+%global vlc_tag         -%{?vlc_date}-0223-%{?vlc_rc}
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -39,11 +40,11 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.0
-Release:	0.43%{?vlc_date:.git%{vlc_date}}%{?dist}
+Release:	0.44%{?vlc_date:.git%{vlc_date}}%{?vlc_rc}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_rc}.tar.xz
+Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 #https://trac.videolan.org/vlc/ticket/18383
 Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
 
@@ -128,9 +129,6 @@ BuildRequires:	lirc-devel
 BuildRequires:  kernel-headers
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
-%if 0%{?fedora} < 24
-BuildRequires:	libmusicbrainz-devel
-%endif
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 BuildRequires:	lua-devel
@@ -252,7 +250,7 @@ VLC media player extras modules.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc:-rc1}
+%setup -q -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
 %patch0 -p1 -b .wl
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -490,9 +488,6 @@ fi || :
 }
 %{!?_without_xcb:
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%if 0%{?fedora} < 17
-%exclude %{_libdir}/vlc/plugins/control/libglobalhotkeys_plugin.so
-%endif
 %exclude %{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
 %exclude %{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
@@ -554,6 +549,9 @@ fi || :
 
 
 %changelog
+* Fri Dec 15 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.44.git20171215
+- Update to 20171215
+
 * Fri Dec 08 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.43.git20171208
 - Update to 20171208
 
