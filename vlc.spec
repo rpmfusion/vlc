@@ -1,3 +1,4 @@
+%global vlc_vers	3.0.0
 %global vlc_date	20171215
 %global vlc_rc		rc2
 %global vlc_tag         -%{?vlc_date}-0223-%{?vlc_rc}
@@ -39,12 +40,12 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	3.0.0
-Release:	0.44%{?vlc_date:.git%{vlc_date}}%{?vlc_rc}%{?dist}
+Version:	%{vlc_vers}%{?vlc_rc:~%{vlc_rc}}
+Release:	0.45%{?vlc_date:.git%{vlc_date}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
-Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
+Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
 #https://trac.videolan.org/vlc/ticket/18383
 Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
 
@@ -250,7 +251,7 @@ VLC media player extras modules.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
+%setup -q -n %{name}-%{vlc_vers}%{?vlc_rc:-%{vlc_rc}}
 %patch0 -p1 -b .wl
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -265,11 +266,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %configure \
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
-%if 0%{?fedora} >= 22
-%ifarch i686
-	--disable-mmx --disable-sse		\
-%endif
-%endif
 	--disable-silent-rules			\
 	--with-pic				\
 	--disable-rpath				\
@@ -549,6 +545,10 @@ fi || :
 
 
 %changelog
+* Sat Dec 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0~rc2-0.45.git20171215
+- Improve pre-version
+- Re-enable i686 mmx/sse (autodetected)
+
 * Fri Dec 15 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.44.git20171215
 - Update to 20171215
 
