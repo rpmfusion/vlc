@@ -46,8 +46,6 @@ License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
-#https://trac.videolan.org/vlc/ticket/18383
-Patch0:         0001-qt-Prefer-XCB-over-Wayland.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -257,7 +255,6 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{vlc_vers}%{?vlc_rc:-%{vlc_rc}}
-%patch0 -p1 -b .wl
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -342,7 +339,7 @@ find %{buildroot} -name '*.a' -exec rm -f {} ';'
 desktop-file-validate %{buildroot}%{_datadir}/applications/vlc.desktop
 
 # Remove installed fonts for skins2
-rm -f %{buildroot}%{_datadir}/vlc/skins2/fonts
+rm -rf %{buildroot}%{_datadir}/vlc/skins2/fonts
 
 #Fix unowned directories
 rm -rf %{buildroot}%{_docdir}/vlc
@@ -422,7 +419,6 @@ fi || :
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{?_with_wayland:
-%{_libdir}/vlc/plugins/access/libwl_screenshooter_plugin.so
 %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
 %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
 %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
@@ -497,7 +493,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
 }
 %{?_with_wayland:
-%exclude %{_libdir}/vlc/plugins/access/libwl_screenshooter_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
@@ -551,6 +546,7 @@ fi || :
 - Drop pre-version
 - Set defaults fonts
 - Enable gstreamer on %%{arm} and aarch64
+- Drop wayland patch
 
 * Sat Dec 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0~rc2-0.45.git20171215
 - Improve pre-version
