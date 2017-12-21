@@ -1,7 +1,7 @@
 %global vlc_vers	3.0.0
-%global vlc_date	20171215
+%global vlc_date	20171221
 %global vlc_rc		rc2
-%global vlc_tag         -%{?vlc_date}-0223-%{?vlc_rc}
+%global vlc_tag         -%{?vlc_date}-0227-%{?vlc_rc}
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -40,8 +40,8 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	%{vlc_vers}%{?vlc_rc:~%{vlc_rc}}
-Release:	0.45%{?vlc_date:.git%{vlc_date}}%{?dist}
+Version:	%{vlc_vers}
+Release:	0.46%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -53,6 +53,8 @@ BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 
 %{?_with_bootstrap:
+BuildRequires:	bison
+BuildRequires:	flex
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 }
@@ -67,7 +69,6 @@ BuildRequires:	pkgconfig(dbus-1)
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
-%{?_with_freerdp:BuildRequires: freerdp-devel}
 BuildRequires:	fribidi-devel
 %{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
@@ -76,6 +77,10 @@ BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	kde-filesystem
 BuildRequires:	game-music-emu-devel
+%ifarch %{arm} aarch64
+BuildRequires:	pkgconfig(gstreamer-app-1.0)
+BuildRequires:	pkgconfig(gstreamer-video-1.0)
+%endif
 BuildRequires:	libavc1394-devel
 BuildRequires:	libass-devel >= 0.9.7
 %{?_with_bluray:BuildRequires: libbluray-devel >= 0.2.1}
@@ -267,6 +272,10 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
 	--disable-silent-rules			\
+        --with-default-font=%{_fontbasedir}/dejavu/DejaVuSans.ttf \
+        --with-default-font-family=DejaVuSans \
+        --with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
+        --with-default-monospace-font-family=DejaVuSansMono \
 	--with-pic				\
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
@@ -330,18 +339,10 @@ sed -i -e 's! -shared ! -Wl,--as-needed\0!g' libtool
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 find %{buildroot} -name '*.a' -exec rm -f {} ';'
 
-desktop-file-install --vendor ""			\
-	--dir %{buildroot}%{_datadir}/applications	\
-	--delete-original				\
-	--mode 644					\
-	%{buildroot}%{_datadir}/applications/vlc.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/vlc.desktop
 
 # Remove installed fonts for skins2
-rm -f %{buildroot}%{_datadir}/vlc/skins2/fonts/*.ttf
-ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
-  %{buildroot}%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
-ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
-  %{buildroot}%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
+rm -f %{buildroot}%{_datadir}/vlc/skins2/fonts
 
 #Fix unowned directories
 rm -rf %{buildroot}%{_docdir}/vlc
@@ -545,6 +546,12 @@ fi || :
 
 
 %changelog
+* Thu Dec 21 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.46.git20171221.rc2
+- Update to 20171221
+- Drop pre-version
+- Set defaults fonts
+- Enable gstreamer on %%{arm} and aarch64
+
 * Sat Dec 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0~rc2-0.45.git20171215
 - Improve pre-version
 - Re-enable i686 mmx/sse (autodetected)
