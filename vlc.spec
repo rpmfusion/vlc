@@ -41,7 +41,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	0.46%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
+Release:	0.47%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -541,6 +541,9 @@ fi || :
 
 
 %changelog
+* Sun Dec 31 2017 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.47.git20171221.rc2
+- Mass rebuild for x264 and x265
+
 * Thu Dec 21 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.46.git20171221.rc2
 - Update to 20171221
 - Drop pre-version
