@@ -1,7 +1,7 @@
 %global vlc_vers	3.0.0
-%global vlc_date	20171221
-%global vlc_rc		rc2
-%global vlc_tag         -%{?vlc_date}-0227-%{?vlc_rc}
+%global vlc_date	20180109
+%global vlc_rc		rc5
+%global vlc_tag         -%{?vlc_date}-0224-%{?vlc_rc}
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -41,7 +41,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	0.47%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
+Release:	0.48%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -541,6 +541,9 @@ fi || :
 
 
 %changelog
+* Tue Jan 09 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.48.git20180109.rc5
+- Update to 20180109 -rc5
+
 * Sun Dec 31 2017 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.47.git20171221.rc2
 - Mass rebuild for x264 and x265
 
