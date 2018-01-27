@@ -462,6 +462,7 @@ fi || :
 %{_bindir}/vlc-wrapper
 %exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
+%{_libdir}/vlc/lua/
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %{?_with_gnomevfs:
