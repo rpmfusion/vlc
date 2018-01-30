@@ -32,7 +32,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	2.2.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -495,6 +495,9 @@ fi || :
 
 
 %changelog
+* Tue Jan 30 2018 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-2
+- rebuilt
+
 * Wed Nov 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-1
 - Update to 2.2.8
 
