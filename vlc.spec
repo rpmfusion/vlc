@@ -1,7 +1,7 @@
 %global vlc_vers	3.0.0
-%global vlc_date	20180127
-%global vlc_rc		rc8
-%global vlc_tag         -%{?vlc_date}-0224-%{?vlc_rc}
+%global vlc_date	20180202
+%global vlc_rc		rc9
+%global vlc_tag         -%{?vlc_date}-0233-%{?vlc_rc}
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -41,7 +41,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	0.51%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
+Release:	0.52%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -542,6 +542,9 @@ fi || :
 
 
 %changelog
+* Fri Feb 02 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.52.git20180202.rc9
+- Update to rc9
+
 * Sat Jan 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.51.git20180127.rc8
 - Update to 20180127 -rc8
 - Rebuild for new libcdio and libvpx
