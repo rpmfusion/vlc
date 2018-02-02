@@ -139,9 +139,7 @@ BuildRequires:	lua-devel
 BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
-%if 0%{?fedora}  && 0%{?fedora} < 28
 %{?_with_opencv:BuildRequires: pkgconfig(opencv)}
-%endif
 BuildRequires:	openslp-devel
 Buildrequires:	opus-devel
 BuildRequires:	pcre-devel
