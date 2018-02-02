@@ -25,7 +25,9 @@
 %global _with_vaapi 1
 %endif
 %global _with_bluray    1
+%if 0%{?fedora}  && 0%{?fedora} < 28
 %global _with_opencv    1
+%endif
 %global _with_fluidsynth 1
 %if 0%{?fedora}
 %global _with_freerdp 1
