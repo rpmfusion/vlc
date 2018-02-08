@@ -51,6 +51,7 @@ Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
+BuildRequires:  fontpackages-devel
 
 %{?_with_bootstrap:
 BuildRequires:	bison
@@ -70,7 +71,6 @@ BuildRequires:	pkgconfig(dbus-1)
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
 BuildRequires:	fribidi-devel
-%{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hostname
@@ -186,6 +186,12 @@ BuildRequires:  pkgconfig(xcb-keysyms)
 }
 BuildRequires:	xorg-x11-proto-devel
 
+%ifarch armv7hl
+%{?_with_rpi:
+BuildRequires:  raspberrypi-vc-devel
+}
+%endif
+
 
 %{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
@@ -283,14 +289,12 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
 	--enable-sftp				\
-%{?_with_gnomevfs:--enable-gnomevfs}		\
 %{?_with_vcdimager:--enable-vcdx}		\
 	--enable-omxil				\
 	--enable-omxil-vout			\
 %{?_with_rpi:
 	--enable-rpi-omxil			\
-	--enable-mmal-codec			\
-	--enable-mmal-vout			\
+	--enable-mmal				\
 } \
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
