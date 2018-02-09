@@ -1,7 +1,7 @@
 %global vlc_vers	3.0.0
-%global vlc_date	20180202
-%global vlc_rc		rc9
-%global vlc_tag         -%{?vlc_date}-0233-%{?vlc_rc}
+#global vlc_date	20180202
+#global vlc_rc		rc9
+#global vlc_tag         -%%{?vlc_date}-0233-%%{?vlc_rc}
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -25,7 +25,9 @@
 %global _with_vaapi 1
 %endif
 %global _with_bluray    1
+%if 0%{?fedora}  && 0%{?fedora} < 28
 %global _with_opencv    1
+%endif
 %global _with_fluidsynth 1
 %if 0%{?fedora}
 %global _with_freerdp 1
@@ -41,7 +43,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	0.52%{?vlc_date:.git%{vlc_date}}%{?vlc_rc:.%{vlc_rc}}%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -49,6 +51,7 @@ Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
+BuildRequires:  fontpackages-devel
 
 %{?_with_bootstrap:
 BuildRequires:	bison
@@ -68,7 +71,6 @@ BuildRequires:	pkgconfig(dbus-1)
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
 BuildRequires:	fribidi-devel
-%{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hostname
@@ -184,6 +186,12 @@ BuildRequires:  pkgconfig(xcb-keysyms)
 }
 BuildRequires:	xorg-x11-proto-devel
 
+%ifarch armv7hl
+%{?_with_rpi:
+BuildRequires:  raspberrypi-vc-devel
+}
+%endif
+
 
 %{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
@@ -263,8 +271,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 
 
 %build
-
-
 %configure \
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
@@ -281,14 +287,12 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
 	--enable-sftp				\
-%{?_with_gnomevfs:--enable-gnomevfs}		\
 %{?_with_vcdimager:--enable-vcdx}		\
 	--enable-omxil				\
 	--enable-omxil-vout			\
 %{?_with_rpi:
 	--enable-rpi-omxil			\
-	--enable-mmal-codec			\
-	--enable-mmal-vout			\
+	--enable-mmal				\
 } \
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
@@ -542,6 +546,12 @@ fi || :
 
 
 %changelog
+* Fri Feb 09 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-1
+- Update to 3.0.0 release
+
+* Sun Feb 04 2018 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.53.git20180202.rc9
+- Rebuild (live555-2018.01.29)
+
 * Fri Feb 02 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.52.git20180202.rc9
 - Update to rc9
 
