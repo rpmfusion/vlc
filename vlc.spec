@@ -43,7 +43,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -148,6 +148,7 @@ BuildRequires:	pcre-devel
 BuildRequires:	pkgconfig(libarchive) >= 3.1.0
 BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
+BuildRequires:	pkgconfig(microdns)
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
@@ -546,6 +547,9 @@ fi || :
 
 
 %changelog
+* Sun Feb 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-2
+- Enable microdns (rfbz#4793)
+
 * Fri Feb 09 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-1
 - Update to 3.0.0 release
 
