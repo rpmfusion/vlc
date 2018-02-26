@@ -43,7 +43,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -121,6 +121,7 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
+BuildRequires:	pkgconfig(libplacebo)
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -549,6 +550,9 @@ fi || :
 
 
 %changelog
+* Mon Feb 26 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-3
+- Add libplacebo support
+
 * Sun Feb 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-2
 - Enable microdns (rfbz#4793)
 
