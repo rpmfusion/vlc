@@ -48,6 +48,9 @@ License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
+# opengl: update for libplacebo v0.4.0 API changes
+# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commit;h=f33a7b19f0a55e70f1a6dd1fd3542cdec1d29ac6
+Patch0:     modules_video_output_opengl_fragment_shaders.c.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -267,6 +270,7 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{vlc_vers}%{?vlc_rc:-%{vlc_rc}}
+%patch0 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
