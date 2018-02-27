@@ -48,6 +48,8 @@ License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
+# Missing file from tarball
+Source1:	asm.S
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -269,6 +271,8 @@ VLC media player extras modules.
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 }
+
+install -pm 0644 %{SOURCE1} modules/arm_neon
 
 
 
