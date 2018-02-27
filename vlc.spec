@@ -1,4 +1,4 @@
-%global vlc_vers	3.0.0
+%global vlc_vers	3.0.1
 #global vlc_date	20180202
 #global vlc_rc		rc9
 #global vlc_tag         -%%{?vlc_date}-0233-%%{?vlc_rc}
@@ -43,7 +43,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	3%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
@@ -550,6 +550,9 @@ fi || :
 
 
 %changelog
+* Tue Feb 27 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-1
+- Update to 3.0.1
+
 * Mon Feb 26 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-3
 - Add libplacebo support
 
