@@ -50,6 +50,8 @@ URL:		http://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
 # Missing file from tarball
 Source1:	asm.S
+# https://git.videolan.org/?p=vlc.git;a=commit;h=26e2d3906658c30f2f88f4b1bc9630ec43bf5525
+Patch0:     modules_text_renderer_freetype_text_layout.c.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -267,6 +269,7 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{vlc_vers}%{?vlc_rc:-%{vlc_rc}}
+%patch0 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -554,6 +557,7 @@ fi || :
 %changelog
 * Thu Mar 08 2018 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 3.0.1-3
 - Rebuilt for new ffmpeg snapshot
+- Patch for fribidi version 1.0
 
 * Wed Feb 28 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-2
 - Rebuilt for x265
