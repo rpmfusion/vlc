@@ -45,8 +45,7 @@ Name:		vlc
 Version:	%{vlc_vers}
 Release:	3%{?dist}
 License:	GPLv2+
-Group:		Applications/Multimedia
-URL:		http://www.videolan.org
+URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
 # Missing file from tarball
 Source1:	asm.S
