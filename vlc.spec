@@ -43,7 +43,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	%{vlc_vers}
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
@@ -554,6 +554,9 @@ fi || :
 
 
 %changelog
+* Sat Mar 17 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-4
+- Rebuilt for live555
+
 * Thu Mar 08 2018 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 3.0.1-3
 - Rebuilt for new ffmpeg snapshot
 - Patch for fribidi version 1.0
