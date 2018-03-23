@@ -1,4 +1,3 @@
-%global vlc_vers	3.0.1
 #global vlc_date	20180202
 #global vlc_rc		rc9
 #global vlc_tag         -%%{?vlc_date}-0233-%%{?vlc_rc}
@@ -42,11 +41,11 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	%{vlc_vers}
-Release:	4%{?dist}
+Version:	3.0.1
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
-Source0:	%{vlc_url}/%{?!vlc_rc:%{vlc_vers}/}vlc-%{vlc_vers}%{?vlc_tag}.tar.xz
+Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 # Missing file from tarball
 Source1:	asm.S
 # https://git.videolan.org/?p=vlc.git;a=commit;h=26e2d3906658c30f2f88f4b1bc9630ec43bf5525
@@ -160,6 +159,7 @@ BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
 BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
+BuildRequires:	pkgconfig(soxr)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
@@ -556,6 +556,10 @@ fi || :
 
 
 %changelog
+* Fri Mar 23 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-5
+- Rework version tag
+- Add soxr
+
 * Sat Mar 17 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-4
 - Rebuilt for live555
 
