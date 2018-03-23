@@ -557,6 +557,7 @@ fi || :
 * Fri Mar 23 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-5
 - Rework version tag
 - Add soxr
+- Add ldconfig_scriptlets
 
 * Sat Mar 17 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-4
 - Rebuilt for live555
