@@ -267,7 +267,7 @@ VLC media player extras modules.
 
 
 %prep
-%setup -q -n %{name}-%{vlc_vers}%{?vlc_rc:-%{vlc_rc}}
+%setup -q -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
 %patch0 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
