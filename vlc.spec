@@ -370,11 +370,10 @@ rm -rf %{buildroot}/%{_datadir}/macosx
 %find_lang %{name}
 
 
-%ldconfig_scriptlets
 %ldconfig_scriptlets core
-%ldconfig_scriptlets extras
 
 %post
+%ldconfig
 if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
 fi || :
@@ -386,6 +385,7 @@ fi
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null || :
 
 %postun
+%ldconfig
 %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null
 %{_bindir}/touch --no-create %{_datadir}/icons/hicolor
@@ -397,11 +397,13 @@ fi || :
 %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 
 %post extras
+%ldconfig
 if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %postun extras
+%ldconfig
 if [ $1 == 0 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
