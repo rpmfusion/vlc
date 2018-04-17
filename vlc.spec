@@ -42,7 +42,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -558,6 +558,9 @@ fi || :
 
 
 %changelog
+* Tue Apr 17 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-6
+- Rebuilt for libupnp
+
 * Fri Mar 23 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-5
 - Rework version tag
 - Add soxr
