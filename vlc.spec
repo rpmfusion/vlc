@@ -41,13 +41,11 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	3.0.1
-Release:	6%{?dist}
+Version:	3.0.2
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-# Missing file from tarball
-Source1:	asm.S
 # https://git.videolan.org/?p=vlc.git;a=commit;h=26e2d3906658c30f2f88f4b1bc9630ec43bf5525
 Patch0:     modules_text_renderer_freetype_text_layout.c.patch
 
@@ -270,7 +268,6 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
-%patch0 -p1
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -558,6 +555,9 @@ fi || :
 
 
 %changelog
+* Mon Apr 23 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.2-1
+- Update to 3.0.2
+
 * Tue Apr 17 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-6
 - Rebuilt for libupnp
 
