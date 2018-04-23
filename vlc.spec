@@ -273,9 +273,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 }
 
-install -pm 0644 %{SOURCE1} modules/arm_neon
-
-
 
 %build
 %configure \
