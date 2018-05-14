@@ -140,7 +140,7 @@ BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 BuildRequires:	lua-devel
 BuildRequires:	minizip-devel
-%{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
+%{?_with_libmpeg2:BuildRequires: libmpeg2-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
 %{?_with_opencv:BuildRequires: pkgconfig(opencv)}
 BuildRequires:	openslp-devel
