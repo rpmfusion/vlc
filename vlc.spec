@@ -195,6 +195,10 @@ BuildRequires:  raspberrypi-vc-devel
 }
 %endif
 
+%if 0%{?rhel} == 7
+BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
+%endif
+
 
 %{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
 
@@ -267,6 +271,11 @@ VLC media player extras modules.
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
 %patch0 -p1
+
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
+
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -274,6 +283,10 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 
 
 %build
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
+
 %configure \
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
