@@ -41,7 +41,7 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	3.0.2
+Version:	3.0.3
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
@@ -140,7 +140,7 @@ BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 BuildRequires:	lua-devel
 BuildRequires:	minizip-devel
-%{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
+%{?_with_libmpeg2:BuildRequires: libmpeg2-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
 %if 0%{?fedora}  && 0%{?fedora} < 28
 %{?_with_opencv:BuildRequires: pkgconfig(opencv)}
@@ -195,6 +195,10 @@ BuildRequires:	xorg-x11-proto-devel
 %{?_with_rpi:
 BuildRequires:  raspberrypi-vc-devel
 }
+%endif
+
+%if 0%{?rhel} == 7
+BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
 
@@ -268,6 +272,12 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
+%patch0 -p1
+
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
+
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -275,6 +285,10 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 
 
 %build
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
+
 %configure \
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
@@ -552,6 +566,15 @@ fi || :
 
 
 %changelog
+* Mon May 28 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-1
+- Update to 3.0.3
+
+* Mon May 14 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.2-3
+- Rebuilt
+
+* Mon Apr 23 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.2-2
+- Readd lost patch
+
 * Mon Apr 23 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.2-1
 - Update to 3.0.2
 
