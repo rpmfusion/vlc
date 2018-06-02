@@ -42,13 +42,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 # https://git.videolan.org/?p=vlc.git;a=commit;h=26e2d3906658c30f2f88f4b1bc9630ec43bf5525
 Patch0:     modules_text_renderer_freetype_text_layout.c.patch
-
+# https://git.videolan.org/?p=vlc.git;a=commit;h=39b0590165501cdeb85595a19bf076d06bcc594c
+Patch1:     buildfix_qt511.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -270,8 +271,7 @@ VLC media player extras modules.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
-%patch0 -p1
+%autosetup -p1 -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -565,6 +565,9 @@ fi || :
 
 
 %changelog
+* Sat Jun 02 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-3
+- Fix build against Qt 5.11
+
 * Fri Jun 01 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.3-2
 - Add missing libjpeg
 
