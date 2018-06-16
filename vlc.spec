@@ -123,7 +123,9 @@ BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libjpeg)
+%ifarch x86_64 i686
 BuildRequires:	pkgconfig(libplacebo)
+%endif
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -567,6 +569,7 @@ fi || :
 %changelog
 * Sat Jun 16 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-4
 - Rebuild for new libass version
+- Make libplacebo x86 only due to vulkan changes
 
 * Sat Jun 02 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-3
 - Fix build against Qt 5.11
