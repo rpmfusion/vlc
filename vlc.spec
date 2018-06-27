@@ -42,7 +42,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -123,9 +123,7 @@ BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libjpeg)
-%ifarch x86_64 i686
 BuildRequires:	pkgconfig(libplacebo)
-%endif
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -567,6 +565,9 @@ fi || :
 
 
 %changelog
+* Wed Jun 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-5
+- Revert last commit
+
 * Sat Jun 16 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-4
 - Rebuild for new libass version
 - Make libplacebo x86 only due to vulkan changes
