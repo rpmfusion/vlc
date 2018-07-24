@@ -241,7 +241,6 @@ multi-cast in IPv4 or IPv6 on networks.
 
 %package devel
 Summary:	Development files for %{name}
-Group:		Development/Libraries
 Requires:	%{name}-core%{_isa} = %{version}-%{release}
 
 %description devel
@@ -251,7 +250,6 @@ developing applications that use %{name}.
 
 %package core
 Summary:	VLC media player core
-Group:		Applications/Multimedia
 Provides:	vlc-nox = %{version}-%{release}
 Obsoletes:	vlc-nox < 1.1.5-2
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
@@ -262,7 +260,6 @@ VLC media player core components
 
 %package extras
 Summary:	VLC media player with extras modules
-Group:		Applications/Multimedia
 Requires:	vlc-core%{_isa} = %{version}-%{release}
 
 
