@@ -42,7 +42,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.3
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -50,6 +50,9 @@ Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 Patch0:     modules_text_renderer_freetype_text_layout.c.patch
 # https://git.videolan.org/?p=vlc.git;a=commit;h=39b0590165501cdeb85595a19bf076d06bcc594c
 Patch1:     buildfix_qt511.patch
+# https://mailman.videolan.org/pipermail/vlc-devel/2018-July/120638.html
+# https://bugzilla.rpmfusion.org/show_bug.cgi?id=4596
+Patch2:     fix_wayland_freeze.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -562,6 +565,9 @@ fi || :
 
 
 %changelog
+* Sat Aug 04 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-7
+- Add patch from vlc mailing list to fix wayland freeze (rfbz#4596)
+
 * Tue Jul 24 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.3-6
 - Rebuilt for libplacebo
 
