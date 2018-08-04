@@ -1,0 +1,21 @@
+Closes: https://gitlab.gnome.org/GNOME/mutter/issues/244
+Signed-off-by: Olivier Fourdan <ofourdan at redhat.com>
+---
+ modules/gui/qt/util/timetooltip.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/gui/qt/util/timetooltip.cpp b/modules/gui/qt/util/timetooltip.cpp
+index 1314b520ea..7a63a9d7d9 100644
+--- a/modules/gui/qt/util/timetooltip.cpp
++++ b/modules/gui/qt/util/timetooltip.cpp
+@@ -73,7 +73,7 @@ void TimeTooltip::adjustPosition()
+ #if defined( Q_OS_WIN )
+         mTarget.y() - 2 * size.height() - TIP_HEIGHT / 2 );
+ #else
+-        mTarget.y() - size.height() + TIP_HEIGHT / 2 );
++        mTarget.y() - size.height() - TIP_HEIGHT / 2 );
+ #endif
+ 
+     // Keep the tooltip on the same screen if possible
+-- 
+2.17.1
