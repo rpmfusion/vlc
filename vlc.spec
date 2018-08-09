@@ -62,6 +62,7 @@ BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
+BuildRequires:	gcc-c++
 }
 
 %{?_with_a52dec:BuildRequires: a52dec-devel}
