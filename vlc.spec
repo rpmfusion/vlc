@@ -41,18 +41,11 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	3.0.3
-Release:	7%{?dist}
+Version:	3.0.4
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-# https://git.videolan.org/?p=vlc.git;a=commit;h=26e2d3906658c30f2f88f4b1bc9630ec43bf5525
-Patch0:     modules_text_renderer_freetype_text_layout.c.patch
-# https://git.videolan.org/?p=vlc.git;a=commit;h=39b0590165501cdeb85595a19bf076d06bcc594c
-Patch1:     buildfix_qt511.patch
-# https://mailman.videolan.org/pipermail/vlc-devel/2018-July/120638.html
-# https://bugzilla.rpmfusion.org/show_bug.cgi?id=4596
-Patch2:     fix_wayland_freeze.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -325,7 +318,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-theora				\
 	--enable-libass				\
 	--enable-shout				\
-%{!?_with_wayland: --disable-wayland} 		\
+%{?_with_wayland: --enable-wayland} 		\
 %{!?_without_xcb:--enable-xcb --enable-xvideo} 	\
 %{?_without_xcb:--disable-xcb --disable-xvideo} \
 	--enable-svg				\
@@ -566,6 +559,9 @@ fi || :
 
 
 %changelog
+* Fri Aug 31 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.4-1
+- Update to 3.0.4
+
 * Sat Aug 04 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-7
 - Add patch from vlc mailing list to fix wayland freeze (rfbz#4596)
 
