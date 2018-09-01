@@ -119,6 +119,7 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
+BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	pkgconfig(libplacebo)
 BuildRequires:	pkgconfig(libudev)
