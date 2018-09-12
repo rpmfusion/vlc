@@ -42,7 +42,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -224,6 +224,9 @@ Requires: xdg-utils
 
 Requires:       hicolor-icon-theme
 
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
 #Merge back jack plugin into main
 Obsoletes: vlc-plugin-jack < %{version}-%{release}
 Provides: vlc-plugin-jack = %{version}-%{release}
@@ -259,7 +262,8 @@ VLC media player core components
 %package extras
 Summary:	VLC media player with extras modules
 Requires:	vlc-core%{_isa} = %{version}-%{release}
-
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 
 %description extras
 VLC media player extras modules.
@@ -377,7 +381,7 @@ rm -rf %{buildroot}/%{_datadir}/macosx
 %ldconfig_scriptlets core
 
 %post
-%ldconfig
+%{?ldconfig}
 if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
 fi || :
@@ -389,7 +393,7 @@ fi
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null || :
 
 %postun
-%ldconfig
+%{?ldconfig}
 %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null
 %{_bindir}/touch --no-create %{_datadir}/icons/hicolor
@@ -401,13 +405,13 @@ fi || :
 %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 
 %post extras
-%ldconfig
+%{?ldconfig}
 if [ $1 == 1 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %postun extras
-%ldconfig
+%{?ldconfig}
 if [ $1 == 0 ] ; then
   %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
@@ -560,6 +564,9 @@ fi || :
 
 
 %changelog
+* Wed Sep 12 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.4-2
+- Fix unexpanded ldconfig macro (rfbz#5018)
+
 * Fri Aug 31 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.4-1
 - Update to 3.0.4
 
