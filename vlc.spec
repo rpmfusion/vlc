@@ -42,7 +42,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -108,7 +108,7 @@ BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmpg123-devel
 BuildRequires:	libmtp-devel >= 1.0.0
-%{?_with_projectm:BuildRequires: libprojectM-qt-devel}
+%{?_with_projectm:BuildRequires: libprojectM-devel}
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libssh2-devel
@@ -119,6 +119,11 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
+%if 0%{?fedora}
+BuildRequires:  phonon-qt5-devel
+%else
+BuildRequires:  phonon-devel
+%endif
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	pkgconfig(libplacebo)
@@ -200,7 +205,13 @@ BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
 
-%{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
+%{?_with_workaround_circle_deps:
+%if 0%{?fedora}
+BuildRequires: phonon-qt5-backend-gstreamer
+%else
+BuildRequires: phonon-backend-gstreamer
+%endif
+}
 
 %{?_with_wayland:
 # Fedora 25 Workstation default to wayland but not all
@@ -564,6 +575,9 @@ fi || :
 
 
 %changelog
+* Tue Sep 18 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.4-3
+- Expunge qt-devel from buildroot
+
 * Wed Sep 12 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.4-2
 - Fix unexpanded ldconfig macro (rfbz#5018)
 
