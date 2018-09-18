@@ -186,6 +186,7 @@ BuildRequires:	libXv-devel
 BuildRequires:	libXxf86vm-devel
 BuildRequires:	libX11-devel
 BuildRequires:	libXext-devel
+BuildRequires:	libXinerama-devel
 BuildRequires:	libXpm-devel
 %{!?_without_xcb:
 BuildRequires:  libxcb-devel
