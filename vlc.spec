@@ -1,6 +1,6 @@
-#global vlc_date	20180202
+%global vlc_date	20180921
 #global vlc_rc		rc9
-#global vlc_tag         -%%{?vlc_date}-0233-%%{?vlc_rc}
+%global vlc_tag         -%%{?vlc_date}-0223-%%{?vlc_rc}
 %if 0%{?vlc_rc:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -29,6 +29,7 @@
 %endif
 %global _with_fluidsynth 1
 %if 0%{?fedora}
+%global _with_aom     1
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
@@ -41,11 +42,13 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	3.0.4
-Release:	3%{?dist}
+Version:	3.0.5
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
+Patch0:         0001-Workaround-a-bug-with-.-vlc-cache-gen-on-armhfp.patch
+
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -59,6 +62,7 @@ BuildRequires:	libtool
 BuildRequires:	gcc-c++
 
 %{?_with_a52dec:BuildRequires: a52dec-devel}
+%{?_with_aom:BuildRequires: libaom-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
@@ -322,6 +326,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-rpi-omxil			\
 	--enable-mmal				\
 } \
+%{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
@@ -576,6 +581,11 @@ fi || :
 
 
 %changelog
+* Fri Sep 21 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-1
+- Update to 3.0.5 snapshot from today
+- Enable aom support
+- Workaound a bug with vlc-cache-gen on armhfp
+
 * Tue Sep 18 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.4-3
 - Expunge qt-devel from buildroot
 
