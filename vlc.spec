@@ -47,7 +47,6 @@ Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:         0001-Workaround-a-bug-with-.-vlc-cache-gen-on-armhfp.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
