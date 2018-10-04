@@ -47,6 +47,7 @@ Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
+Patch1:     x264-Fix-build-with-a-newer-version-of-x264.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -582,6 +583,7 @@ fi || :
 %changelog
 * Thu Oct 04 2018 Sérgio Basto <sergio@serjux.com> - 3.0.5-3
 - Mass rebuild for x264 and/or x265
+- Fix build with x264 >= 0.153
 
 * Wed Oct 03 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-2
 - Update to 20181003 snapshot
