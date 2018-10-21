@@ -1,7 +1,7 @@
-#global vlc_date	20180202
-#global vlc_rc		rc9
-#global vlc_tag         -%%{?vlc_date}-0233-%%{?vlc_rc}
-%if 0%{?vlc_rc:1}
+%global vlc_date	20181020
+#global vlc_rc		-rc9
+%global vlc_tag         -%{?vlc_date}-0221
+%if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
 %global vlc_url https://download.videolan.org/pub/videolan/vlc/
@@ -29,6 +29,7 @@
 %endif
 %global _with_fluidsynth 1
 %if 0%{?fedora}
+%global _with_aom     1
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
@@ -41,11 +42,13 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	3.0.4
-Release:	2%{?dist}
+Version:	3.0.5
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
-Source0:	%{vlc_url}/%{?!vlc_rc:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
+Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
+Patch1:     x264-Fix-build-with-a-newer-version-of-x264.patch
+
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -59,6 +62,7 @@ BuildRequires:	libtool
 BuildRequires:	gcc-c++
 
 %{?_with_a52dec:BuildRequires: a52dec-devel}
+%{?_with_aom:BuildRequires: libaom-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
@@ -108,7 +112,7 @@ BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmpg123-devel
 BuildRequires:	libmtp-devel >= 1.0.0
-%{?_with_projectm:BuildRequires: libprojectM-qt-devel}
+%{?_with_projectm:BuildRequires: libprojectM-devel}
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libssh2-devel
@@ -119,6 +123,11 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
+%if 0%{?fedora}
+BuildRequires:  phonon-qt5-devel
+%else
+BuildRequires:  phonon-devel
+%endif
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	pkgconfig(libplacebo)
@@ -181,6 +190,7 @@ BuildRequires:	libXv-devel
 BuildRequires:	libXxf86vm-devel
 BuildRequires:	libX11-devel
 BuildRequires:	libXext-devel
+BuildRequires:	libXinerama-devel
 BuildRequires:	libXpm-devel
 %{!?_without_xcb:
 BuildRequires:  libxcb-devel
@@ -200,7 +210,13 @@ BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
 
-%{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
+%{?_with_workaround_circle_deps:
+%if 0%{?fedora}
+BuildRequires: phonon-qt5-backend-gstreamer
+%else
+BuildRequires: phonon-backend-gstreamer
+%endif
+}
 
 %{?_with_wayland:
 # Fedora 25 Workstation default to wayland but not all
@@ -270,7 +286,7 @@ VLC media player extras modules.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{version}%{?vlc_rc:-%{vlc_rc}}
+%autosetup -p1 -n %{name}-%{version}%{?vlc_rc}
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -310,6 +326,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-rpi-omxil			\
 	--enable-mmal				\
 } \
+%{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
@@ -564,6 +581,24 @@ fi || :
 
 
 %changelog
+* Sat Oct 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-4
+- Update to 20181020
+
+* Thu Oct 04 2018 Sérgio Basto <sergio@serjux.com> - 3.0.5-3
+- Mass rebuild for x264 and/or x265
+- Fix build with x264 >= 0.153
+
+* Wed Oct 03 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-2
+- Update to 20181003 snapshot
+
+* Fri Sep 21 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-1
+- Update to 3.0.5 snapshot from today
+- Enable aom support
+- Workaound a bug with vlc-cache-gen on armhfp
+
+* Tue Sep 18 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.4-3
+- Expunge qt-devel from buildroot
+
 * Wed Sep 12 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.4-2
 - Fix unexpanded ldconfig macro (rfbz#5018)
 
