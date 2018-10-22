@@ -37,6 +37,7 @@ License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+Patch0:		vlc-2.2x-fix-upnp.patch
 
 BuildRequires:	desktop-file-utils
 
@@ -497,6 +498,7 @@ fi || :
 %changelog
 * Mon Oct 22 2018 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-3
 - Rebuilt for live555 CVE-2018-4013
+- Fix build with libupnp
 
 * Tue Jan 30 2018 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-2
 - rebuilt
