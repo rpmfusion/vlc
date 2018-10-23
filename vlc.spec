@@ -37,6 +37,8 @@ License:	GPLv2+
 Group:		Applications/Multimedia
 URL:		http://www.videolan.org
 Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
+# Adapt patch with this addition fix
+# https://github.com/mrjimenez/pupnp/issues/63
 Patch0:		vlc-2.2x-fix-upnp.patch
 
 BuildRequires:	desktop-file-utils

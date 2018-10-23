@@ -21,3 +21,13 @@ index bdd3c55ee5..82d43632f4 100644
  /*
   * Compat functions and typedefs for libupnp prior to 1.8
   */
+@@ -74,6 +74,8 @@
+ {
+   return p_s->Sid;
+ }
++#elif UPNP_VERSION < 10800
++typedef void* UpnpEventPtr;
+ #else
+ typedef const void* UpnpEventPtr;
+ #endif
+
