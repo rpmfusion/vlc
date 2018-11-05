@@ -488,10 +488,6 @@ fi || :
 %{?_with_fluidsynth:
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-#vdpau in main
-%dir %{_libdir}/vlc/plugins/vdpau
-%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
-
 
 %files core -f %{name}.lang
 %{_bindir}/vlc
@@ -552,6 +548,9 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/vdpau
 %ghost %{_libdir}/vlc/plugins/plugins.dat
 %dir %{_libdir}/vlc/
+%dir %{_libdir}/vlc/plugins
+%dir %{_libdir}/vlc/plugins/vdpau
+%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
 %{_libdir}/vlc/vlc-cache-gen
 %{_libdir}/vlc/plugins
 %{_mandir}/man1/vlc*.1*
