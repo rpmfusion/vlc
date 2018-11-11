@@ -1,4 +1,4 @@
-%global vlc_date	20181020
+%global vlc_date	20181111
 #global vlc_rc		-rc9
 %global vlc_tag         -%{?vlc_date}-0221
 %if 0%{?vlc_tag:1}
@@ -43,11 +43,10 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch1:     x264-Fix-build-with-a-newer-version-of-x264.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -580,6 +579,9 @@ fi || :
 
 
 %changelog
+* Sun Nov 11 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-5
+- Update to 20181111
+
 * Sat Oct 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-4
 - Update to 20181020
 
