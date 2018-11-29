@@ -1,6 +1,6 @@
-%global vlc_date	20181111
+%global vlc_date	20181129
 #global vlc_rc		-rc9
-%global vlc_tag         -%{?vlc_date}-0221
+%global vlc_tag         -%{?vlc_date}-0232
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -43,7 +43,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
 Version:	3.0.5
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -579,6 +579,9 @@ fi || :
 
 
 %changelog
+* Thu Nov 29 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-7
+- Update to 20181129
+
 * Sun Nov 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-6
 - Rebuild for new x265
 
