@@ -1,4 +1,11 @@
-#global vlc_rc			-20170212-0224
+%global vlc_date	20181129
+#global vlc_rc		-rc9
+%global vlc_tag         -%{?vlc_date}-0232
+%if 0%{?vlc_tag:1}
+%global vlc_url https://nightlies.videolan.org/build/source/
+%else
+%global vlc_url https://download.videolan.org/pub/videolan/vlc/
+%endif
 %global _with_bootstrap		1
 %global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
@@ -17,12 +24,19 @@
 %global _with_vaapi 1
 %endif
 %global _with_bluray    1
+%if 0%{?fedora}  && 0%{?fedora} < 28
 %global _with_opencv    1
+%endif
 %global _with_fluidsynth 1
 %if 0%{?fedora}
+%global _with_aom     1
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
+%global _with_wayland 1
+%endif
+%ifarch x86_64 i686
+%global _with_crystalhd 1
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
@@ -31,24 +45,26 @@
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Name:		vlc
-Version:	2.2.8
-Release:	3%{?dist}
+Version:	3.0.5
+Release:	7%{?dist}
 License:	GPLv2+
-Group:		Applications/Multimedia
-URL:		http://www.videolan.org
-Source0:	http://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}%{?vlc_rc}.tar.xz
-# Adapt patch with this addition fix
-# https://github.com/mrjimenez/pupnp/issues/63
-Patch0:		vlc-2.2x-fix-upnp.patch
+URL:		https://www.videolan.org
+Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 
 BuildRequires:	desktop-file-utils
+BuildRequires:  libappstream-glib
+BuildRequires:  fontpackages-devel
 
 %{?_with_bootstrap:
+BuildRequires:	bison
+BuildRequires:	flex
 BuildRequires:	gettext-devel
 BuildRequires:	libtool
 }
+BuildRequires:	gcc-c++
 
 %{?_with_a52dec:BuildRequires: a52dec-devel}
+%{?_with_aom:BuildRequires: libaom-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
@@ -58,14 +74,17 @@ BuildRequires:	pkgconfig(dbus-1)
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
-%{?_with_freerdp:BuildRequires: freerdp-devel}
 BuildRequires:	fribidi-devel
-%{?_with_gnomevfs:BuildRequires: gnome-vfs2-devel}
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
+BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	kde-filesystem
 BuildRequires:	game-music-emu-devel
+%ifarch %{arm} aarch64
+BuildRequires:	pkgconfig(gstreamer-app-1.0)
+BuildRequires:	pkgconfig(gstreamer-video-1.0)
+%endif
 BuildRequires:	libavc1394-devel
 BuildRequires:	libass-devel >= 0.9.7
 %{?_with_bluray:BuildRequires: libbluray-devel >= 0.2.1}
@@ -74,6 +93,8 @@ BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
 BuildRequires:	pkgconfig(libchromaprint)
 %{?_with_crystalhd:BuildRequires: libcrystalhd-devel}
+BuildRequires:	pkgconfig(daaladec)
+BuildRequires:	pkgconfig(daalaenc)
 BuildRequires:	libdc1394-devel >= 2.1.0
 %{?_with_libdca:BuildRequires: libdca-devel}
 BuildRequires:	libdv-devel
@@ -85,11 +106,15 @@ BuildRequires:	libid3tag-devel
 BuildRequires:	libkate-devel
 %{?_with_libmad:BuildRequires: libmad-devel}
 BuildRequires:	libmatroska-devel >= 0.7.6
+%ifarch x86_64 i686
+BuildRequires:	libmfx-devel
+%endif
 BuildRequires:	libmodplug-devel
 BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
+BuildRequires:	libmpg123-devel
 BuildRequires:	libmtp-devel >= 1.0.0
-%{?_with_projectm:BuildRequires: libprojectM-qt-devel}
+%{?_with_projectm:BuildRequires: libprojectM-devel}
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
 BuildRequires:	libssh2-devel
@@ -100,6 +125,14 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
+%if 0%{?fedora}
+BuildRequires:  phonon-qt5-devel
+%else
+BuildRequires:  phonon-devel
+%endif
+BuildRequires:	pkgconfig(libidn)
+BuildRequires:	pkgconfig(libjpeg)
+BuildRequires:	pkgconfig(libplacebo)
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -107,30 +140,41 @@ BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
 BuildRequires:  pkgconfig(vdpau)
 BuildRequires:	pkgconfig(vorbis)
+BuildRequires:	pkgconfig(vpx)
 BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	lirc-devel
 %{?_with_live555:BuildRequires: live555-devel >= 0-0.33}
 BuildRequires:  kernel-headers
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
-%if 0%{?fedora} < 24
-BuildRequires:	libmusicbrainz-devel
-%endif
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 BuildRequires:	lua-devel
 BuildRequires:	minizip-devel
-%{?_with_libmpeg2:BuildRequires: mpeg2dec-devel >= 0.3.2}
+%{?_with_libmpeg2:BuildRequires: libmpeg2-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
 %{?_with_opencv:BuildRequires: pkgconfig(opencv)}
 BuildRequires:	openslp-devel
 Buildrequires:	opus-devel
 BuildRequires:	pcre-devel
+BuildRequires:	pkgconfig(libarchive) >= 3.1.0
 BuildRequires:	pkgconfig(libpulse) >= 0.9.8
-BuildRequires:	qt4-devel >= 4.5.2
+BuildRequires:	pkgconfig(libsecret-1) >= 0.18
+BuildRequires:	pkgconfig(microdns)
+BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
+BuildRequires:	pkgconfig(Qt5Core) >= 5.5
+BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
+BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
+BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
+BuildRequires:	pkgconfig(soxr)
+BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
+%{?_with_wayland:
+BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
+BuildRequires:	pkgconfig(wayland-egl)
+BuildRequires:	pkgconfig(wayland-protocols)
+}
 %{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
 BuildRequires:	sqlite-devel
-BuildRequires:	SDL_image-devel
 %{?_with_sidplay:BuildRequires: pkgconfig(libsidplay2)}
 BuildRequires:	speex-devel >= 1.1.5
 BuildRequires:	taglib-devel
@@ -148,6 +192,7 @@ BuildRequires:	libXv-devel
 BuildRequires:	libXxf86vm-devel
 BuildRequires:	libX11-devel
 BuildRequires:	libXext-devel
+BuildRequires:	libXinerama-devel
 BuildRequires:	libXpm-devel
 %{!?_without_xcb:
 BuildRequires:  libxcb-devel
@@ -156,8 +201,32 @@ BuildRequires:  pkgconfig(xcb-keysyms)
 }
 BuildRequires:	xorg-x11-proto-devel
 
+%ifarch armv7hl
+%{?_with_rpi:
+BuildRequires:  raspberrypi-vc-devel
+}
+%endif
 
-%{?_with_workaround_circle_deps:BuildRequires: phonon-backend-gstreamer}
+%if 0%{?rhel} == 7
+BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
+%endif
+
+
+%{?_with_workaround_circle_deps:
+%if 0%{?fedora}
+BuildRequires: phonon-qt5-backend-gstreamer
+%else
+BuildRequires: phonon-backend-gstreamer
+%endif
+}
+
+%{?_with_wayland:
+# Fedora 25 Workstation default to wayland but not all
+# Boolean deps will handle this better when allowed
+%if 0%{?fedora} >= 25
+Recommends: qt5-qtwayland%{_isa}
+%endif
+}
 
 
 Provides: %{name}-xorg%{_isa} = %{version}-%{release}
@@ -167,11 +236,18 @@ Requires: kde-filesystem
 Requires: dejavu-sans-fonts
 Requires: dejavu-sans-mono-fonts
 Requires: dejavu-serif-fonts
-Requires: qt4%{?_isa} >= %{_qt4_version}
 
 #For xdg-sreensaver
 Requires: xdg-utils
 
+Requires:       hicolor-icon-theme
+
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+#Merge back jack plugin into main
+Obsoletes: vlc-plugin-jack < %{version}-%{release}
+Provides: vlc-plugin-jack = %{version}-%{release}
 
 
 %description
@@ -184,7 +260,6 @@ multi-cast in IPv4 or IPv6 on networks.
 
 %package devel
 Summary:	Development files for %{name}
-Group:		Development/Libraries
 Requires:	%{name}-core%{_isa} = %{version}-%{release}
 
 %description devel
@@ -194,35 +269,31 @@ developing applications that use %{name}.
 
 %package core
 Summary:	VLC media player core
-Group:		Applications/Multimedia
 Provides:	vlc-nox = %{version}-%{release}
 Obsoletes:	vlc-nox < 1.1.5-2
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
+%{?lua_version:Requires: lua(abi) = %{lua_version}}
 
 %description core
 VLC media player core components
 
 %package extras
 Summary:	VLC media player with extras modules
-Group:		Applications/Multimedia
 Requires:	vlc-core%{_isa} = %{version}-%{release}
-
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
 
 %description extras
 VLC media player extras modules.
 
-%package plugin-jack
-Summary:	JACK audio plugin for VLC
-Group:		Applications/Multimedia
-Requires:	vlc-core%{_isa} = %{version}-%{release}
-
-%description plugin-jack
-JACK audio plugin for the VLC media player.
-
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
+%autosetup -p1 -n %{name}-%{version}%{?vlc_rc}
+
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
+
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
@@ -231,17 +302,18 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 
 
 %build
-
+%if 0%{?rhel} == 7
+. /opt/rh/devtoolset-7/enable
+%endif
 
 %configure \
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
-%if 0%{?fedora} >= 22
-%ifarch i686
-	--disable-mmx --disable-sse		\
-%endif
-%endif
 	--disable-silent-rules			\
+        --with-default-font=%{_fontbasedir}/dejavu/DejaVuSans.ttf \
+        --with-default-font-family=DejaVuSans \
+        --with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
+        --with-default-monospace-font-family=DejaVuSansMono \
 	--with-pic				\
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
@@ -250,15 +322,14 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
 	--enable-sftp				\
-%{?_with_gnomevfs:--enable-gnomevfs}		\
 %{?_with_vcdimager:--enable-vcdx}		\
 	--enable-omxil				\
 	--enable-omxil-vout			\
 %{?_with_rpi:
 	--enable-rpi-omxil			\
-	--enable-mmal-codec			\
-	--enable-mmal-vout			\
+	--enable-mmal				\
 } \
+%{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
@@ -272,6 +343,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-theora				\
 	--enable-libass				\
 	--enable-shout				\
+%{?_with_wayland: --enable-wayland} 		\
 %{!?_without_xcb:--enable-xcb --enable-xvideo} 	\
 %{?_without_xcb:--disable-xcb --disable-xvideo} \
 	--enable-svg				\
@@ -289,85 +361,79 @@ sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' li
 sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 %endif
 
-%if 0
+%if 1
 # clean unused-direct-shlib-dependencies
 sed -i -e 's! -shared ! -Wl,--as-needed\0!g' libtool
 %endif
 
 
 
-make %{?_smp_mflags}
+%make_build
 
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p" CPPROG="cp -p"
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
-find $RPM_BUILD_ROOT -name '*.a' -exec rm -f {} ';'
+%make_install INSTALL="install -p" CPPROG="cp -p"
+find %{buildroot} -name '*.la' -exec rm -f {} ';'
+find %{buildroot} -name '*.a' -exec rm -f {} ';'
 
-desktop-file-install --vendor ""			\
-	--dir $RPM_BUILD_ROOT%{_datadir}/applications	\
-	--delete-original				\
-	--mode 644					\
-	$RPM_BUILD_ROOT%{_datadir}/applications/vlc.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/vlc.desktop
 
 # Remove installed fonts for skins2
-rm -f $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/*.ttf
-ln -sf ../../../fonts/dejavu/DejaVuSans.ttf \
-  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSans.ttf
-ln -sf ../../../fonts/dejavu/DejaVuSans-Bold.ttf  \
-  $RPM_BUILD_ROOT%{_datadir}/vlc/skins2/fonts/FreeSansBold.ttf
+rm -rf %{buildroot}%{_datadir}/vlc/skins2/fonts
 
 #Fix unowned directories
-rm -rf $RPM_BUILD_ROOT%{_docdir}/vlc
+rm -rf %{buildroot}%{_docdir}/vlc
 
 #Ghost the plugins cache
-touch $RPM_BUILD_ROOT%{_libdir}/vlc/plugins.dat
+touch %{buildroot}%{_libdir}/vlc/plugins/plugins.dat
+
+#Appdata
+appstream-util validate-relax --nonet \
+  %{buildroot}/%{_datadir}/metainfo/*.appdata.xml || :
+
+#Fixup
+rm -rf %{buildroot}/%{_datadir}/macosx
 
 
 %find_lang %{name}
 
 
+%ldconfig_scriptlets core
+
 %post
-%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null
-touch --no-create %{_datadir}/icons/hicolor
+%{?ldconfig}
+if [ $1 == 1 ] ; then
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
+fi || :
+
+%{_bindir}/touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
 fi 
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null || :
 
-%post core -p /sbin/ldconfig
-
 %postun
-%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null
+%{?ldconfig}
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null
 %{_bindir}/update-desktop-database %{_datadir}/applications &>/dev/null
-touch --no-create %{_datadir}/icons/hicolor
+%{_bindir}/touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ]; then
   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
 fi || :
 
-%postun core -p /sbin/ldconfig
-
 %posttrans core
-%{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+%{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 
 %post extras
+%{?ldconfig}
 if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
-fi
-
-%post plugin-jack
-if [ $1 == 1 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %postun extras
+%{?ldconfig}
 if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
-fi
-
-%postun plugin-jack
-if [ $1 == 0 ] ; then
-  %{_libdir}/vlc/vlc-cache-gen -f %{_libdir}/vlc &>/dev/null || :
+  %{_libdir}/vlc/vlc-cache-gen %{_libdir}/vlc/plugins &>/dev/null || :
 fi
 
 %preun core
@@ -377,7 +443,9 @@ fi || :
 
 
 %files
-%doc AUTHORS COPYING ChangeLog NEWS README THANKS
+%doc AUTHORS ChangeLog NEWS README THANKS
+%license COPYING
+%{_datadir}/metainfo/vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
@@ -385,31 +453,45 @@ fi || :
 %{_datadir}/vlc/skins2/
 %{_bindir}/qvlc
 %{_bindir}/svlc
-%{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%{_libdir}/vlc/*.so*
+%{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
 %{_libdir}/vlc/plugins/codec/libsdl_image_plugin.so
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
+%{?_with_wayland:
+%{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
+%{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
+
+}
 %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
 %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%{_libdir}/vlc/plugins/video_output/libvout_sdl_plugin.so
 %{!?_without_xcb:
 %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
-%{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+%{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
+%{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 }
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
 }
+#jack in main
+%{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
+%{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
+#pulseaudio in main
 %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
+%{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
+%{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
+%{?_with_fluidsynth:
+%{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
+}
 
 %files core -f %{name}.lang
 %{_bindir}/vlc
@@ -419,8 +501,9 @@ fi || :
 %{_bindir}/vlc-wrapper
 %exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
+%{_libdir}/vlc/lua/
 %{_libdir}/*.so.*
-%exclude %{_libdir}/vlc/plugins/gui/libqt4_plugin.so
+%exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %{?_with_gnomevfs:
 %exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
@@ -449,10 +532,17 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_glx_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
 %exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
+}
+%{?_with_wayland:
+%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
+%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
 }
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
@@ -464,16 +554,18 @@ fi || :
 }
 %exclude %{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
-%ghost %{_libdir}/vlc/plugins.dat
-%{_libdir}/vlc/
+%exclude %{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
+%exclude %{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
+%exclude %{_libdir}/vlc/plugins/vdpau
+%ghost %{_libdir}/vlc/plugins/plugins.dat
+%dir %{_libdir}/vlc/
+%dir %{_libdir}/vlc/plugins
+%dir %{_libdir}/vlc/plugins/vdpau
+%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
+%{_libdir}/vlc/vlc-cache-gen
+%{_libdir}/vlc/plugins
 %{_mandir}/man1/vlc*.1*
 
-%files plugin-jack
-%{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
-%{_libdir}/vlc/plugins/audio_output/libjack_plugin.so
-%{?_with_fluidsynth:
-%{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
-}
 
 %files extras
 %{?_with_opencv:
@@ -499,30 +591,284 @@ fi || :
 
 
 %changelog
-* Mon Oct 22 2018 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-3
-- Rebuilt for live555 CVE-2018-4013
-- Fix build with libupnp
+* Thu Nov 29 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-7
+- Update to 20181129
 
-* Tue Jan 30 2018 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-2
-- rebuilt
+* Sun Nov 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-6
+- Rebuild for new x265
 
-* Wed Nov 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.8-1
-- Update to 2.2.8
+* Sun Nov 11 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-5
+- Update to 20181111
 
-* Thu Jun 01 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.6-2
-- Backport fix for flac crash
+* Sat Oct 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-4
+- Update to 20181020
 
-* Wed May 24 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.6-1
-- Update to 2.2.6
+* Thu Oct 04 2018 Sérgio Basto <sergio@serjux.com> - 3.0.5-3
+- Mass rebuild for x264 and/or x265
+- Fix build with x264 >= 0.153
 
-* Wed Apr 19 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.5.1-2
-- Improve main/core library split
+* Wed Oct 03 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-2
+- Update to 20181003 snapshot
 
-* Thu Mar 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.5.1-1
-- Update to 2.2.5.1
+* Fri Sep 21 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-1
+- Update to 3.0.5 snapshot from today
+- Enable aom support
+- Workaound a bug with vlc-cache-gen on armhfp
 
-* Sun Feb 12 2017 Nicolas Chauvet <kwizart@gmail.com> - 2.2.5-1
-- Update to 2.2.5
+* Tue Sep 18 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.4-3
+- Expunge qt-devel from buildroot
+
+* Wed Sep 12 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.4-2
+- Fix unexpanded ldconfig macro (rfbz#5018)
+
+* Fri Aug 31 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.4-1
+- Update to 3.0.4
+
+* Sat Aug 04 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-7
+- Add patch from vlc mailing list to fix wayland freeze (rfbz#4596)
+
+* Tue Jul 24 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.3-6
+- Rebuilt for libplacebo
+
+* Wed Jun 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-5
+- Revert last commit
+
+* Sat Jun 16 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-4
+- Rebuild for new libass version
+- Make libplacebo x86 only due to vulkan changes
+
+* Sat Jun 02 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-3
+- Fix build against Qt 5.11
+
+* Fri Jun 01 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.3-2
+- Add missing libjpeg
+
+* Mon May 28 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.3-1
+- Update to 3.0.3
+
+* Mon May 14 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.2-3
+- Rebuilt
+
+* Mon Apr 23 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.2-2
+- Readd lost patch
+
+* Mon Apr 23 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.2-1
+- Update to 3.0.2
+
+* Tue Apr 17 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-6
+- Rebuilt for libupnp
+
+* Fri Mar 23 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-5
+- Rework version tag
+- Add soxr
+- Add ldconfig_scriptlets
+
+* Sat Mar 17 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-4
+- Rebuilt for live555
+
+* Thu Mar 08 2018 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 3.0.1-3
+- Rebuilt for new ffmpeg snapshot
+- Patch for fribidi version 1.0
+
+* Wed Feb 28 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-2
+- Rebuilt for x265
+
+* Tue Feb 27 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.1-1
+- Update to 3.0.1
+
+* Mon Feb 26 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-3
+- Add libplacebo support
+
+* Sun Feb 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-2
+- Enable microdns (rfbz#4793)
+
+* Fri Feb 09 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-1
+- Update to 3.0.0 release
+
+* Sun Feb 04 2018 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.53.git20180202.rc9
+- Rebuild (live555-2018.01.29)
+
+* Fri Feb 02 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.52.git20180202.rc9
+- Update to rc9
+
+* Sat Jan 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.51.git20180127.rc8
+- Update to 20180127 -rc8
+- Rebuild for new libcdio and libvpx
+
+* Thu Jan 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.50.git20180109.rc5
+- Rebuilt for ffmpeg-3.5 git
+
+* Mon Jan 15 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.49.git20180109.rc5
+- Rebuilt for VA-API 1.0.0
+
+* Tue Jan 09 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.48.git20180109.rc5
+- Update to 20180109 -rc5
+
+* Sun Dec 31 2017 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.47.git20171221.rc2
+- Mass rebuild for x264 and x265
+
+* Thu Dec 21 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.46.git20171221.rc2
+- Update to 20171221
+- Drop pre-version
+- Set defaults fonts
+- Enable gstreamer on %%{arm} and aarch64
+- Drop wayland patch
+
+* Sat Dec 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0~rc2-0.45.git20171215
+- Improve pre-version
+- Re-enable i686 mmx/sse (autodetected)
+
+* Fri Dec 15 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.44.git20171215
+- Update to 20171215
+
+* Fri Dec 08 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.43.git20171208
+- Update to 20171208
+
+* Fri Dec 01 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.42.git20171122
+- Rebuild for new protobuf version
+- Rebuild against new libmfx (rhbz#1471768)
+
+* Sun Nov 26 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.41.git20171122
+- Rebuilt for live555
+
+* Wed Nov 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.40.git20171122
+- Update to 20171122 snapshot
+
+* Thu Nov 16 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.40.git20171103
+- Rebuild for new protobuf version
+
+* Fri Nov 03 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.39.git20171103
+- Update to 20171103 snapshoot
+
+* Mon Oct 16 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.38.git20171009
+- Rebuild for ffmpeg update
+
+* Mon Oct 09 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.37.git20171009
+- Update snapshot
+- Fix libvlc vdpau issue (rfbz #4678)
+
+* Mon Sep 25 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.36.git20170922
+- Rebuilt for live555
+
+* Fri Sep 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.35.git20170922
+- Update to VDD2017 edition
+- https://www.videolan.org/videolan/events/vdd17/
+
+* Wed Aug 23 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.34.git20170823
+- Update snapshot
+
+* Mon Jul 31 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.33.git20170717
+- Fix lua directory search path
+
+* Tue Jul 25 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.32.git20170717
+- Rebuilt for live555
+
+* Mon Jul 17 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.31.git20170717
+- Update snapshot
+
+* Tue Jul 04 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.30.git20170704
+- Update snapshot
+- Use https for downloads - rhbz#4584
+
+* Sat Jun 24 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.29.git20170622
+- Restore wayland with a patch - rhbz#4552
+
+* Thu Jun 22 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.28.git20170622
+- Update snapshoot
+- Disable wayland support for now
+- Update release field
+
+* Thu Jun 01 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.2620170601git
+- Update to 20170601 snapshot
+
+* Thu May 25 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.25
+- Rebuilt for live555
+
+* Tue May 23 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.24
+- Update to 20170523 snapshot
+
+* Sat Apr 29 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.23
+- Rebuild for ffmpeg update
+
+* Thu Apr 27 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.22
+- Update ot 20170427 snapshot
+
+* Wed Apr 05 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.21
+- Update to 20170405 snapshoot
+- Rework main -core library split
+
+* Mon Mar 20 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 3.0.0-0.20
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Thu Mar 16 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.19
+- Update to 20170318 snapshoot
+- Drop hidpi revert rfbz#4272
+- Recommends qt5-qtwayland
+
+* Thu Feb 23 2017 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.18
+- Rebuild for libvncserver .so version bump
+
+* Mon Feb 20 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.17
+- Update to 20170220 snapshot
+- Clean merged patch, unrevert wayland runtime detection
+- Switch source url on purpose
+
+* Tue Jan 31 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.16
+- Add daala support
+
+* Tue Jan 17 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.15
+- Fix lirc activation - rhbz#4420
+- Revert upstream commit 785b0f18d7 for wayland detection - rfbz#4380
+
+* Mon Jan 09 2017 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.14
+- Update to 20170109
+- Disable wayland for now - rhbz#4380
+- Move libvlc pulse,vdpau,xcb from -core to main
+
+* Tue Jan 03 2017 Dominik Mierzejewski <rpm@greysector.net> - 3.0.0-0.13
+- rebuild for x265
+
+* Mon Dec 12 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.12
+- Update to 20161212 snapshot
+- Add BR: vpx, mpg123 and mfx
+
+* Tue Nov 22 2016 leigh scott <leigh123linux@googlemail.com> - 3.0.0-0.11
+- add patch to disable HIDPI scaling - rfbz#4272
+
+* Tue Nov 08 2016 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.10
+- Rebuild for x265-2.1
+
+* Fri Oct 28 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.9
+- Updateto 3.0.0 20161026-0238-git
+- Merge vlc-plugin-jack into main
+- Add support for appdata
+
+* Thu Sep 08 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.8
+- Re-enable bootstrap
+
+* Fri Sep 02 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.7
+- Bump to 20160901 nightly
+- Fix plugins.dat path - rfbz#4184
+
+* Thu Aug 18 2016 Sérgio Basto <sergio@serjux.com> - 3.0.0-0.6
+- Clean spec, Vascom patches series, rfbz #4196, add license tag
+
+* Thu Aug 04 2016 Leigh Scott <leigh123linux@googlemail.com> - 3.0.0-0.5
+- Remove -f from vlc-cache-gen scriptlets rfbz#4167
+
+* Sat Jul 30 2016 Julian Sikorski <belegdol@fedoraproject.org> - 3.0.0-0.4
+- Rebuilt for ffmpeg-3.1.1
+
+* Fri Jul 29 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.3
+- Update to today snapshoot
+
+* Fri Jul 01 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.2
+- Update to today snapshot
+
+* Tue Jun 14 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.0.0-0.1
+- Update to 3.0.0 - snapshot 20160614
+- Switch to qt5
+- Update Build Dependencies
 
 * Mon Jun 06 2016 Nicolas Chauvet <kwizart@gmail.com> - 2.2.4-1
 - Update to 2.2.4
