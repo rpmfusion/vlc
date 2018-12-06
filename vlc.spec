@@ -38,9 +38,6 @@
 %ifarch x86_64 i686
 %global _with_crystalhd 1
 %endif
-%ifarch x86_64 i686
-%global _with_crystalhd 1
-%endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
@@ -300,7 +297,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 }
 
 
-
 %build
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -458,7 +454,6 @@ fi || :
 %{?_with_gnomevfs:
 %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
 }
-%{_libdir}/vlc/plugins/codec/libsdl_image_plugin.so
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{?_with_wayland:
@@ -519,13 +514,6 @@ fi || :
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-%exclude %{_libdir}/vlc/plugins/codec/libsdl_image_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libvout_sdl_plugin.so
 %{!?_without_xcb:
 %exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
 %exclude %{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
