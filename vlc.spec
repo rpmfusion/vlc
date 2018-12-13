@@ -1,6 +1,6 @@
-%global vlc_date	20181129
+%global vlc_date	20181213
 #global vlc_rc		-rc9
-%global vlc_tag         -%{?vlc_date}-0232
+%global vlc_tag         -%{?vlc_date}-0221
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -575,6 +575,10 @@ fi || :
 
 
 %changelog
+* Thu Dec 13 2018 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-0.1
+- Bump Epoch
+- Update to 20181213
+
 * Thu Nov 29 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-7
 - Update to 20181129
 
