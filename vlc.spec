@@ -41,9 +41,10 @@
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
+Epoch:		1
 Name:		vlc
 Version:	3.0.5
-Release:	7%{?dist}
+Release:	0.1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -226,8 +227,8 @@ Recommends: qt5-qtwayland%{_isa}
 }
 
 
-Provides: %{name}-xorg%{_isa} = %{version}-%{release}
-Requires: vlc-core%{_isa} = %{version}-%{release}
+Provides: %{name}-xorg%{_isa} = %{epoch}:%{version}-%{release}
+Requires: vlc-core%{_isa} = %{epoch}:%{version}-%{release}
 Requires: kde-filesystem
 
 Requires: dejavu-sans-fonts
@@ -242,10 +243,6 @@ Requires:       hicolor-icon-theme
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-#Merge back jack plugin into main
-Obsoletes: vlc-plugin-jack < %{version}-%{release}
-Provides: vlc-plugin-jack = %{version}-%{release}
-
 
 %description
 VLC media player is a highly portable multimedia player and multimedia framework
@@ -257,7 +254,7 @@ multi-cast in IPv4 or IPv6 on networks.
 
 %package devel
 Summary:	Development files for %{name}
-Requires:	%{name}-core%{_isa} = %{version}-%{release}
+Requires:	%{name}-core%{_isa} = %{epoch}:%{version}-%{release}
 
 %description devel
 The %{name}-devel package contains libraries and header files for
@@ -266,8 +263,7 @@ developing applications that use %{name}.
 
 %package core
 Summary:	VLC media player core
-Provides:	vlc-nox = %{version}-%{release}
-Obsoletes:	vlc-nox < 1.1.5-2
+Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
 
@@ -276,7 +272,7 @@ VLC media player core components
 
 %package extras
 Summary:	VLC media player with extras modules
-Requires:	vlc-core%{_isa} = %{version}-%{release}
+Requires:	vlc-core%{_isa} = %{epoch}:%{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
