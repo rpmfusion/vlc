@@ -317,7 +317,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_vcdimager:--enable-vcdx}		\
 	--enable-omxil				\
 	--enable-omxil-vout			\
-%{?_with_rpi:
+%{?_with_rpi: \
 	--enable-rpi-omxil			\
 	--enable-mmal				\
 } \
