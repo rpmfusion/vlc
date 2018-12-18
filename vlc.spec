@@ -199,7 +199,7 @@ BuildRequires:  pkgconfig(xcb-keysyms)
 }
 BuildRequires:	xorg-x11-proto-devel
 
-%ifarch armv7hl
+%ifarch armv7hl armv7hnl
 %{?_with_rpi:
 BuildRequires:  raspberrypi-vc-devel
 }
