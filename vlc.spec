@@ -44,7 +44,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.5
-Release:	0.1%{?dist}
+Release:	0.2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -577,6 +577,9 @@ fi || :
 
 
 %changelog
+* Thu Dec 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-0.2
+- Add mmal support
+
 * Thu Dec 13 2018 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-0.1
 - Bump Epoch
 - Update to 20181213
