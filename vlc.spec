@@ -48,6 +48,7 @@ Release:	0.1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
+Patch0:         https://raw.githubusercontent.com/fedberry/vlc/master/mmal_1.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -202,6 +203,7 @@ BuildRequires:	xorg-x11-proto-devel
 %ifarch armv7hl armv7hnl
 %{?_with_rpi:
 BuildRequires:  raspberrypi-vc-devel
+BuildRequires:  raspberrypi-vc-static
 }
 %endif
 
