@@ -200,12 +200,11 @@ BuildRequires:  pkgconfig(xcb-keysyms)
 }
 BuildRequires:	xorg-x11-proto-devel
 
-%ifarch armv7hl armv7hnl
 %{?_with_rpi:
+ExclusiveArch:  armv7hnl
 BuildRequires:  raspberrypi-vc-devel
 BuildRequires:  raspberrypi-vc-static
 }
-%endif
 
 %if 0%{?rhel} == 7
 BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
