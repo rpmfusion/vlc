@@ -1,6 +1,6 @@
-%global vlc_date	20181213
+#global vlc_date	20181213
 #global vlc_rc		-rc9
-%global vlc_tag         -%{?vlc_date}-0221
+#global vlc_tag         -#{?vlc_date}-0221
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -44,7 +44,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.5
-Release:	0.2%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -576,6 +576,9 @@ fi || :
 
 
 %changelog
+* Thu Dec 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-1
+- Update to 3.0.5
+
 * Thu Dec 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-0.2
 - Add mmal support
 
