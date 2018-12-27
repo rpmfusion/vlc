@@ -1,6 +1,6 @@
-%global vlc_date	20181020
+#global vlc_date	20181213
 #global vlc_rc		-rc9
-%global vlc_tag         -%{?vlc_date}-0221
+#global vlc_tag         -#{?vlc_date}-0221
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -41,13 +41,14 @@
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
+Epoch:		1
 Name:		vlc
 Version:	3.0.5
-Release:	4%{?dist}
+Release:	10%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch1:     x264-Fix-build-with-a-newer-version-of-x264.patch
+Patch0:         https://raw.githubusercontent.com/fedberry/vlc/master/mmal_1.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -199,11 +200,11 @@ BuildRequires:  pkgconfig(xcb-keysyms)
 }
 BuildRequires:	xorg-x11-proto-devel
 
-%ifarch armv7hl
 %{?_with_rpi:
+ExclusiveArch:  armv7hnl
 BuildRequires:  raspberrypi-vc-devel
+BuildRequires:  raspberrypi-vc-static
 }
-%endif
 
 %if 0%{?rhel} == 7
 BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
@@ -227,8 +228,8 @@ Recommends: qt5-qtwayland%{_isa}
 }
 
 
-Provides: %{name}-xorg%{_isa} = %{version}-%{release}
-Requires: vlc-core%{_isa} = %{version}-%{release}
+Provides: %{name}-xorg%{_isa} = %{epoch}:%{version}-%{release}
+Requires: vlc-core%{_isa} = %{epoch}:%{version}-%{release}
 Requires: kde-filesystem
 
 Requires: dejavu-sans-fonts
@@ -243,10 +244,6 @@ Requires:       hicolor-icon-theme
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-#Merge back jack plugin into main
-Obsoletes: vlc-plugin-jack < %{version}-%{release}
-Provides: vlc-plugin-jack = %{version}-%{release}
-
 
 %description
 VLC media player is a highly portable multimedia player and multimedia framework
@@ -258,7 +255,7 @@ multi-cast in IPv4 or IPv6 on networks.
 
 %package devel
 Summary:	Development files for %{name}
-Requires:	%{name}-core%{_isa} = %{version}-%{release}
+Requires:	%{name}-core%{_isa} = %{epoch}:%{version}-%{release}
 
 %description devel
 The %{name}-devel package contains libraries and header files for
@@ -267,8 +264,7 @@ developing applications that use %{name}.
 
 %package core
 Summary:	VLC media player core
-Provides:	vlc-nox = %{version}-%{release}
-Obsoletes:	vlc-nox < 1.1.5-2
+Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
 
@@ -277,7 +273,7 @@ VLC media player core components
 
 %package extras
 Summary:	VLC media player with extras modules
-Requires:	vlc-core%{_isa} = %{version}-%{release}
+Requires:	vlc-core%{_isa} = %{epoch}:%{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
@@ -322,7 +318,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_vcdimager:--enable-vcdx}		\
 	--enable-omxil				\
 	--enable-omxil-vout			\
-%{?_with_rpi:
+%{?_with_rpi: \
 	--enable-rpi-omxil			\
 	--enable-mmal				\
 } \
@@ -488,10 +484,6 @@ fi || :
 %{?_with_fluidsynth:
 %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-#vdpau in main
-%dir %{_libdir}/vlc/plugins/vdpau
-%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
-
 
 %files core -f %{name}.lang
 %{_bindir}/vlc
@@ -552,6 +544,9 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/vdpau
 %ghost %{_libdir}/vlc/plugins/plugins.dat
 %dir %{_libdir}/vlc/
+%dir %{_libdir}/vlc/plugins
+%dir %{_libdir}/vlc/plugins/vdpau
+%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
 %{_libdir}/vlc/vlc-cache-gen
 %{_libdir}/vlc/plugins
 %{_mandir}/man1/vlc*.1*
@@ -581,6 +576,26 @@ fi || :
 
 
 %changelog
+* Thu Dec 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-10
+- Update to 3.0.5
+- Bump n-v-r to make koji happy
+
+* Thu Dec 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-0.2
+- Add mmal support
+
+* Thu Dec 13 2018 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-0.1
+- Bump Epoch
+- Update to 20181213
+
+* Thu Nov 29 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-7
+- Update to 20181129
+
+* Sun Nov 18 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-6
+- Rebuild for new x265
+
+* Sun Nov 11 2018 Leigh Scott <leigh123linux@googlemail.com> - 3.0.5-5
+- Update to 20181111
+
 * Sat Oct 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 3.0.5-4
 - Update to 20181020
 
