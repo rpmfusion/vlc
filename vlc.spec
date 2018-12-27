@@ -576,8 +576,9 @@ fi || :
 
 
 %changelog
-* Thu Dec 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-1
+* Thu Dec 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-10
 - Update to 3.0.5
+- Bump n-v-r to make koji happy
 
 * Thu Dec 20 2018 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-0.2
 - Add mmal support
