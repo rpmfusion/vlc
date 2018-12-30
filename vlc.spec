@@ -30,6 +30,7 @@
 %global _with_fluidsynth 1
 %if 0%{?fedora}
 %global _with_aom     1
+%global _with_dav1d   1
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
@@ -44,7 +45,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.5
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -68,6 +69,7 @@ BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
+%{?_with_dav1d:BuildRequires: libdav1d-devel}
 BuildRequires:	pkgconfig(dbus-1)
 %{?_with_faad2:BuildRequires: faad2-devel}
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
@@ -324,6 +326,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 } \
 %{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
+%{?_with_dav1d:--enable-dav1d}                  \
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
 %{?_with_faad2:--enable-faad} \
@@ -576,6 +579,9 @@ fi || :
 
 
 %changelog
+* Sun Dec 30 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-11
+- Enable dav1d support
+
 * Thu Dec 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-10
 - Update to 3.0.5
 - Bump n-v-r to make koji happy
