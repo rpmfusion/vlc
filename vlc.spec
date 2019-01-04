@@ -45,7 +45,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.5
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -229,6 +229,9 @@ Recommends: qt5-qtwayland%{_isa}
 %endif
 }
 
+#Merge back jack plugin into main
+Obsoletes: vlc-plugin-jack < %{version}-%{release}
+Provides: vlc-plugin-jack = %{version}-%{release}
 
 Provides: %{name}-xorg%{_isa} = %{epoch}:%{version}-%{release}
 Requires: vlc-core%{_isa} = %{epoch}:%{version}-%{release}
@@ -579,6 +582,9 @@ fi || :
 
 
 %changelog
+* Fri Jan 04 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-12
+- Restore Obsoletes/Provides vlc-plugin-jack
+
 * Sun Dec 30 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-11
 - Enable dav1d support
 
