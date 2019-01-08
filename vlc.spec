@@ -287,7 +287,10 @@ VLC media player extras modules.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{name}-%{version}%{?vlc_rc}
+%ifarch %{arm}
+%patch0 -p1
+%endif
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -321,9 +324,9 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_opencv:--enable-opencv} \
 	--enable-sftp				\
 %{?_with_vcdimager:--enable-vcdx}		\
+%{?_with_rpi: \
 	--enable-omxil				\
 	--enable-omxil-vout			\
-%{?_with_rpi: \
 	--enable-rpi-omxil			\
 	--enable-mmal				\
 } \
