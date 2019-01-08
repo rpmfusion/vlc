@@ -457,9 +457,6 @@ fi || :
 %{_bindir}/svlc
 %{_libdir}/vlc/*.so*
 %{_libdir}/vlc/plugins/gui/libqt_plugin.so
-%{?_with_gnomevfs:
-%{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
-}
 %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
 %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
 %{?_with_wayland:
@@ -505,9 +502,6 @@ fi || :
 %{_libdir}/vlc/lua/
 %{_libdir}/*.so.*
 %exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
-%{?_with_gnomevfs:
-%exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
-}
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{?_with_vcdimager:
 %exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
