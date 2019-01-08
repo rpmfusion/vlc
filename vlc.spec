@@ -45,7 +45,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.5
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -585,6 +585,9 @@ fi || :
 
 
 %changelog
+* Tue Jan 08 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-13
+- Only enable rpi on pi
+
 * Fri Jan 04 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-12
 - Restore Obsoletes/Provides vlc-plugin-jack
 
