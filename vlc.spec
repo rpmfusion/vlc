@@ -288,9 +288,9 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{name}-%{version}%{?vlc_rc}
-%ifarch %{arm}
+%{?_with_rpi:
 %patch0 -p1
-%endif
+}
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -586,7 +586,7 @@ fi || :
 
 %changelog
 * Tue Jan 08 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-13
-- Only enable rpi on pi
+- Only enable mmal on rpi
 
 * Fri Jan 04 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-12
 - Restore Obsoletes/Provides vlc-plugin-jack
