@@ -550,7 +550,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
 %exclude %{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
-%exclude %{_libdir}/vlc/plugins/vdpau
 %ghost %{_libdir}/vlc/plugins/plugins.dat
 %dir %{_libdir}/vlc/
 %dir %{_libdir}/vlc/plugins
@@ -587,6 +586,7 @@ fi || :
 %changelog
 * Tue Jan 08 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-13
 - Only enable mmal on rpi
+- Fixup vdpau on core
 
 * Fri Jan 04 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-12
 - Restore Obsoletes/Provides vlc-plugin-jack
