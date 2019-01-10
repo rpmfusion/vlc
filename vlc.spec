@@ -44,8 +44,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.5
-Release:	14%{?dist}
+Version:	3.0.6
+Release:	15%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -545,6 +545,10 @@ fi || :
 
 
 %changelog
+* Thu Jan 10 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-15
+- Update to 3.0.6
+- Rework xorg/wayland plugins moved to vlc-core
+
 * Tue Jan 08 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-14
 - Only enable mmal on rpi
 - Fixup vdpau on core
