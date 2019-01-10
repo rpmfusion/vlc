@@ -456,26 +456,9 @@ fi || :
 %{_bindir}/qvlc
 %{_bindir}/svlc
 %{_libdir}/vlc/*.so*
+# qt in main
 %{_libdir}/vlc/plugins/gui/libqt_plugin.so
-%{_libdir}/vlc/plugins/video_output/libaa_plugin.so
-%{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%{?_with_wayland:
-%{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
-
-}
-%{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
-%{_libdir}/vlc/plugins/video_output/libgl_plugin.so
-%{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%{!?_without_xcb:
-%{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-%{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
-%{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
-}
+# skin2 in main
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
@@ -501,7 +484,6 @@ fi || :
 %{_datadir}/vlc/
 %{_libdir}/vlc/lua/
 %{_libdir}/*.so.*
-%exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{?_with_vcdimager:
 %exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
@@ -514,24 +496,9 @@ fi || :
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-%{!?_without_xcb:
-%exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%exclude %{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
-%exclude %{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-}
-%{?_with_wayland:
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
-}
+%dir %{_libdir}/vlc/plugins/gui
+%{_libdir}/vlc/plugins/gui/libncurses_plugin.so
+%exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
