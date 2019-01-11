@@ -327,7 +327,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_rpi: \
 	--enable-omxil				\
 	--enable-omxil-vout			\
-%{?_with_rpi:
 	--enable-rpi-omxil			\
 	--enable-mmal				\
 } \
