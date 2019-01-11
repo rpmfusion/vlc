@@ -30,6 +30,7 @@
 %global _with_fluidsynth 1
 %if 0%{?fedora}
 %global _with_aom     1
+%global _with_dav1d   1
 %global _with_freerdp 1
 %global _with_projectm  1
 %global _with_schroedinger 1
@@ -43,8 +44,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.5
-Release:	10%{?dist}
+Version:	3.0.6
+Release:	15%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -68,6 +69,7 @@ BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
 BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
+%{?_with_dav1d:BuildRequires: libdav1d-devel}
 BuildRequires:	pkgconfig(dbus-1)
 %{?_with_faad2:BuildRequires: faad2-devel}
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
@@ -227,6 +229,9 @@ Recommends: qt5-qtwayland%{_isa}
 %endif
 }
 
+#Merge back jack plugin into main
+Obsoletes: vlc-plugin-jack < %{version}-%{release}
+Provides: vlc-plugin-jack = %{version}-%{release}
 
 Provides: %{name}-xorg%{_isa} = %{epoch}:%{version}-%{release}
 Requires: vlc-core%{_isa} = %{epoch}:%{version}-%{release}
@@ -282,7 +287,10 @@ VLC media player extras modules.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{name}-%{version}%{?vlc_rc}
+%{?_with_rpi:
+%patch0 -p1
+}
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -316,14 +324,15 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?_with_opencv:--enable-opencv} \
 	--enable-sftp				\
 %{?_with_vcdimager:--enable-vcdx}		\
+%{?_with_rpi: \
 	--enable-omxil				\
 	--enable-omxil-vout			\
-%{?_with_rpi: \
 	--enable-rpi-omxil			\
 	--enable-mmal				\
 } \
 %{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
+%{?_with_dav1d:--enable-dav1d}                  \
 %{!?_with_ffmpeg:--disable-avcodec --disable-avformat \
 	--disable-swscale --disable-postproc} \
 %{?_with_faad2:--enable-faad} \
@@ -447,29 +456,9 @@ fi || :
 %{_bindir}/qvlc
 %{_bindir}/svlc
 %{_libdir}/vlc/*.so*
+# qt in main
 %{_libdir}/vlc/plugins/gui/libqt_plugin.so
-%{?_with_gnomevfs:
-%{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
-}
-%{_libdir}/vlc/plugins/video_output/libaa_plugin.so
-%{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%{?_with_wayland:
-%{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
-%{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
-
-}
-%{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
-%{_libdir}/vlc/plugins/video_output/libgl_plugin.so
-%{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%{!?_without_xcb:
-%{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
-%{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-%{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
-%{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
-}
+# skin2 in main
 %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_projectm:
 %{_libdir}/vlc/plugins/visualization/libprojectm_plugin.so
@@ -495,10 +484,6 @@ fi || :
 %{_datadir}/vlc/
 %{_libdir}/vlc/lua/
 %{_libdir}/*.so.*
-%exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
-%{?_with_gnomevfs:
-%exclude %{_libdir}/vlc/plugins/access/libaccess_gnomevfs_plugin.so
-}
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{?_with_vcdimager:
 %exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
@@ -511,24 +496,9 @@ fi || :
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-%{!?_without_xcb:
-%exclude %{_libdir}/vlc/plugins/access/libxcb_screen_plugin.so
-%exclude %{_libdir}/vlc/plugins/control/libxcb_hotkeys_plugin.so
-%exclude %{_libdir}/vlc/plugins/services_discovery/libxcb_apps_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libaa_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libcaca_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_x11_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libgl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libglx_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_x11_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_window_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libxcb_xv_plugin.so
-}
-%{?_with_wayland:
-%exclude %{_libdir}/vlc/plugins/video_output/libegl_wl_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shell_plugin.so
-%exclude %{_libdir}/vlc/plugins/video_output/libwl_shm_plugin.so
-}
+%dir %{_libdir}/vlc/plugins/gui
+%{_libdir}/vlc/plugins/gui/libncurses_plugin.so
+%exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
 %exclude %{_libdir}/vlc/plugins/video_filter/libopencv_example_plugin.so
@@ -541,7 +511,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/audio_output/libpulse_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
 %exclude %{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
-%exclude %{_libdir}/vlc/plugins/vdpau
 %ghost %{_libdir}/vlc/plugins/plugins.dat
 %dir %{_libdir}/vlc/
 %dir %{_libdir}/vlc/plugins
@@ -576,6 +545,20 @@ fi || :
 
 
 %changelog
+* Thu Jan 10 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-15
+- Update to 3.0.6
+- Rework xorg/wayland plugins moved to vlc-core
+
+* Tue Jan 08 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-14
+- Only enable mmal on rpi
+- Fixup vdpau on core
+
+* Fri Jan 04 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.5-12
+- Restore Obsoletes/Provides vlc-plugin-jack
+
+* Sun Dec 30 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-11
+- Enable dav1d support
+
 * Thu Dec 27 2018 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.5-10
 - Update to 3.0.5
 - Bump n-v-r to make koji happy
