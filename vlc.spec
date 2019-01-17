@@ -455,7 +455,7 @@ fi || :
 %{_datadir}/vlc/skins2/
 %{_bindir}/qvlc
 %{_bindir}/svlc
-%{_libdir}/vlc/*.so*
+%{_libdir}/vlc/libvlc_pulse.so*
 # qt in main
 %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 # skin2 in main
@@ -482,8 +482,11 @@ fi || :
 %{_bindir}/vlc-wrapper
 %exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
-%{_libdir}/vlc/lua/
 %{_libdir}/*.so.*
+%dir %{_libdir}/vlc
+%{_libdir}/vlc/lua/
+%{_libdir}/vlc/libvlc_vdpau.so*
+%{_libdir}/vlc/libvlc_xcb_events.so*
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{?_with_vcdimager:
 %exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
