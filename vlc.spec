@@ -45,7 +45,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.6
-Release:	15%{?dist}
+Release:	16%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -455,7 +455,7 @@ fi || :
 %{_datadir}/vlc/skins2/
 %{_bindir}/qvlc
 %{_bindir}/svlc
-%{_libdir}/vlc/*.so*
+%{_libdir}/vlc/libvlc_pulse.so*
 # qt in main
 %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 # skin2 in main
@@ -482,8 +482,11 @@ fi || :
 %{_bindir}/vlc-wrapper
 %exclude %{_datadir}/vlc/skins2
 %{_datadir}/vlc/
-%{_libdir}/vlc/lua/
 %{_libdir}/*.so.*
+%dir %{_libdir}/vlc
+%{_libdir}/vlc/lua/
+%{_libdir}/vlc/libvlc_vdpau.so*
+%{_libdir}/vlc/libvlc_xcb_events.so*
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
 %{?_with_vcdimager:
 %exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
@@ -545,6 +548,9 @@ fi || :
 
 
 %changelog
+* Thu Jan 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-16
+- Update main/core packaging split
+
 * Thu Jan 10 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-15
 - Update to 3.0.6
 - Rework xorg/wayland plugins moved to vlc-core
