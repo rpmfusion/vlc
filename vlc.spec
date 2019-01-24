@@ -7,7 +7,6 @@
 %global vlc_url https://download.videolan.org/pub/videolan/vlc/
 %endif
 %global _with_bootstrap		1
-%global _with_workaround_circle_deps 1
 %if 0%{?!_without_freeworld:1}
 %global _with_a52dec 1
 %global _with_faad2 1
@@ -126,11 +125,6 @@ BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
-%if 0%{?fedora}
-BuildRequires:  phonon-qt5-devel
-%else
-BuildRequires:  phonon-devel
-%endif
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	pkgconfig(libplacebo)
@@ -212,14 +206,14 @@ BuildRequires:  raspberrypi-vc-static
 BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
-
-%{?_with_workaround_circle_deps:
-%if 0%{?fedora}
-BuildRequires: phonon-qt5-backend-gstreamer
+%if 0%{?fedora} || 0%{?rhel} >= 8
+BuildRequires:  phonon-qt5-devel
+BuildRequires:  phonon-qt5-backend-gstreamer
 %else
-BuildRequires: phonon-backend-gstreamer
+# phonon is unmaintained on EL7
+Obsoletes: phonon-backend-vlc < 0.6.2-3
+Provides: phonon-backend-vlc = 0.6.2-3
 %endif
-}
 
 %{?_with_wayland:
 # Fedora 25 Workstation default to wayland but not all
