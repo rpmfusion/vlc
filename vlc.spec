@@ -44,7 +44,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.6
-Release:	16%{?dist}
+Release:	17%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -542,6 +542,9 @@ fi || :
 
 
 %changelog
+* Thu Jan 24 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-17
+- Drop unmaintained phonon support on el7
+
 * Thu Jan 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-16
 - Update main/core packaging split
 
