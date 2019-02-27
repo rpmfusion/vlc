@@ -44,11 +44,13 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.6
-Release:	18%{?dist}
+Release:	19%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:         https://raw.githubusercontent.com/fedberry/vlc/master/mmal_1.patch
+Patch0:     https://raw.githubusercontent.com/fedberry/vlc/master/mmal_1.patch
+# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=2688feb2742a6021ca211ae5c106b12c3d822946
+Patch1:     libvpx-1.8-fix.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -285,6 +287,7 @@ VLC media player extras modules.
 %{?_with_rpi:
 %patch0 -p1
 }
+%patch1 -p1
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -542,6 +545,9 @@ fi || :
 
 
 %changelog
+* Wed Feb 27 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.6-19
+- Patch for libvpx-1.8.0
+
 * Wed Feb 27 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-18
 - Rebuilt
 
