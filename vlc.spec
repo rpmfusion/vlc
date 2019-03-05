@@ -44,7 +44,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.6
-Release:	21%{?dist}
+Release:	22%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -545,6 +545,9 @@ fi || :
 
 
 %changelog
+* Tue Mar 05 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-22
+- Rebuilt for live555/dav1d
+
 * Tue Mar 05 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:3.0.6-21
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
