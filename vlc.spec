@@ -43,11 +43,11 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.6
-Release:	24%{?dist}
+Release:	25%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:     https://raw.githubusercontent.com/fedberry/vlc/master/mmal_1.patch
+Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
 # https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=2688feb2742a6021ca211ae5c106b12c3d822946
 Patch1:     libvpx-1.8-fix.patch
 
@@ -544,6 +544,10 @@ fi || :
 
 
 %changelog
+* Sat Apr 06 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-25
+- Rebuilt for libplacebo
+- Update mmal patch
+
 * Tue Mar 26 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-24
 - Drop projectm until fixed
 
