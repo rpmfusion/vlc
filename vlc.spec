@@ -126,7 +126,7 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
-BuildRequires:	pkgconfig(libplacebo)
+#BuildRequires:	pkgconfig(libplacebo)
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
