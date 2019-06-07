@@ -1,13 +1,13 @@
-From 943b3096d213731a92f3932cfba1c593fe48d7d0 Mon Sep 17 00:00:00 2001
+From 78dff2f7ec405d423da4431fc873cd5182e594c8 Mon Sep 17 00:00:00 2001
 From: Leigh Scott <leigh123linux@gmail.com>
 Date: Fri, 7 Jun 2019 22:24:42 +0100
 Subject: Adapt patch from videolan mailing list
          https://mailman.videolan.org/pipermail/vlc-devel/2019-May/124293.html
 
 ---
- .../video_output/opengl/fragment_shaders.c    |  6 ++++
- modules/video_output/opengl/vout_helper.h     | 30 +++++++++++++++++--
- 2 files changed, 34 insertions(+), 2 deletions(-)
+ .../video_output/opengl/fragment_shaders.c    |  6 +++++
+ modules/video_output/opengl/vout_helper.h     | 27 +++++++++++++++++--
+ 2 files changed, 31 insertions(+), 2 deletions(-)
 
 diff --git a/modules/video_output/opengl/fragment_shaders.c b/modules/video_output/opengl/fragment_shaders.c
 index 8c1f67ee7a..f6fb2be6c5 100644
@@ -28,10 +28,10 @@ index 8c1f67ee7a..f6fb2be6c5 100644
  
          struct pl_color_space dst_space = pl_color_space_unknown;
 diff --git a/modules/video_output/opengl/vout_helper.h b/modules/video_output/opengl/vout_helper.h
-index 978669f89c..49a823abb7 100644
+index 978669f89c..cfc256530e 100644
 --- a/modules/video_output/opengl/vout_helper.h
 +++ b/modules/video_output/opengl/vout_helper.h
-@@ -148,6 +148,18 @@ static const char * const tone_text[] = {
+@@ -148,6 +148,15 @@ static const char * const tone_text[] = {
  #define TONEMAP_DESAT_TEXT "Tone-mapping desaturation coefficient"
  #define TONEMAP_DESAT_LONGTEXT "How strongly to desaturate overbright colors towards white. 0.0 disables this behavior."
  
@@ -44,13 +44,10 @@ index 978669f89c..49a823abb7 100644
 +#define DESAT_BASE_TEXT "Desaturation base"
 +#define DESAT_BASE_LONGTEXT "Controls the starting offset of the desaturation curve. Brightness values below this base will always be colorimetrically tone mapped (never desaturated)."
 +
-+#define MAX_BOOST_TEXT "Maximum brightness boost"
-+#define MAX_BOOST_LONGTEXT "Maximum allowed brightness boost to compensate for dark scenes. A value of 1.0 means no brightness boost is allowed."
-+
  #define TONEMAP_WARN_TEXT "Highlight clipped pixels"
  #define TONEMAP_WARN_LONGTEXT "Debugging tool to indicate which pixels were clipped as part of the tone mapping process."
  
-@@ -171,6 +183,21 @@ static const char * const dither_text[] = {
+@@ -171,6 +180,21 @@ static const char * const dither_text[] = {
  #define DEPTH_TEXT "Dither depth override (0 = framebuffer depth)"
  #define DEPTH_LONGTEXT "Overrides the detected framebuffer depth. Useful to dither to lower bit depths than otherwise required."
  
@@ -72,7 +69,7 @@ index 978669f89c..49a823abb7 100644
  #define add_glopts_placebo() \
      set_section("Colorspace conversion", NULL) \
      add_integer("rendering-intent", pl_color_map_default_params.intent, \
-@@ -184,10 +211,9 @@ static const char * const dither_text[] = {
+@@ -184,10 +208,9 @@ static const char * const dither_text[] = {
      add_integer("tone-mapping", PL_TONE_MAPPING_HABLE, \
                  TONEMAPPING_TEXT, TONEMAPPING_LONGTEXT, false) \
              change_integer_list(tone_values, tone_text) \
