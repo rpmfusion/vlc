@@ -1,6 +1,6 @@
-#global vlc_date	20181213
+#global vlc_date	20190406
 #global vlc_rc		-rc9
-#global vlc_tag         -#{?vlc_date}-0221
+#global vlc_tag     -#{?vlc_date}-0223
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -31,7 +31,6 @@
 %global _with_aom     1
 %global _with_dav1d   1
 %global _with_freerdp 1
-%global _with_projectm  1
 %global _with_schroedinger 1
 %global _with_wayland 1
 %endif
@@ -43,12 +42,12 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.6
-Release:	17%{?dist}
+Version:	3.0.7
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:         https://raw.githubusercontent.com/fedberry/vlc/master/mmal_1.patch
+Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -127,7 +126,7 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
-BuildRequires:	pkgconfig(libplacebo)
+#BuildRequires:	pkgconfig(libplacebo)
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -542,6 +541,36 @@ fi || :
 
 
 %changelog
+* Fri Jun 07 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.7-1
+- Update to 3.0.7
+
+* Sat Apr 06 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.7-0.1
+- Update to 20190406
+- Rebuilt for live555
+- Rebuilt for libplacebo
+- Update mmal patch
+
+* Tue Mar 26 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-24
+- Drop projectm until fixed
+
+* Tue Mar 12 2019 Sérgio Basto <sergio@serjux.com> - 1:3.0.6-23
+- Mass rebuild for x264
+
+* Tue Mar 05 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-22
+- Rebuilt for live555/dav1d
+
+* Tue Mar 05 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:3.0.6-21
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Thu Feb 28 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.6-20
+- Rebuild for new x265
+
+* Wed Feb 27 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.6-19
+- Patch for libvpx-1.8.0
+
+* Wed Feb 27 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-18
+- Rebuilt
+
 * Thu Jan 24 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.6-17
 - Drop unmaintained phonon support on el7
 
