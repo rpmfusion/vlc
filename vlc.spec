@@ -1,6 +1,6 @@
-%global vlc_date	20190406
+#global vlc_date	20190406
 #global vlc_rc		-rc9
-%global vlc_tag         -%{?vlc_date}-0223
+#global vlc_tag     -#{?vlc_date}-0223
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -43,7 +43,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.7
-Release:	0.1%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -541,6 +541,9 @@ fi || :
 
 
 %changelog
+* Fri Jun 07 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.7-1
+- Update to 3.0.7
+
 * Sat Apr 06 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.7-0.1
 - Update to 20190406
 - Rebuilt for live555
