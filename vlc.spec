@@ -43,12 +43,12 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
-
+Patch1:     libplacebo_patch_1.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -126,7 +126,7 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
-#BuildRequires:	pkgconfig(libplacebo)
+BuildRequires:	pkgconfig(libplacebo)
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -284,6 +284,7 @@ VLC media player extras modules.
 %{?_with_rpi:
 %patch0 -p1
 }
+%patch1 -p1
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -541,6 +542,9 @@ fi || :
 
 
 %changelog
+* Fri Jun 07 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.7-2
+- Enable libplacebo
+
 * Fri Jun 07 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.7-1
 - Update to 3.0.7
 
