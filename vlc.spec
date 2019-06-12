@@ -42,7 +42,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.7
+Version:	3.0.7.1
 Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
@@ -65,6 +65,9 @@ BuildRequires:	gcc-c++
 %{?_with_aom:BuildRequires: libaom-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
+%ifnarch i686 armv7hl
+BuildRequires:	asdcplib-devel
+%endif
 BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
 %{?_with_dav1d:BuildRequires: libdav1d-devel}
@@ -542,6 +545,12 @@ fi || :
 
 
 %changelog
+* Wed Jun 12 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.7.1-2
+- Enable asdcplib
+
+* Wed Jun 12 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.7.1-1
+- Update to 3.0.7.1
+
 * Fri Jun 07 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.7-2
 - Enable libplacebo
 
