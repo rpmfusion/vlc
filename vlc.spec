@@ -65,7 +65,9 @@ BuildRequires:	gcc-c++
 %{?_with_aom:BuildRequires: libaom-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
+%ifnarch i686 armv7hl
 BuildRequires:	asdcplib-devel
+%endif
 BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
 %{?_with_dav1d:BuildRequires: libdav1d-devel}
