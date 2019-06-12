@@ -65,7 +65,7 @@ BuildRequires:	gcc-c++
 %{?_with_aom:BuildRequires: libaom-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
-%ifnarch i686 armv7hl
+%ifnarch i686 %{arm}
 BuildRequires:	asdcplib-devel
 %endif
 BuildRequires:	avahi-devel
