@@ -36,6 +36,8 @@
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
+%endif
+%ifarch x86_64
 %global _with_asdcp     1
 %endif
 
