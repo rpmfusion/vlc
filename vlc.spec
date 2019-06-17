@@ -486,7 +486,7 @@ fi || :
 %{_libdir}/vlc/libvlc_vdpau.so*
 %{_libdir}/vlc/libvlc_xcb_events.so*
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
-%{?_with_ascdp:
+%{?_with_asdcp:
 %exclude %{_libdir}/vlc/plugins/access/libdcp_plugin.so
 }
 %{?_with_vcdimager:
@@ -538,7 +538,7 @@ fi || :
 %{?_with_crystalhd:
 %{_libdir}/vlc/plugins/codec/libcrystalhd_plugin.so
 }
-%{?_with_ascdp:
+%{?_with_asdcp:
 %{_libdir}/vlc/plugins/access/libdcp_plugin.so
 }
 
