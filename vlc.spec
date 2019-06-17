@@ -36,6 +36,7 @@
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
+%global _with_asdcp     1
 %endif
 
 
@@ -65,9 +66,7 @@ BuildRequires:	gcc-c++
 %{?_with_aom:BuildRequires: libaom-devel}
 BuildRequires:	aalib-devel
 BuildRequires:	alsa-lib-devel
-%ifnarch i686 %{arm}
-BuildRequires:	asdcplib-devel
-%endif
+%{?_with_asdcp:BuildRequires: asdcplib-devel}
 BuildRequires:	avahi-devel
 BuildRequires:	cdparanoia-devel
 %{?_with_dav1d:BuildRequires: libdav1d-devel}
@@ -485,6 +484,9 @@ fi || :
 %{_libdir}/vlc/libvlc_vdpau.so*
 %{_libdir}/vlc/libvlc_xcb_events.so*
 %exclude %{_libdir}/vlc/plugins/access/libaccess_jack_plugin.so
+%{?_with_ascdp:
+%exclude %{_libdir}/vlc/plugins/access/libdcp_plugin.so
+}
 %{?_with_vcdimager:
 %exclude %{_libdir}/vlc/plugins/access/libvcd_plugin.so
 %exclude %{_libdir}/vlc/plugins/access/libvcdx_plugin.so
@@ -533,6 +535,9 @@ fi || :
 }
 %{?_with_crystalhd:
 %{_libdir}/vlc/plugins/codec/libcrystalhd_plugin.so
+}
+%{?_with_ascdp:
+%{_libdir}/vlc/plugins/access/libdcp_plugin.so
 }
 
 %files devel
