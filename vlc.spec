@@ -6,39 +6,44 @@
 %else
 %global vlc_url https://download.videolan.org/pub/videolan/vlc/
 %endif
-%global _with_bootstrap		1
+
+%global _with_bootstrap 1
+
 %if 0%{?!_without_freeworld:1}
-%global _with_a52dec 1
 %global _with_faad2 1
 %global _with_ffmpeg 1
 %global _with_libdca 1
-%global _with_libdvbpsi	1
-%global _with_libmad 1
-%global _with_libmpeg2 1
-%global _with_twolame 1
 %global _with_x264 1
 %global _with_x265 1
 %global _with_xvidcore 1
 %global _with_live555 1
 %global _with_vaapi 1
 %endif
-%global _with_bluray    1
-%if 0%{?fedora}  && 0%{?fedora} < 28
-%global _with_opencv    1
-%endif
+
+%global _with_a52dec 1
+%global _with_libdvbpsi	1
+%global _with_libmad 1
+%global _with_libmpeg2 1
+%global _with_twolame 1
 %global _with_fluidsynth 1
+%global _with_schroedinger 1
+%global _with_freerdp 1
+
 %if 0%{?fedora}
 %global _with_aom     1
+%global _with_bluray  1
 %global _with_dav1d   1
-%global _with_freerdp 1
-%global _with_schroedinger 1
 %global _with_wayland 1
+%ifarch x86_64
+%global _with_asdcp     1
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
 %endif
-%ifarch x86_64
-%global _with_asdcp     1
+%endif
+
+%if 0%{?el7}
+%global _with_opencv  1
 %endif
 
 
