@@ -500,8 +500,6 @@ fi || :
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-%dir %{_libdir}/vlc/plugins/gui
-%{_libdir}/vlc/plugins/gui/libncurses_plugin.so
 %exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
@@ -516,10 +514,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
 %exclude %{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
 %ghost %{_libdir}/vlc/plugins/plugins.dat
-%dir %{_libdir}/vlc/
-%dir %{_libdir}/vlc/plugins
-%dir %{_libdir}/vlc/plugins/vdpau
-%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
 %{_libdir}/vlc/vlc-cache-gen
 %{_libdir}/vlc/plugins
 %{_mandir}/man1/vlc*.1*
