@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.7.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -551,6 +551,10 @@ fi || :
 
 
 %changelog
+* Tue Jun 18 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.7.1-4
+- Avoid files listed twice
+- Rework with/without options
+
 * Mon Jun 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.7.1-3
 - Move asdcp plugin to extras
 
