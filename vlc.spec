@@ -554,6 +554,7 @@ fi || :
 %changelog
 * Thu Jul 18 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.2
 - Update snapshot
+- Add system-wide ciphers
 
 * Tue Jul 02 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.1
 - Update to 20190702
