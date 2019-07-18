@@ -57,6 +57,7 @@ URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
 Patch1:     libplacebo_patch_1.patch
+Patch2:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
