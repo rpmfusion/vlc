@@ -1,6 +1,6 @@
-#global vlc_date	20190406
+%global vlc_date	20190820
 #global vlc_rc		-rc9
-#global vlc_tag     -#{?vlc_date}-0223
+%global vlc_tag     -%{?vlc_date}-0222
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -50,13 +50,14 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.7.1
-Release:	4%{?dist}
+Version:	3.0.8
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
 Patch1:     libplacebo_patch_1.patch
+Patch2:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -551,6 +552,25 @@ fi || :
 
 
 %changelog
+* Tue Aug 20 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-1
+- Update to 3.0.8 - 20190820 snapshot
+
+* Tue Aug 06 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-0.5
+- Rebuild for new ffmpeg version
+
+* Wed Jul 31 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.4
+- Update snapshot
+
+* Fri Jul 19 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.3
+- Rebuilt for live555
+
+* Thu Jul 18 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.2
+- Update snapshot
+- Add system-wide ciphers
+
+* Tue Jul 02 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.1
+- Update to 20190702
+
 * Tue Jun 18 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.7.1-4
 - Avoid files listed twice
 - Rework with/without options
