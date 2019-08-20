@@ -1,57 +1,63 @@
-#global vlc_date	20190406
+%global vlc_date	20190820
 #global vlc_rc		-rc9
-#global vlc_tag     -#{?vlc_date}-0223
+%global vlc_tag     -%{?vlc_date}-0222
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
 %global vlc_url https://download.videolan.org/pub/videolan/vlc/
 %endif
-%global _with_bootstrap		1
+
+%global _with_bootstrap 1
+
 %if 0%{?!_without_freeworld:1}
-%global _with_a52dec 1
 %global _with_faad2 1
 %global _with_ffmpeg 1
 %global _with_libdca 1
-%global _with_libdvbpsi	1
-%global _with_libmad 1
-%global _with_libmpeg2 1
-%global _with_twolame 1
 %global _with_x264 1
 %global _with_x265 1
 %global _with_xvidcore 1
 %global _with_live555 1
 %global _with_vaapi 1
 %endif
-%global _with_bluray    1
-%if 0%{?fedora}  && 0%{?fedora} < 28
-%global _with_opencv    1
-%endif
+
+%global _with_a52dec 1
+%global _with_libdvbpsi	1
+%global _with_libmad 1
+%global _with_libmpeg2 1
+%global _with_twolame 1
 %global _with_fluidsynth 1
+%global _with_schroedinger 1
+%global _with_freerdp 1
+
 %if 0%{?fedora}
 %global _with_aom     1
+%global _with_bluray  1
 %global _with_dav1d   1
-%global _with_freerdp 1
-%global _with_schroedinger 1
 %global _with_wayland 1
+%ifarch x86_64
+%global _with_asdcp     1
 %endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
 %endif
-%ifarch x86_64
-%global _with_asdcp     1
+%endif
+
+%if 0%{?el7}
+%global _with_opencv  1
 %endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.7.1
-Release:	3%{?dist}
+Version:	3.0.8
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
 Patch1:     libplacebo_patch_1.patch
+Patch2:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch 
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -500,8 +506,6 @@ fi || :
 %{?_with_fluidsynth:
 %exclude %{_libdir}/vlc/plugins/codec/libfluidsynth_plugin.so
 }
-%dir %{_libdir}/vlc/plugins/gui
-%{_libdir}/vlc/plugins/gui/libncurses_plugin.so
 %exclude %{_libdir}/vlc/plugins/gui/libqt_plugin.so
 %exclude %{_libdir}/vlc/plugins/gui/libskins2_plugin.so
 %{?_with_opencv:
@@ -516,10 +520,6 @@ fi || :
 %exclude %{_libdir}/vlc/plugins/access/libpulsesrc_plugin.so
 %exclude %{_libdir}/vlc/plugins/services_discovery/libpulselist_plugin.so
 %ghost %{_libdir}/vlc/plugins/plugins.dat
-%dir %{_libdir}/vlc/
-%dir %{_libdir}/vlc/plugins
-%dir %{_libdir}/vlc/plugins/vdpau
-%{_libdir}/vlc/plugins/vdpau/libvdpau_*_plugin.so
 %{_libdir}/vlc/vlc-cache-gen
 %{_libdir}/vlc/plugins
 %{_mandir}/man1/vlc*.1*
@@ -552,6 +552,29 @@ fi || :
 
 
 %changelog
+* Tue Aug 20 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-1
+- Update to 3.0.8 - 20190820 snapshot
+
+* Tue Aug 06 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-0.5
+- Rebuild for new ffmpeg version
+
+* Wed Jul 31 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.4
+- Update snapshot
+
+* Fri Jul 19 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.3
+- Rebuilt for live555
+
+* Thu Jul 18 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.2
+- Update snapshot
+- Add system-wide ciphers
+
+* Tue Jul 02 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-0.1
+- Update to 20190702
+
+* Tue Jun 18 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.7.1-4
+- Avoid files listed twice
+- Rework with/without options
+
 * Mon Jun 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.7.1-3
 - Move asdcp plugin to extras
 
