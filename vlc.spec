@@ -58,6 +58,7 @@ Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
 Patch1:     libplacebo_patch_1.patch
 Patch2:     Fix_aom_abi_break.patch 
+Patch3:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -296,6 +297,7 @@ VLC media player extras modules.
 }
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
