@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -552,6 +552,9 @@ fi || :
 
 
 %changelog
+* Wed Aug 21 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-2
+- Rebuild for dav1d and aom SONAME bump
+
 * Tue Aug 20 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-1
 - Update to 3.0.8 - 20190820 snapshot
 
