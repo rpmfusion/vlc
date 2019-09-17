@@ -221,7 +221,7 @@ BuildRequires:  raspberrypi-vc-static
 BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
-%if 0%{?fedora} || 0%{?rhel} >= 8
+%if 0%{?fedora}
 BuildRequires:  phonon-qt5-devel
 BuildRequires:  phonon-qt5-backend-gstreamer
 %else
