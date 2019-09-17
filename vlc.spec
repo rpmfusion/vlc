@@ -139,7 +139,10 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
+# Not Yet in EL8
+%if 0%{?fedora} || 0%{?el7}
 BuildRequires:	pkgconfig(libplacebo)
+%endif
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -557,6 +560,10 @@ fi || :
 
 
 %changelog
+* Tue Sep 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-20
+- Add EL8 support
+- Drop kde-filesystem
+
 * Wed Aug 21 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-2
 - Rebuild for dav1d and aom SONAME bump
 
