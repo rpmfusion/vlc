@@ -29,11 +29,14 @@
 %global _with_schroedinger 1
 %global _with_freerdp 1
 
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?el8}
 %global _with_aom     1
 %global _with_bluray  1
 %global _with_dav1d   1
 %global _with_wayland 1
+%endif
+
+%if 0%{?fedora}
 %ifarch x86_64
 %global _with_asdcp     1
 %endif
