@@ -92,7 +92,6 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:	kde-filesystem
 BuildRequires:	game-music-emu-devel
 %ifarch %{arm} aarch64
 BuildRequires:	pkgconfig(gstreamer-app-1.0)
@@ -242,7 +241,6 @@ Provides: vlc-plugin-jack = %{version}-%{release}
 
 Provides: %{name}-xorg%{_isa} = %{epoch}:%{version}-%{release}
 Requires: vlc-core%{_isa} = %{epoch}:%{version}-%{release}
-Requires: kde-filesystem
 
 Requires: dejavu-sans-fonts
 Requires: dejavu-sans-mono-fonts
@@ -328,7 +326,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--with-pic				\
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
-	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
@@ -406,6 +403,9 @@ appstream-util validate-relax --nonet \
 #Fixup
 rm -rf %{buildroot}/%{_datadir}/macosx
 
+#Disable KDE4 desktop files
+rm -rf  %{buildroot}%{_datadir}/kde4
+
 
 %find_lang %{name}
 
@@ -459,7 +459,6 @@ fi || :
 %license COPYING
 %{_datadir}/metainfo/vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
-%{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
 %{_datadir}/icons/hicolor/*/apps/vlc*.xpm
 %{_datadir}/vlc/skins2/
