@@ -1,6 +1,6 @@
-%global vlc_date	20190820
+%global vlc_date	20191014
 #global vlc_rc		-rc9
-%global vlc_tag     -%{?vlc_date}-0222
+%global vlc_tag     -%{?vlc_date}-0223
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -53,12 +53,12 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.8
-Release:	20%{?dist}
+Version:	3.0.9
+Release:	21%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
+Patch0:		https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_10.patch
 Patch1:     libplacebo_patch_1.patch
 Patch2:     Fix_aom_abi_break.patch 
 Patch3:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
@@ -560,6 +560,10 @@ fi || :
 
 
 %changelog
+* Mon Oct 14 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-21
+- Update to 20191014
+- Update mmal patch to 10
+
 * Tue Sep 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-20
 - Add EL8 support
 - Drop kde-filesystem
