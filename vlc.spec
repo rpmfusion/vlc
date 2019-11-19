@@ -54,7 +54,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	21%{?dist}
+Release:	23%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -560,6 +560,12 @@ fi || :
 
 
 %changelog
+* Fri Nov 15 2019 Dominik 'Rathann' Mierzejewski <rpm@greysector.net> - 1:3.0.9-23
+- rebuild for libdvdread ABI bump
+
+* Thu Oct 24 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-22
+- Rebuild for dav1d SONAME bump
+
 * Mon Oct 14 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-21
 - Update to 20191014
 - Update mmal patch to 10
