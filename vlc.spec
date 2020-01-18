@@ -334,7 +334,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
-	--enable-sftp				\
+%{!?el8:--enable-sftp} \
 %{?_with_vcdimager:--enable-vcdx}		\
 %{?_with_rpi: \
 	--enable-omxil				\
@@ -354,7 +354,6 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?!_without_freeworld: --enable-realrtsp} \
 	--enable-flac				\
 	--enable-tremor				\
-%{?el8:--disable-libssh2} \
 	--enable-speex				\
 	--enable-theora				\
 	--enable-libass				\
