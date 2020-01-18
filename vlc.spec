@@ -354,6 +354,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 %{?!_without_freeworld: --enable-realrtsp} \
 	--enable-flac				\
 	--enable-tremor				\
+%{?el8:--disable-libssh2} \
 	--enable-speex				\
 	--enable-theora				\
 	--enable-libass				\
