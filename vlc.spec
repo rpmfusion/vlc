@@ -341,6 +341,7 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-omxil-vout			\
 	--enable-rpi-omxil			\
 	--enable-mmal				\
+	--enable-mmal-avcodec			\
 } \
 %{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
