@@ -1,6 +1,6 @@
-%global vlc_date	20190820
+%global vlc_date	20200118
 #global vlc_rc		-rc9
-%global vlc_tag     -%{?vlc_date}-0222
+%global vlc_tag     -%{?vlc_date}-0223
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -29,11 +29,14 @@
 %global _with_schroedinger 1
 %global _with_freerdp 1
 
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?el8}
 %global _with_aom     1
 %global _with_bluray  1
 %global _with_dav1d   1
 %global _with_wayland 1
+%endif
+
+%if 0%{?fedora}
 %ifarch x86_64
 %global _with_asdcp     1
 %endif
@@ -50,14 +53,15 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.8
-Release:	1%{?dist}
+Version:	3.0.9
+Release:	28%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
+Patch0:		https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
 Patch1:     libplacebo_patch_1.patch
-Patch2:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch 
+Patch2:     Fix_aom_abi_break.patch 
+Patch3:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -88,7 +92,6 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:	kde-filesystem
 BuildRequires:	game-music-emu-devel
 %ifarch %{arm} aarch64
 BuildRequires:	pkgconfig(gstreamer-app-1.0)
@@ -126,7 +129,9 @@ BuildRequires:	libmtp-devel >= 1.0.0
 %{?_with_projectm:BuildRequires: libprojectM-devel}
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
+%if ! 0%{?el8}
 BuildRequires:	libssh2-devel
+%endif
 BuildRequires:	libsysfs-devel
 BuildRequires:	libshout-devel
 BuildRequires:	libsmbclient-devel
@@ -136,7 +141,10 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
+# Not Yet in EL8
+%if 0%{?fedora} || 0%{?el7}
 BuildRequires:	pkgconfig(libplacebo)
+%endif
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -215,7 +223,7 @@ BuildRequires:  raspberrypi-vc-static
 BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
-%if 0%{?fedora} || 0%{?rhel} >= 8
+%if 0%{?fedora}
 BuildRequires:  phonon-qt5-devel
 BuildRequires:  phonon-qt5-backend-gstreamer
 %else
@@ -238,7 +246,6 @@ Provides: vlc-plugin-jack = %{version}-%{release}
 
 Provides: %{name}-xorg%{_isa} = %{epoch}:%{version}-%{release}
 Requires: vlc-core%{_isa} = %{epoch}:%{version}-%{release}
-Requires: kde-filesystem
 
 Requires: dejavu-sans-fonts
 Requires: dejavu-sans-mono-fonts
@@ -295,6 +302,8 @@ VLC media player extras modules.
 %patch0 -p1
 }
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -322,17 +331,17 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--with-pic				\
 	--disable-rpath				\
 	--with-binary-version=%{version}	\
-	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
-	--enable-sftp				\
+%{!?el8:--enable-sftp} \
 %{?_with_vcdimager:--enable-vcdx}		\
 %{?_with_rpi: \
 	--enable-omxil				\
 	--enable-omxil-vout			\
 	--enable-rpi-omxil			\
 	--enable-mmal				\
+	--enable-mmal-avcodec			\
 } \
 %{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
@@ -400,6 +409,9 @@ appstream-util validate-relax --nonet \
 #Fixup
 rm -rf %{buildroot}/%{_datadir}/macosx
 
+#Disable KDE4 desktop files
+rm -rf  %{buildroot}%{_datadir}/kde4
+
 
 %find_lang %{name}
 
@@ -453,7 +465,6 @@ fi || :
 %license COPYING
 %{_datadir}/metainfo/vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
-%{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
 %{_datadir}/icons/hicolor/*/apps/vlc*.xpm
 %{_datadir}/vlc/skins2/
@@ -552,6 +563,40 @@ fi || :
 
 
 %changelog
+* Sat Jan 18 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-28
+- Update to current snapshot
+- Drop libssh2 from el8 - rfbz#5519
+- Update mmal patch
+
+* Sun Dec 22 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-27
+- Rebuild for new protobuf version
+
+* Thu Dec 19 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-26
+- Rebuild for new libplacebo version
+
+* Tue Dec 17 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-25
+- Mass rebuild for x264
+
+* Thu Nov 28 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-24
+- Rebuild for new x265
+
+* Fri Nov 15 2019 Dominik 'Rathann' Mierzejewski <rpm@greysector.net> - 1:3.0.9-23
+- rebuild for libdvdread ABI bump
+
+* Thu Oct 24 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-22
+- Rebuild for dav1d SONAME bump
+
+* Mon Oct 14 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-21
+- Update to 20191014
+- Update mmal patch to 10
+
+* Tue Sep 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-20
+- Add EL8 support
+- Drop kde-filesystem
+
+* Wed Aug 21 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-2
+- Rebuild for dav1d and aom SONAME bump
+
 * Tue Aug 20 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-1
 - Update to 3.0.8 - 20190820 snapshot
 
