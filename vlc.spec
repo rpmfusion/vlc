@@ -1,4 +1,4 @@
-%global vlc_date	20191014
+%global vlc_date	20200118
 #global vlc_rc		-rc9
 %global vlc_tag     -%{?vlc_date}-0223
 %if 0%{?vlc_tag:1}
@@ -54,11 +54,11 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	23%{?dist}
+Release:	28%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:		https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_10.patch
+Patch0:		https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
 Patch1:     libplacebo_patch_1.patch
 Patch2:     Fix_aom_abi_break.patch 
 Patch3:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
@@ -129,7 +129,9 @@ BuildRequires:	libmtp-devel >= 1.0.0
 %{?_with_projectm:BuildRequires: libprojectM-devel}
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
+%if ! 0%{?el8}
 BuildRequires:	libssh2-devel
+%endif
 BuildRequires:	libsysfs-devel
 BuildRequires:	libshout-devel
 BuildRequires:	libsmbclient-devel
@@ -332,13 +334,14 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
-	--enable-sftp				\
+%{!?el8:--enable-sftp} \
 %{?_with_vcdimager:--enable-vcdx}		\
 %{?_with_rpi: \
 	--enable-omxil				\
 	--enable-omxil-vout			\
 	--enable-rpi-omxil			\
 	--enable-mmal				\
+	--enable-mmal-avcodec			\
 } \
 %{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
@@ -560,6 +563,23 @@ fi || :
 
 
 %changelog
+* Sat Jan 18 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-28
+- Update to current snapshot
+- Drop libssh2 from el8 - rfbz#5519
+- Update mmal patch
+
+* Sun Dec 22 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-27
+- Rebuild for new protobuf version
+
+* Thu Dec 19 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-26
+- Rebuild for new libplacebo version
+
+* Tue Dec 17 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-25
+- Mass rebuild for x264
+
+* Thu Nov 28 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-24
+- Rebuild for new x265
+
 * Fri Nov 15 2019 Dominik 'Rathann' Mierzejewski <rpm@greysector.net> - 1:3.0.9-23
 - rebuild for libdvdread ABI bump
 
