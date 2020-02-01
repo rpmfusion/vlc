@@ -54,7 +54,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	28%{?dist}
+Release:	29%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -563,6 +563,9 @@ fi || :
 
 
 %changelog
+* Sat Feb 01 2020 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-29
+- rebuilt
+
 * Sat Jan 18 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-28
 - Update to current snapshot
 - Drop libssh2 from el8 - rfbz#5519
