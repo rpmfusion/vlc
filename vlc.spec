@@ -54,7 +54,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	30%{?dist}
+Release:	31%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -563,6 +563,9 @@ fi || :
 
 
 %changelog
+* Sat Feb 22 2020 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 1:3.0.9-31
+- Rebuild for ffmpeg-4.3 git
+
 * Sat Feb 08 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-30
 - Rebuild for new libplacebo version
 
