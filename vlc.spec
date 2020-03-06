@@ -62,6 +62,9 @@ Patch0:		https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16
 Patch1:     libplacebo_patch_1.patch
 Patch2:     Fix_aom_abi_break.patch 
 Patch3:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
+# Revert commit for f30
+# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
+Patch4:     buildfix_for_old_dav1d.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  fontpackages-devel
@@ -304,6 +307,9 @@ VLC media player extras modules.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%if 0%{?fedora} == 30
+%patch4 -p1
+%endif
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
