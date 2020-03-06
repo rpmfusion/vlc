@@ -1,4 +1,4 @@
-%global vlc_date	20200118
+%global vlc_date	20200306
 #global vlc_rc		-rc9
 %global vlc_tag     -%{?vlc_date}-0223
 %if 0%{?vlc_tag:1}
@@ -54,7 +54,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	32%{?dist}
+Release:	33%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
@@ -563,6 +563,9 @@ fi || :
 
 
 %changelog
+* Fri Mar 06 2020 leigh123linux <leigh123linux@googlemail.com> - 1:3.0.9-33
+- Update to current snapshot
+
 * Sun Feb 23 2020 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 1:3.0.9-32
 - Rebuild for x265
 
