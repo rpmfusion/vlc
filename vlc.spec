@@ -30,7 +30,9 @@
 %global _with_freerdp 1
 %global _with_dav1d   1
 %global _with_aom     1
+%ifarch x86_64 ppc64le aarch64
 %global _with_asdcp   1
+%endif
 
 %if 0%{?fedora} || 0%{?el8}
 %global _with_bluray  1
