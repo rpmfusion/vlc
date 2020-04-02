@@ -59,8 +59,8 @@ License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
-Patch2:     Fix_aom_abi_break.patch 
-Patch3:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
+Patch2:	Fix_aom_abi_break.patch
+Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 # Revert commit for f30
 # https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
 Patch4:     buildfix_for_old_dav1d.patch
@@ -225,7 +225,7 @@ BuildRequires:  raspberrypi-vc-static
 BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} >= 8
 BuildRequires:  phonon-qt5-devel
 BuildRequires:  phonon-qt5-backend-gstreamer
 %else
@@ -237,7 +237,7 @@ Provides: phonon-backend-vlc = 0.6.2-3
 %{?_with_wayland:
 # Fedora 25 Workstation default to wayland but not all
 # Boolean deps will handle this better when allowed
-%if 0%{?fedora} >= 25
+%if 0%{?fedora} || 0%{?rhel} >= 8
 Recommends: qt5-qtwayland%{_isa}
 %endif
 }
