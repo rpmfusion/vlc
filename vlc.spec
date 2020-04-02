@@ -1,6 +1,6 @@
-%global vlc_date	20200306
+%global vlc_date	20200402
 #global vlc_rc		-rc9
-%global vlc_tag     -%{?vlc_date}-0223
+%global vlc_tag     -%{?vlc_date}-0222
 %if 0%{?vlc_tag:1}
 %global vlc_url https://nightlies.videolan.org/build/source/
 %else
@@ -54,12 +54,11 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	33%{?dist}
+Release:	34%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:		https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
-Patch1:     libplacebo_patch_1.patch
+Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
 Patch2:     Fix_aom_abi_break.patch 
 Patch3:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 # Revert commit for f30
@@ -304,11 +303,14 @@ VLC media player extras modules.
 %{?_with_rpi:
 %patch0 -p1
 }
-%patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %if 0%{?fedora} == 30
 %patch4 -p1
+%endif
+%if 0%{?el7}
+# Lower opus requirement - rfbz#5585
+sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
 %endif
 
 %if 0%{?rhel} == 7
@@ -420,6 +422,9 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 
 
 %find_lang %{name}
+
+%check
+make check
 
 
 %ldconfig_scriptlets core
@@ -569,6 +574,10 @@ fi || :
 
 
 %changelog
+* Thu Apr 02 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-34
+- Update to 20200402
+- Enable make tests
+
 * Fri Mar 06 2020 leigh123linux <leigh123linux@googlemail.com> - 1:3.0.9-33
 - Update to current snapshot
 
