@@ -49,20 +49,23 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	35%{?dist}
+Release:	36%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
 Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
 %global vlc_setup vlc-3.0-%{?commit0}
-%elif 0%{?vlc_rc:1}
+%else
+%if 0%{?vlc_rc:1}
 Source0: https://download.videolan.org/pub/videolan/testing/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %else
 Source0: https://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}.tar.xz
 %global vlc_setup vlc-%{version}
 %endif
+%endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
+Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
 Patch2:	Fix_aom_abi_break.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 # Revert commit for f30
@@ -191,12 +194,12 @@ BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
 BuildRequires:	pkgconfig(wayland-protocols)
 }
-%{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
-BuildRequires:	sqlite-devel
+%{?_with_schroedinger:BuildRequires: pkgconfig(schroedinger-1.0)}
+BuildRequires:	pkgconfig(sqlite3)
 %{?_with_sidplay:BuildRequires: pkgconfig(libsidplay2)}
-BuildRequires:	speex-devel >= 1.1.5
-BuildRequires:	taglib-devel
-%{?_with_twolame:BuildRequires:	twolame-devel}
+BuildRequires:	pkgconfig(speex)
+BuildRequires:	pkgconfig(taglib)
+%{?_with_twolame:BuildRequires: pkgconfig(twolame)}
 %{?_with_vcdimager:BuildRequires: vcdimager-devel >= 0.7.21}
 %{?_with_x264:BuildRequires: x264-devel >= 0-0.8.20061028}
 %{?_with_x265:BuildRequires: x265-devel}
@@ -307,6 +310,7 @@ VLC media player extras modules.
 %{?_with_rpi:
 %patch0 -p1
 }
+%patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %if 0%{?fedora} == 30
@@ -315,6 +319,8 @@ VLC media player extras modules.
 %if 0%{?el7}
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
+sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
+sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 . /opt/rh/devtoolset-8/enable
 %endif
 
@@ -578,6 +584,10 @@ fi || :
 
 
 %changelog
+* Sun Apr 05 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-36
+- Lower libopus requirement for el7 - rfbz#5585
+- Add patch to build with libdvdread/libdvdnav for rhel
+
 * Sun Apr 05 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-35
 - Switch to gitlab snapshot
 - Switch to devtoolset-8 for el7
