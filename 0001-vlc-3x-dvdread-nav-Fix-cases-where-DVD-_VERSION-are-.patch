@@ -1,0 +1,75 @@
+From 92b65796875fbd30c3ae4c98a924b735ede60038 Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet <kwizart@gmail.com>
+Date: Thu, 2 Apr 2020 16:25:56 +0200
+Subject: [PATCH] vlc-3x: dvdread/nav: Fix cases where DVD*_VERSION* are
+ undefined
+
+With libdvdread/nav 5.0.3 (as in EL7/8) DVDREAD_VERSION_CODE is undefined
+leading to a comparison error. Use the older version notation for vlc-3.x
+instead.
+
+Also DVDNAV_VERSION is undefined there leading to a warning as it will
+assume VERSION = 0. Use a #if defined to clear that warning.
+
+Signed-off-by: Nicolas Chauvet <kwizart@gmail.com>
+---
+ modules/access/dvdnav.c  | 6 +++---
+ modules/access/dvdread.c | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/modules/access/dvdnav.c b/modules/access/dvdnav.c
+index 61a9157111..86954e0d96 100644
+--- a/modules/access/dvdnav.c
++++ b/modules/access/dvdnav.c
+@@ -191,7 +191,7 @@ static int EventMouse( vlc_object_t *, char const *,
+ static int EventIntf( vlc_object_t *, char const *,
+                       vlc_value_t, vlc_value_t, void * );
+ 
+-#if DVDNAV_VERSION >= 60100
++#if defined(DVDNAV_VERSION) && DVDNAV_VERSION >= 60100
+ static void DvdNavLog( void *foo, dvdnav_logger_level_t i, const char *p, va_list z)
+ {
+     msg_GenericVa( (demux_t*)foo, i, p, z );
+@@ -367,7 +367,7 @@ static int AccessDemuxOpen ( vlc_object_t *p_this )
+ 
+     /* Open dvdnav */
+     psz_path = ToLocale( psz_file );
+-#if DVDNAV_VERSION >= 60100
++#if defined(DVDNAV_VERSION) && DVDNAV_VERSION >= 60100
+     dvdnav_logger_cb cbs;
+     cbs.pf_log = DvdNavLog;
+     if( dvdnav_open2( &p_dvdnav, p_demux, &cbs, psz_path  ) != DVDNAV_STATUS_OK )
+@@ -479,7 +479,7 @@ static int DemuxOpen ( vlc_object_t *p_this )
+     };
+ 
+     /* Open dvdnav with stream callbacks */
+-#if DVDNAV_VERSION >= 60100
++#if defined(DVDNAV_VERSION) && DVDNAV_VERSION >= 60100
+     dvdnav_logger_cb cbs;
+     cbs.pf_log = DvdNavLog;
+     if( dvdnav_open_stream2( &p_dvdnav, p_demux,
+diff --git a/modules/access/dvdread.c b/modules/access/dvdread.c
+index 442b3a0e49..5fe184193b 100644
+--- a/modules/access/dvdread.c
++++ b/modules/access/dvdread.c
+@@ -157,7 +157,7 @@ static int  DvdReadSeek     ( demux_t *, int );
+ static void DvdReadHandleDSI( demux_t *, uint8_t * );
+ static void DvdReadFindCell ( demux_t * );
+ 
+-#if DVDREAD_VERSION >= DVDREAD_VERSION_CODE(6, 1, 0)
++#if defined(DVDREAD_VERSION) && DVDREAD_VERSION >= 60100
+ static void DvdReadLog( void *foo, dvd_logger_level_t i, const char *p, va_list z )
+ {
+     demux_t *p_demux = (demux_t*)foo;
+@@ -200,7 +200,7 @@ static int Open( vlc_object_t *p_this )
+ 
+     /* Open dvdread */
+     const char *psz_path = ToLocale( psz_file );
+-#if DVDREAD_VERSION >= DVDREAD_VERSION_CODE(6, 1, 0)
++#if defined(DVDREAD_VERSION) && DVDREAD_VERSION >= 60100
+     dvd_logger_cb cbs;
+     cbs.pf_log = DvdReadLog;
+     dvd_reader_t *p_dvdread = DVDOpen2( p_demux, &cbs, psz_path );
+-- 
+2.25.1
+
