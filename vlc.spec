@@ -1,11 +1,6 @@
-%global vlc_date	20200402
+%global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
-%global vlc_tag     -%{?vlc_date}-0222
-%if 0%{?vlc_tag:1}
-%global vlc_url https://nightlies.videolan.org/build/source/
-%else
-%global vlc_url https://download.videolan.org/pub/videolan/vlc/
-%endif
 
 %global _with_bootstrap 1
 
@@ -21,7 +16,7 @@
 %endif
 
 %global _with_a52dec 1
-%global _with_libdvbpsi	1
+%global _with_libdvbpsi 1
 %global _with_libmad 1
 %global _with_libmpeg2 1
 %global _with_twolame 1
@@ -54,19 +49,28 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9
-Release:	34%{?dist}
+Release:	35%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
-Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
+%if 0%{?commit0:1}
+Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
+%global vlc_setup vlc-3.0-%{?commit0}
+%elif 0%{?vlc_rc:1}
+Source0: https://download.videolan.org/pub/videolan/testing/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
+%global vlc_setup vlc-%{version}%{?vlc_rc}
+%else
+Source0: https://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}.tar.xz
+%global vlc_setup vlc-%{version}
+%endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
 Patch2:	Fix_aom_abi_break.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 # Revert commit for f30
 # https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
-Patch4:     buildfix_for_old_dav1d.patch
+Patch4:	buildfix_for_old_dav1d.patch
 BuildRequires:	desktop-file-utils
-BuildRequires:  libappstream-glib
-BuildRequires:  fontpackages-devel
+BuildRequires:	libappstream-glib
+BuildRequires:	fontpackages-devel
 
 %{?_with_bootstrap:
 BuildRequires:	bison
@@ -221,8 +225,8 @@ BuildRequires:  raspberrypi-vc-devel
 BuildRequires:  raspberrypi-vc-static
 }
 
-%if 0%{?rhel} == 7
-BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
+%if 0%{?el7}
+BuildRequires: devtoolset-8-toolchain, devtoolset-8-libatomic-devel
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
@@ -299,7 +303,7 @@ VLC media player extras modules.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{vlc_setup}
 %{?_with_rpi:
 %patch0 -p1
 }
@@ -311,10 +315,7 @@ VLC media player extras modules.
 %if 0%{?el7}
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
-%endif
-
-%if 0%{?rhel} == 7
-. /opt/rh/devtoolset-7/enable
+. /opt/rh/devtoolset-8/enable
 %endif
 
 %{?_with_bootstrap:
@@ -322,10 +323,12 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 }
 
+touch src/revision.txt
+
 
 %build
-%if 0%{?rhel} == 7
-. /opt/rh/devtoolset-7/enable
+%if 0%{?el7}
+. /opt/rh/devtoolset-8/enable
 %endif
 
 %configure \
@@ -336,8 +339,9 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
         --with-default-font-family=DejaVuSans \
         --with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
         --with-default-monospace-font-family=DejaVuSansMono \
+	--with-kde-solid=no			\
 	--with-pic				\
-	--disable-rpath				\
+	--disable-rpath			\
 	--with-binary-version=%{version}	\
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
@@ -472,7 +476,7 @@ fi || :
 
 
 %files
-%doc AUTHORS ChangeLog NEWS README THANKS
+%doc AUTHORS NEWS README THANKS
 %license COPYING
 %{_datadir}/metainfo/vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
@@ -574,6 +578,10 @@ fi || :
 
 
 %changelog
+* Sun Apr 05 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-35
+- Switch to gitlab snapshot
+- Switch to devtoolset-8 for el7
+
 * Thu Apr 02 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-34
 - Update to 20200402
 - Enable make tests
