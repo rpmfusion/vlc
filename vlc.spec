@@ -71,6 +71,7 @@ Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 # Revert commit for f30
 # https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
 Patch4:	buildfix_for_old_dav1d.patch
+Patch5:	Lower-libgcrypt-to-1.5.3.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -317,10 +318,13 @@ VLC media player extras modules.
 %patch4 -p1
 %endif
 %if 0%{?el7}
+%patch5 -p1
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
 sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
 sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
+# Lower taglib
+sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-8/enable
 %endif
 
@@ -434,6 +438,9 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 %find_lang %{name}
 
 %check
+%if 0%{?el7}
+. /opt/rh/devtoolset-8/enable
+%endif
 make check
 
 
