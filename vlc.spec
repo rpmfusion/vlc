@@ -1,5 +1,5 @@
-%global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+#global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
+#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
@@ -48,8 +48,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.9
-Release:	36%{?dist}
+Version:	3.0.9.2
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -66,7 +66,6 @@ Source0: https://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version
 %endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
 Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
-Patch2:	Fix_aom_abi_break.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 # Revert commit for f30
 # https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
@@ -139,9 +138,7 @@ BuildRequires:	libmtp-devel >= 1.0.0
 %{?_with_projectm:BuildRequires: libprojectM-devel}
 BuildRequires:	libproxy-devel
 BuildRequires:	librsvg2-devel >= 2.9.0
-%if ! 0%{?el8}
 BuildRequires:	libssh2-devel
-%endif
 BuildRequires:	libsysfs-devel
 BuildRequires:	libshout-devel
 BuildRequires:	libsmbclient-devel
@@ -182,7 +179,7 @@ BuildRequires:	pcre-devel
 BuildRequires:	pkgconfig(libarchive) >= 3.1.0
 BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
-BuildRequires:	pkgconfig(microdns)
+BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
@@ -190,6 +187,9 @@ BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(soxr)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
+%if 0%{?fedora} > 30 && 0%{?rhel}
+BuildRequires:	pkgconfig(srt)
+%endif
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
@@ -292,6 +292,10 @@ Summary:	VLC media player core
 Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
+Requires: libmicrodns%{?_isa} > 0.1.2-1
+%if 0%{?fc31}
+Requires: srt-libs%{?_isa} > 1.4.1-1
+%endif
 
 %description core
 VLC media player core components
@@ -311,8 +315,9 @@ VLC media player extras modules.
 %{?_with_rpi:
 %patch0 -p1
 }
+%if 0%{?rhel}
 %patch1 -p1
-%patch2 -p1
+%endif
 %patch3 -p1
 %if 0%{?fedora} == 30
 %patch4 -p1
@@ -591,6 +596,11 @@ fi || :
 
 
 %changelog
+* Wed Apr 08 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9.2-1
+- Update to 3.0.9.2
+- Enable srt
+- Enable libssh2 even on el8
+
 * Sun Apr 05 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-36
 - Lower libopus requirement for el7 - rfbz#5585
 - Add patch to build with libdvdread/libdvdnav for rhel
