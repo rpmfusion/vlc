@@ -1,11 +1,6 @@
-%global vlc_date	20190820
+#global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
+#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
-%global vlc_tag     -%{?vlc_date}-0222
-%if 0%{?vlc_tag:1}
-%global vlc_url https://nightlies.videolan.org/build/source/
-%else
-%global vlc_url https://download.videolan.org/pub/videolan/vlc/
-%endif
 
 %global _with_bootstrap 1
 
@@ -21,22 +16,25 @@
 %endif
 
 %global _with_a52dec 1
-%global _with_libdvbpsi	1
+%global _with_libdvbpsi 1
 %global _with_libmad 1
 %global _with_libmpeg2 1
 %global _with_twolame 1
 %global _with_fluidsynth 1
 %global _with_schroedinger 1
 %global _with_freerdp 1
+%global _with_dav1d   1
+%global _with_aom     1
+%ifarch x86_64 ppc64le aarch64
+%global _with_asdcp   1
+%endif
+
+%if 0%{?fedora} || 0%{?el8}
+%global _with_bluray  1
+%global _with_wayland 1
+%endif
 
 %if 0%{?fedora}
-%global _with_aom     1
-%global _with_bluray  1
-%global _with_dav1d   1
-%global _with_wayland 1
-%ifarch x86_64
-%global _with_asdcp     1
-%endif
 %ifarch x86_64 i686
 %global _with_crystalhd 1
 %endif
@@ -50,17 +48,32 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.8
+Version:	3.0.9.2
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
-Source0:	%{vlc_url}/%{?!vlc_tag:%{version}/}vlc-%{version}%{?vlc_tag}.tar.xz
-Patch0:		https://github.com/RPi-Distro/vlc/raw/stretch-rpt/debian/patches/mmal_8.patch
-Patch1:     libplacebo_patch_1.patch
-Patch2:     0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch 
+%if 0%{?commit0:1}
+Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
+%global vlc_setup vlc-3.0-%{?commit0}
+%else
+%if 0%{?vlc_rc:1}
+Source0: https://download.videolan.org/pub/videolan/testing/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
+%global vlc_setup vlc-%{version}%{?vlc_rc}
+%else
+Source0: https://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}.tar.xz
+%global vlc_setup vlc-%{version}
+%endif
+%endif
+Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
+Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
+Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
+# Revert commit for f30
+# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
+Patch4:	buildfix_for_old_dav1d.patch
+Patch5:	Lower-libgcrypt-to-1.5.3.patch
 BuildRequires:	desktop-file-utils
-BuildRequires:  libappstream-glib
-BuildRequires:  fontpackages-devel
+BuildRequires:	libappstream-glib
+BuildRequires:	fontpackages-devel
 
 %{?_with_bootstrap:
 BuildRequires:	bison
@@ -88,7 +101,6 @@ BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	gsm-devel
 BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
-BuildRequires:	kde-filesystem
 BuildRequires:	game-music-emu-devel
 %ifarch %{arm} aarch64
 BuildRequires:	pkgconfig(gstreamer-app-1.0)
@@ -136,7 +148,10 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
+# Not Yet in EL8
+%if 0%{?fedora} || 0%{?el7}
 BuildRequires:	pkgconfig(libplacebo)
+%endif
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
 BuildRequires:	libupnp-devel
@@ -164,7 +179,7 @@ BuildRequires:	pcre-devel
 BuildRequires:	pkgconfig(libarchive) >= 3.1.0
 BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
-BuildRequires:	pkgconfig(microdns)
+BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
@@ -172,17 +187,20 @@ BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(soxr)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
+%if 0%{?fedora} > 30 && 0%{?rhel}
+BuildRequires:	pkgconfig(srt)
+%endif
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
 BuildRequires:	pkgconfig(wayland-protocols)
 }
-%{?_with_schroedinger:BuildRequires: schroedinger-devel >= 1.0.10}
-BuildRequires:	sqlite-devel
+%{?_with_schroedinger:BuildRequires: pkgconfig(schroedinger-1.0)}
+BuildRequires:	pkgconfig(sqlite3)
 %{?_with_sidplay:BuildRequires: pkgconfig(libsidplay2)}
-BuildRequires:	speex-devel >= 1.1.5
-BuildRequires:	taglib-devel
-%{?_with_twolame:BuildRequires:	twolame-devel}
+BuildRequires:	pkgconfig(speex)
+BuildRequires:	pkgconfig(taglib)
+%{?_with_twolame:BuildRequires: pkgconfig(twolame)}
 %{?_with_vcdimager:BuildRequires: vcdimager-devel >= 0.7.21}
 %{?_with_x264:BuildRequires: x264-devel >= 0-0.8.20061028}
 %{?_with_x265:BuildRequires: x265-devel}
@@ -211,8 +229,8 @@ BuildRequires:  raspberrypi-vc-devel
 BuildRequires:  raspberrypi-vc-static
 }
 
-%if 0%{?rhel} == 7
-BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
+%if 0%{?el7}
+BuildRequires: devtoolset-8-toolchain, devtoolset-8-libatomic-devel
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
@@ -227,7 +245,7 @@ Provides: phonon-backend-vlc = 0.6.2-3
 %{?_with_wayland:
 # Fedora 25 Workstation default to wayland but not all
 # Boolean deps will handle this better when allowed
-%if 0%{?fedora} >= 25
+%if 0%{?fedora} || 0%{?rhel} >= 8
 Recommends: qt5-qtwayland%{_isa}
 %endif
 }
@@ -238,7 +256,6 @@ Provides: vlc-plugin-jack = %{version}-%{release}
 
 Provides: %{name}-xorg%{_isa} = %{epoch}:%{version}-%{release}
 Requires: vlc-core%{_isa} = %{epoch}:%{version}-%{release}
-Requires: kde-filesystem
 
 Requires: dejavu-sans-fonts
 Requires: dejavu-sans-mono-fonts
@@ -275,6 +292,10 @@ Summary:	VLC media player core
 Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
+Requires: libmicrodns%{?_isa} > 0.1.2-1
+%if 0%{?fc31}
+Requires: srt-libs%{?_isa} > 1.4.1-1
+%endif
 
 %description core
 VLC media player core components
@@ -290,14 +311,26 @@ VLC media player extras modules.
 
 
 %prep
-%setup -q -n %{name}-%{version}%{?vlc_rc}
+%setup -q -n %{vlc_setup}
 %{?_with_rpi:
 %patch0 -p1
 }
+%if 0%{?rhel}
 %patch1 -p1
-
-%if 0%{?rhel} == 7
-. /opt/rh/devtoolset-7/enable
+%endif
+%patch3 -p1
+%if 0%{?fedora} == 30
+%patch4 -p1
+%endif
+%if 0%{?el7}
+%patch5 -p1
+# Lower opus requirement - rfbz#5585
+sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
+sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
+sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
+# Lower taglib
+sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
+. /opt/rh/devtoolset-8/enable
 %endif
 
 %{?_with_bootstrap:
@@ -305,10 +338,12 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
 ./bootstrap
 }
 
+touch src/revision.txt
+
 
 %build
-%if 0%{?rhel} == 7
-. /opt/rh/devtoolset-7/enable
+%if 0%{?el7}
+. /opt/rh/devtoolset-8/enable
 %endif
 
 %configure \
@@ -319,20 +354,21 @@ rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
         --with-default-font-family=DejaVuSans \
         --with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
         --with-default-monospace-font-family=DejaVuSansMono \
+	--with-kde-solid=no			\
 	--with-pic				\
-	--disable-rpath				\
+	--disable-rpath			\
 	--with-binary-version=%{version}	\
-	--with-kde-solid=%{_kde4_appsdir}/solid/actions \
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
 %{?_with_opencv:--enable-opencv} \
-	--enable-sftp				\
+%{!?el8:--enable-sftp} \
 %{?_with_vcdimager:--enable-vcdx}		\
 %{?_with_rpi: \
 	--enable-omxil				\
 	--enable-omxil-vout			\
 	--enable-rpi-omxil			\
 	--enable-mmal				\
+	--enable-mmal-avcodec			\
 } \
 %{?_with_aom:--enable-aom}                      \
 %{!?_with_a52dec:--disable-a52}			\
@@ -400,8 +436,17 @@ appstream-util validate-relax --nonet \
 #Fixup
 rm -rf %{buildroot}/%{_datadir}/macosx
 
+#Disable KDE4 desktop files
+rm -rf  %{buildroot}%{_datadir}/kde4
+
 
 %find_lang %{name}
+
+%check
+%if 0%{?el7}
+. /opt/rh/devtoolset-8/enable
+%endif
+make check
 
 
 %ldconfig_scriptlets core
@@ -449,11 +494,10 @@ fi || :
 
 
 %files
-%doc AUTHORS ChangeLog NEWS README THANKS
+%doc AUTHORS NEWS README THANKS
 %license COPYING
 %{_datadir}/metainfo/vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
-%{_datadir}/kde4/apps/solid/actions/vlc-*.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
 %{_datadir}/icons/hicolor/*/apps/vlc*.xpm
 %{_datadir}/vlc/skins2/
@@ -552,6 +596,72 @@ fi || :
 
 
 %changelog
+* Wed Apr 08 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9.2-1
+- Update to 3.0.9.2
+- Enable srt
+- Enable libssh2 even on el8
+
+* Sun Apr 05 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-36
+- Lower libopus requirement for el7 - rfbz#5585
+- Add patch to build with libdvdread/libdvdnav for rhel
+
+* Sun Apr 05 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-35
+- Switch to gitlab snapshot
+- Switch to devtoolset-8 for el7
+
+* Thu Apr 02 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-34
+- Update to 20200402
+- Enable make tests
+
+* Fri Mar 06 2020 leigh123linux <leigh123linux@googlemail.com> - 1:3.0.9-33
+- Update to current snapshot
+
+* Sun Feb 23 2020 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 1:3.0.9-32
+- Rebuild for x265
+
+* Sat Feb 22 2020 RPM Fusion Release Engineering <leigh123linux@googlemail.com> - 1:3.0.9-31
+- Rebuild for ffmpeg-4.3 git
+
+* Sat Feb 08 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-30
+- Rebuild for new libplacebo version
+
+* Sat Feb 01 2020 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-29
+- rebuilt
+
+* Sat Jan 18 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-28
+- Update to current snapshot
+- Drop libssh2 from el8 - rfbz#5519
+- Update mmal patch
+
+* Sun Dec 22 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-27
+- Rebuild for new protobuf version
+
+* Thu Dec 19 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-26
+- Rebuild for new libplacebo version
+
+* Tue Dec 17 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-25
+- Mass rebuild for x264
+
+* Thu Nov 28 2019 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9-24
+- Rebuild for new x265
+
+* Fri Nov 15 2019 Dominik 'Rathann' Mierzejewski <rpm@greysector.net> - 1:3.0.9-23
+- rebuild for libdvdread ABI bump
+
+* Thu Oct 24 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.9-22
+- Rebuild for dav1d SONAME bump
+
+* Mon Oct 14 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9-21
+- Update to 20191014
+- Update mmal patch to 10
+
+* Tue Sep 17 2019 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.8-20
+- Add EL8 support
+- Drop kde-filesystem
+
+* Wed Aug 21 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-2
+- Rebuild for dav1d and aom SONAME bump
+
 * Tue Aug 20 2019 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.8-1
 - Update to 3.0.8 - 20190820 snapshot
 

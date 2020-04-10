@@ -1,13 +1,13 @@
-From 78dff2f7ec405d423da4431fc873cd5182e594c8 Mon Sep 17 00:00:00 2001
+From 2215a98fbb1f11e5df8e58eba2ea15733cff7905 Mon Sep 17 00:00:00 2001
 From: Leigh Scott <leigh123linux@gmail.com>
-Date: Fri, 7 Jun 2019 22:24:42 +0100
-Subject: Adapt patch from videolan mailing list
-         https://mailman.videolan.org/pipermail/vlc-devel/2019-May/124293.html
+Date: Thu, 19 Dec 2019 15:03:32 +0000
+Subject: [PATCH] Adapt patch from videolan mailing list
 
 ---
  .../video_output/opengl/fragment_shaders.c    |  6 +++++
+ modules/video_output/opengl/vout_helper.c     |  4 ++-
  modules/video_output/opengl/vout_helper.h     | 27 +++++++++++++++++--
- 2 files changed, 31 insertions(+), 2 deletions(-)
+ 3 files changed, 34 insertions(+), 3 deletions(-)
 
 diff --git a/modules/video_output/opengl/fragment_shaders.c b/modules/video_output/opengl/fragment_shaders.c
 index 8c1f67ee7a..f6fb2be6c5 100644
@@ -27,6 +27,21 @@ index 8c1f67ee7a..f6fb2be6c5 100644
          color_params.gamut_warning = var_InheritBool(tc->gl, "tone-mapping-warn");
  
          struct pl_color_space dst_space = pl_color_space_unknown;
+diff --git a/modules/video_output/opengl/vout_helper.c b/modules/video_output/opengl/vout_helper.c
+index 919560e603..12308e2060 100644
+--- a/modules/video_output/opengl/vout_helper.c
++++ b/modules/video_output/opengl/vout_helper.c
+@@ -628,7 +628,9 @@ opengl_init_program(vout_display_opengl_t *vgl, struct prgm *prgm,
+             .log_level = PL_LOG_INFO,
+         });
+         if (tc->pl_ctx) {
+-#   if PL_API_VER >= 6
++#   if PL_API_VER >= 20
++            tc->pl_sh = pl_shader_alloc(tc->pl_ctx, NULL);
++#   elif PL_API_VER >= 6
+             tc->pl_sh = pl_shader_alloc(tc->pl_ctx, NULL, 0);
+ #   else
+             tc->pl_sh = pl_shader_alloc(tc->pl_ctx, NULL, 0, 0);
 diff --git a/modules/video_output/opengl/vout_helper.h b/modules/video_output/opengl/vout_helper.h
 index 978669f89c..cfc256530e 100644
 --- a/modules/video_output/opengl/vout_helper.h
@@ -82,5 +97,5 @@ index 978669f89c..cfc256530e 100644
      set_section("Dithering", NULL) \
      add_integer("dither-algo", -1, DITHER_TEXT, DITHER_LONGTEXT, false) \
 -- 
-2.21.0
+2.24.1
 
