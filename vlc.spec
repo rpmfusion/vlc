@@ -49,7 +49,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.9.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -187,7 +187,7 @@ BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(soxr)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
-%if 0%{?fedora} > 30 && 0%{?rhel}
+%if 0%{?fedora} > 30 || 0%{?rhel}
 BuildRequires:	pkgconfig(srt)
 %endif
 %{?_with_wayland:
@@ -294,7 +294,7 @@ Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
 Requires: libmicrodns%{?_isa} > 0.1.2-1
 %if 0%{?fc31}
-Requires: srt-libs%{?_isa} > 1.4.1-1
+Requires: srt-libs%{?_isa} > 1.4.1-3
 %endif
 
 %description core
@@ -596,6 +596,9 @@ fi || :
 
 
 %changelog
+* Fri Apr 24 2020 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9.2-3
+- Fix srt issue (rfbz#5614)
+
 * Mon Apr 13 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.9.2-2
 - Rebuilt for live555
 
