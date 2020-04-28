@@ -444,7 +444,7 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 
 %check
 %if 0%{?el7}
-. /opt/rh/devtoolset-8/enable
+. /opt/rh/devtoolset-7/enable
 %endif
 make check
 
