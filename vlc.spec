@@ -48,8 +48,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.9.2
-Release:	3%{?dist}
+Version:	3.0.10
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -596,6 +596,9 @@ fi || :
 
 
 %changelog
+* Tue Apr 28 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.10-1
+- Update to 3.0.10
+
 * Fri Apr 24 2020 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9.2-3
 - Fix srt issue (rfbz#5614)
 
