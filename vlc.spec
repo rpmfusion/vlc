@@ -48,8 +48,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.9.2
-Release:	3%{?dist}
+Version:	3.0.10
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -230,7 +230,7 @@ BuildRequires:  raspberrypi-vc-static
 }
 
 %if 0%{?el7}
-BuildRequires: devtoolset-8-toolchain, devtoolset-8-libatomic-devel
+BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
@@ -330,7 +330,7 @@ sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_c
 sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 # Lower taglib
 sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
-. /opt/rh/devtoolset-8/enable
+. /opt/rh/devtoolset-7/enable
 %endif
 
 %{?_with_bootstrap:
@@ -343,7 +343,7 @@ touch src/revision.txt
 
 %build
 %if 0%{?el7}
-. /opt/rh/devtoolset-8/enable
+. /opt/rh/devtoolset-7/enable
 %endif
 
 %configure \
@@ -596,6 +596,10 @@ fi || :
 
 
 %changelog
+* Tue Apr 28 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.10-1
+- Update to 3.0.10
+- Back to devtoolset-7 for EL7
+
 * Fri Apr 24 2020 Leigh Scott <leigh123linux@googlemail.com> - 1:3.0.9.2-3
 - Fix srt issue (rfbz#5614)
 
