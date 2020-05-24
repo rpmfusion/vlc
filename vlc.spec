@@ -49,7 +49,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -596,6 +596,9 @@ fi || :
 
 
 %changelog
+* Sun May 24 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.10-2
+- Rebuild for dav1d SONAME bump
+
 * Tue Apr 28 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.10-1
 - Update to 3.0.10
 - Back to devtoolset-7 for EL7
