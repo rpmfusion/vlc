@@ -42,6 +42,8 @@
 
 %if 0%{?el7}
 %global _with_opencv  1
+# Developper toolset version
+%global dts_ver       7
 %endif
 
 
@@ -222,7 +224,7 @@ BuildRequires:  raspberrypi-vc-static
 }
 
 %if 0%{?el7}
-BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
+BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-devel
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
@@ -335,7 +337,7 @@ touch src/revision.txt
 
 %build
 %if 0%{?el7}
-. /opt/rh/devtoolset-7/enable
+. /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 
 %configure \
@@ -436,7 +438,7 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 
 %check
 %if 0%{?el7}
-. /opt/rh/devtoolset-7/enable
+. /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 make check
 
