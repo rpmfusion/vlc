@@ -56,20 +56,12 @@ URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
 %global vlc_setup vlc-3.0-%{?commit0}
 %else
-%if 0%{?vlc_rc:1}
-Source0: https://download.videolan.org/pub/videolan/testing/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
-%else
-Source0: https://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}.tar.xz
-%global vlc_setup vlc-%{version}
-%endif
 %endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
 Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
-# Revert commit for f30
-# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
-Patch4:	buildfix_for_old_dav1d.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
