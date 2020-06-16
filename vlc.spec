@@ -313,9 +313,6 @@ VLC media player extras modules.
 %patch1 -p1
 %endif
 %patch3 -p1
-%if 0%{?fedora} == 30
-%patch4 -p1
-%endif
 %if 0%{?el7}
 %patch5 -p1
 # Lower opus requirement - rfbz#5585
