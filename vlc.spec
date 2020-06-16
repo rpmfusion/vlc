@@ -1,5 +1,5 @@
 #global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
-#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
@@ -42,13 +42,15 @@
 
 %if 0%{?el7}
 %global _with_opencv  1
+# Developper toolset version
+%global dts_ver       8
 %endif
 
 
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.10
+Version:	3.0.11
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
@@ -56,20 +58,12 @@ URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
 %global vlc_setup vlc-3.0-%{?commit0}
 %else
-%if 0%{?vlc_rc:1}
-Source0: https://download.videolan.org/pub/videolan/testing/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
-%else
-Source0: https://download.videolan.org/pub/videolan/vlc/%{version}/vlc-%{version}.tar.xz
-%global vlc_setup vlc-%{version}
-%endif
 %endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
 Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
-# Revert commit for f30
-# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commitdiff;h=bb98c9a1bda8972a83ec102e286da00228c1f2d3
-Patch4:	buildfix_for_old_dav1d.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -187,9 +181,7 @@ BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(soxr)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
-%if 0%{?fedora} > 30 || 0%{?rhel}
 BuildRequires:	pkgconfig(srt)
-%endif
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
@@ -230,7 +222,7 @@ BuildRequires:  raspberrypi-vc-static
 }
 
 %if 0%{?el7}
-BuildRequires: devtoolset-7-toolchain, devtoolset-7-libatomic-devel
+BuildRequires: devtoolset-%{dts_ver}-toolchain, devtoolset-%{dts_ver}-libatomic-devel
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
@@ -319,9 +311,6 @@ VLC media player extras modules.
 %patch1 -p1
 %endif
 %patch3 -p1
-%if 0%{?fedora} == 30
-%patch4 -p1
-%endif
 %if 0%{?el7}
 %patch5 -p1
 # Lower opus requirement - rfbz#5585
@@ -330,7 +319,7 @@ sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_c
 sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 # Lower taglib
 sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
-. /opt/rh/devtoolset-7/enable
+. /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 
 %{?_with_bootstrap:
@@ -343,7 +332,7 @@ touch src/revision.txt
 
 %build
 %if 0%{?el7}
-. /opt/rh/devtoolset-7/enable
+. /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 
 %configure \
@@ -444,7 +433,7 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 
 %check
 %if 0%{?el7}
-. /opt/rh/devtoolset-7/enable
+. /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 make check
 
@@ -596,6 +585,15 @@ fi || :
 
 
 %changelog
+* Mon Jun 15 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-1
+- Update to 3.0.11
+
+* Sun May 31 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.10-3
+- Rebuild for new x265 version
+
+* Sun May 24 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.10-2
+- Rebuild for dav1d SONAME bump
+
 * Tue Apr 28 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.10-1
 - Update to 3.0.10
 - Back to devtoolset-7 for EL7
