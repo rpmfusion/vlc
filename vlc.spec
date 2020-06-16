@@ -1,5 +1,5 @@
 #global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
-#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
