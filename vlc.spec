@@ -43,7 +43,7 @@
 %if 0%{?el7}
 %global _with_opencv  1
 # Developper toolset version
-%global dts_ver       7
+%global dts_ver       8
 %endif
 
 
