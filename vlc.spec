@@ -175,6 +175,9 @@ BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
 BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
+%if 0%{?fedora} > 32
+BuildRequires:	qt5-qtbase-private-devel
+%endif
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
 BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
