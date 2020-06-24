@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.11
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -585,6 +585,9 @@ fi || :
 
 
 %changelog
+* Wed Jun 24 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-2
+- rebuilt
+
 * Mon Jun 15 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-1
 - Update to 3.0.11
 
