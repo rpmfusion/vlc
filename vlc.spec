@@ -65,6 +65,8 @@ Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.
 Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
+# Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
+Patch6: replace_deprecated_luaL_checkint.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -323,6 +325,9 @@ sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 # Lower taglib
 sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-%{dts_ver}/enable
+%endif
+%if 0%{?fedora}
+%patch6 -p1
 %endif
 
 %{?_with_bootstrap:
