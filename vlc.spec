@@ -1,4 +1,4 @@
-#global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
+%global commit0 f5ec9e0acaa5e5bc7c5e7cf09019185b0da3bd37
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -61,7 +61,7 @@ Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{s
 Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %endif
-Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
+Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_17.patch
 Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
