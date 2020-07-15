@@ -357,7 +357,7 @@ touch src/revision.txt
 	--with-binary-version=%{version}	\
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
-%{?_with_opencv:--enable-opencv} \
+%{!?_with_opencv:--disable-opencv} \
 %{!?el8:--enable-sftp} \
 %{?_with_vcdimager:--enable-vcdx}		\
 %{?_with_rpi: \
