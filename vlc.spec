@@ -62,7 +62,6 @@ Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{ver
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_17.patch
-Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 # Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
@@ -317,9 +316,6 @@ VLC media player extras modules.
 %{?_with_rpi:
 %patch0 -p1
 }
-%if 0%{?rhel}
-%patch1 -p1
-%endif
 %patch3 -p1
 %if 0%{?el7}
 %patch5 -p1
