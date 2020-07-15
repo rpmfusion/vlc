@@ -185,6 +185,7 @@ BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
 BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(soxr)
+BuildRequires:	pkgconfig(spatialaudio)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
 BuildRequires:	pkgconfig(srt)
 %{?_with_wayland:
