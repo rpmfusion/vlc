@@ -263,8 +263,10 @@ Requires: xdg-utils
 
 Requires:       hicolor-icon-theme
 
+%if 0%{?el7:1}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+%endif
 
 
 %description
@@ -300,8 +302,10 @@ VLC media player core components
 %package extras
 Summary:	VLC media player with extras modules
 Requires:	vlc-core%{_isa} = %{epoch}:%{version}-%{release}
+%if 0%{?el7:1}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+%endif
 
 %description extras
 VLC media player extras modules.
