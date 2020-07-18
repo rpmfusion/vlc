@@ -64,8 +64,9 @@ Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{ver
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_17.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
+Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
-Patch6: replace_deprecated_luaL_checkint.patch
+Patch7: replace_deprecated_luaL_checkint.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -319,6 +320,7 @@ VLC media player extras modules.
 %patch3 -p1
 %if 0%{?el7}
 %patch5 -p1
+%patch6 -p1
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
 sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
