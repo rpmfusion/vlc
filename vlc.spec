@@ -1,5 +1,5 @@
 #global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
-#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
@@ -43,7 +43,7 @@
 %if 0%{?el7}
 %global _with_opencv  1
 # Developper toolset version
-%global dts_ver       7
+%global dts_ver       8
 %endif
 
 
@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.11
-Release:	1%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -65,6 +65,8 @@ Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.
 Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
+# Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
+Patch6: replace_deprecated_luaL_checkint.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -175,15 +177,16 @@ BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
 BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
+%if 0%{?fedora} > 32
+BuildRequires:	qt5-qtbase-private-devel
+%endif
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
 BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(soxr)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
-%if 0%{?fedora} > 30 || 0%{?rhel}
 BuildRequires:	pkgconfig(srt)
-%endif
 %{?_with_wayland:
 BuildRequires:	pkgconfig(wayland-client) >= 1.5.91
 BuildRequires:	pkgconfig(wayland-egl)
@@ -313,9 +316,6 @@ VLC media player extras modules.
 %patch1 -p1
 %endif
 %patch3 -p1
-%if 0%{?fedora} == 30
-%patch4 -p1
-%endif
 %if 0%{?el7}
 %patch5 -p1
 # Lower opus requirement - rfbz#5585
@@ -324,7 +324,10 @@ sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_c
 sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 # Lower taglib
 sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
-. /opt/rh/devtoolset-7/enable
+. /opt/rh/devtoolset-%{dts_ver}/enable
+%endif
+%if 0%{?fedora}
+%patch6 -p1
 %endif
 
 %{?_with_bootstrap:
@@ -590,6 +593,24 @@ fi || :
 
 
 %changelog
+* Sat Jul 18 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11-7
+- Rebuilt
+
+* Wed Jul 08 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11-6
+- Rebuilt
+
+* Tue Jul 07 2020 Sérgio Basto <sergio@serjux.com> - 1:3.0.11-5
+- Mass rebuild for x264
+
+* Wed Jul 01 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11-4
+- Rebuilt for new dav1d and libplacebo
+
+* Tue Jun 30 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-3
+- Rebuilt
+
+* Wed Jun 24 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-2
+- rebuilt
+
 * Mon Jun 15 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-1
 - Update to 3.0.11
 
