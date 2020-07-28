@@ -330,7 +330,7 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 %if 0%{?fedora}
-%patch6 -p1
+%patch7 -p1
 %endif
 
 %{?_with_bootstrap:
