@@ -342,6 +342,9 @@ touch src/revision.txt
 
 
 %build
+%if 0%{?fedora} > 32
+%define _lto_cflags %{nil}
+%endif
 %if 0%{?el7}
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
