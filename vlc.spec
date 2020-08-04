@@ -1,4 +1,4 @@
-#global commit0 8b5cff44981b3af508678b7eb687944e8f2688ea
+#global commit0 f5ec9e0acaa5e5bc7c5e7cf09019185b0da3bd37
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -50,8 +50,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.11
-Release:	1%{?dist}
+Version:	3.0.11.1
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -61,10 +61,12 @@ Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{s
 Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %endif
-Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_16.patch
-Patch1:	0001-vlc-3x-dvdread-nav-Fix-cases-where-DVD-_VERSION-are-.patch
+Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_17.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
+Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
+# Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
+Patch7: replace_deprecated_luaL_checkint.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -175,11 +177,15 @@ BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
 BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
+%if 0%{?fedora} > 32
+BuildRequires:	qt5-qtbase-private-devel
+%endif
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
 BuildRequires:	pkgconfig(Qt5Gui) >= 5.5
 BuildRequires:	pkgconfig(Qt5Svg) >= 5.5
 BuildRequires:	pkgconfig(Qt5X11Extras) >= 5.5
 BuildRequires:	pkgconfig(soxr)
+BuildRequires:	pkgconfig(spatialaudio)
 BuildRequires:	pkgconfig(speexdsp) >= 1.0.5
 BuildRequires:	pkgconfig(srt)
 %{?_with_wayland:
@@ -258,8 +264,10 @@ Requires: xdg-utils
 
 Requires:       hicolor-icon-theme
 
+%if 0%{?el7:1}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+%endif
 
 
 %description
@@ -295,8 +303,10 @@ VLC media player core components
 %package extras
 Summary:	VLC media player with extras modules
 Requires:	vlc-core%{_isa} = %{epoch}:%{version}-%{release}
+%if 0%{?el7:1}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+%endif
 
 %description extras
 VLC media player extras modules.
@@ -307,12 +317,10 @@ VLC media player extras modules.
 %{?_with_rpi:
 %patch0 -p1
 }
-%if 0%{?rhel}
-%patch1 -p1
-%endif
 %patch3 -p1
 %if 0%{?el7}
 %patch5 -p1
+%patch6 -p1
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
 sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
@@ -320,6 +328,9 @@ sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 # Lower taglib
 sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-%{dts_ver}/enable
+%endif
+%if 0%{?fedora}
+%patch7 -p1
 %endif
 
 %{?_with_bootstrap:
@@ -349,7 +360,7 @@ touch src/revision.txt
 	--with-binary-version=%{version}	\
 	--enable-lua				\
 %{?_with_live555:--enable-live555} 		\
-%{?_with_opencv:--enable-opencv} \
+%{!?_with_opencv:--disable-opencv} \
 %{!?el8:--enable-sftp} \
 %{?_with_vcdimager:--enable-vcdx}		\
 %{?_with_rpi: \
@@ -585,6 +596,33 @@ fi || :
 
 
 %changelog
+* Sun Aug 02 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-3
+- Revert "Disable LTO"
+
+* Sat Aug 01 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-2
+- Rebuilt for live555
+
+* Mon Jul 27 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11.1-1
+- Update to 3.0.11.1
+
+* Sat Jul 18 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11-7
+- Rebuilt
+
+* Wed Jul 08 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11-6
+- Rebuilt
+
+* Tue Jul 07 2020 Sérgio Basto <sergio@serjux.com> - 1:3.0.11-5
+- Mass rebuild for x264
+
+* Wed Jul 01 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11-4
+- Rebuilt for new dav1d and libplacebo
+
+* Tue Jun 30 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-3
+- Rebuilt
+
+* Wed Jun 24 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-2
+- rebuilt
+
 * Mon Jun 15 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.11-1
 - Update to 3.0.11
 
