@@ -336,6 +336,8 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 %endif
 %if 0%{?fedora}
 %patch7 -p1
+%patch8 -p1
+%patch9 -p1
 %endif
 
 %{?_with_bootstrap:
