@@ -67,6 +67,11 @@ Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
 Patch7: replace_deprecated_luaL_checkint.patch
+# Fix build with qt5-5.15
+# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commit;h=85aa32db726559743d08d2fcafbb90fc923c43ff
+# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commit;h=4f899efc13a3a8f5259ce260655dfdd6f4830299
+Patch8: 85aa32db726559743d08d2fcafbb90fc923c43ff.patch
+Patch9: 4f899efc13a3a8f5259ce260655dfdd6f4830299.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -596,8 +601,8 @@ fi || :
 
 
 %changelog
-* Mon Sep 28 16:16:44 BST 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-5
-- rebuilt
+* Mon Sep 28 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-5
+- Rebuild for new protobuf
 
 * Tue Aug 18 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:3.0.11.1-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
