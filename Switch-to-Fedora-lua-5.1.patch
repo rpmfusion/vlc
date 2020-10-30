@@ -1,0 +1,36 @@
+From 3965d3cf07a62a7ed64c79f44a7cc416b76cb27e Mon Sep 17 00:00:00 2001
+From: Leigh Scott <leigh123linux@gmail.com>
+Date: Fri, 30 Oct 2020 10:51:52 +0100
+Subject: [PATCH] Switch to Fedora lua-5.1
+
+---
+ configure.ac | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 3aa07a8c715d..9bc7ceafb5ff 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1681,7 +1681,7 @@ then
+     [
+     AC_MSG_WARN([${LUA_PKG_ERRORS}, trying lua 5.1 instead])
+ 
+-    PKG_CHECK_MODULES(LUA, lua5.1,
++    PKG_CHECK_MODULES(LUA, lua-5.1,
+       [ have_lua=yes ],
+       [
+       AC_MSG_WARN([${LUA_PKG_ERRORS}, trying lua >= 5.1 instead])
+@@ -1695,8 +1695,8 @@ then
+             [ have_lua=no ] )
+           AC_CHECK_LIB(  lua5.2 , luaL_newstate,
+             [LUA_LIBS="-llua5.2"],
+-          AC_CHECK_LIB( lua5.1 , luaL_newstate,
+-            [LUA_LIBS="-llua5.1"],
++          AC_CHECK_LIB( lua-5.1 , luaL_newstate,
++            [LUA_LIBS="-llua-5.1"],
+             AC_CHECK_LIB( lua51 , luaL_newstate,
+               [LUA_LIBS="-llua51"],
+               AC_CHECK_LIB( lua , luaL_newstate,
+-- 
+2.25.4
+
