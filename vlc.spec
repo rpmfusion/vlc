@@ -1,4 +1,4 @@
-#global commit0 f5ec9e0acaa5e5bc7c5e7cf09019185b0da3bd37
+%global commit0 a66f141b17e792bcc298c83496749ec93265ff14
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -50,8 +50,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.11.1
-Release:	6%{?dist}
+Version:	3.0.12
+Release:	0.1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -68,11 +68,6 @@ Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
 Patch7: replace_deprecated_luaL_checkint.patch
-# Fix build with qt5-5.15
-# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commit;h=85aa32db726559743d08d2fcafbb90fc923c43ff
-# https://git.videolan.org/?p=vlc/vlc-3.0.git;a=commit;h=4f899efc13a3a8f5259ce260655dfdd6f4830299
-Patch8: 85aa32db726559743d08d2fcafbb90fc923c43ff.patch
-Patch9: 4f899efc13a3a8f5259ce260655dfdd6f4830299.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -170,7 +165,11 @@ BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
+%if 0%{?fedora} || 0%{?rhel} > 7
+BuildRequires:	lua5.1-devel
+%else
 BuildRequires:	lua-devel
+%endif
 BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: libmpeg2-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
@@ -335,10 +334,8 @@ sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} > 7
 %patch7 -p1
-%patch8 -p1
-%patch9 -p1
 %endif
 
 %{?_with_bootstrap:
@@ -608,6 +605,10 @@ fi || :
 
 
 %changelog
+* Fri Oct 30 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12-0.1
+- Update snapshoot
+- Switch to lua-5.1
+
 * Wed Oct 21 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-6
 - Rebuild for new libdvdread
 
