@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.12
-Release:	0.1%{?dist}
+Release:	0.2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -68,6 +68,10 @@ Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # lua-5.1 is used by default for vlc build
 Patch7: Switch-to-Fedora-lua-5.1.patch
+
+# Backport for 3.0 notifyd without gtk3
+Patch9: notify-don-t-depend-on-any-GTK-version.patch
+
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -151,6 +155,7 @@ BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
+BuildRequires:	pkgconfig(libnotify)
 BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
@@ -338,6 +343,8 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 %patch7 -p1
 sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
+
+%patch9 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -606,6 +613,9 @@ fi || :
 
 
 %changelog
+* Fri Oct 30 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12-0.2
+- Backport fix for libnotify - Enable vlc notify
+
 * Fri Oct 30 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12-0.1
 - Update snapshoot
 - Switch to lua-5.1
