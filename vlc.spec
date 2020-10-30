@@ -61,7 +61,8 @@ Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{s
 Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %endif
-Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_17.patch
+Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_20.patch
+Patch1:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_chain.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
