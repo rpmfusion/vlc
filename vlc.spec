@@ -66,8 +66,8 @@ Patch1:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_cha
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
-# Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
-Patch7: replace_deprecated_luaL_checkint.patch
+# lua-5.1 is used by default for vlc build
+Patch7: Switch-to-Fedora-lua-5.1.patch
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
