@@ -166,7 +166,7 @@ BuildRequires:	pkgconfig(glu)
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
 %if 0%{?fedora} || 0%{?rhel} > 7
-BuildRequires:	lua5.1-devel
+BuildRequires:	lua5.1-devel, lua5.1
 %else
 BuildRequires:	lua-devel
 %endif
@@ -336,6 +336,7 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 %endif
 %if 0%{?fedora} || 0%{?rhel} > 7
 %patch7 -p1
+sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
 %{?_with_bootstrap:
