@@ -71,6 +71,9 @@ Patch7: Switch-to-Fedora-lua-5.1.patch
 
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
+# Fix build issue with recent SRT library
+# Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
+Patch10: recent_srt_fix.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -345,6 +348,7 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
 %patch9 -p1
+%patch10 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
