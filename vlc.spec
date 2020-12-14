@@ -74,6 +74,10 @@ Patch9: notify-don-t-depend-on-any-GTK-version.patch
 # Fix build issue with recent SRT library
 # Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
 Patch10: recent_srt_fix.patch
+# Add a missing include that would make the build fail:
+# https://trac.videolan.org/vlc/ticket/25325
+# Drop next release
+Patch11: 0001-Add-missing-include-limits-to-modules.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -349,6 +353,7 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -619,6 +624,7 @@ fi || :
 %changelog
 * Mon Dec 14 2020 Robert-André Mauchin <zebob.m@gmail.com> - 1:3.0.12-0.4
 - Rebuild for dav1d SONAME bump
+- Add patch to build with GCC 11.0.0
 
 * Fri Nov 27 2020 Sérgio Basto <sergio@serjux.com> - 1:3.0.12-0.3
 - Mass rebuild for x264-0.161

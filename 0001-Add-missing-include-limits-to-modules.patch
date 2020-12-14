@@ -1,0 +1,39 @@
+From 8783290f260292ecba5aa2e3d63cad614fe9ed81 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Robert-Andr=C3=A9=20Mauchin?= <zebob.m@gmail.com>
+Date: Mon, 14 Dec 2020 03:23:52 +0100
+Subject: [PATCH] Add missing include <limits> to modules/
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+demux/adaptive/playlist/SegmentInformation.cpp
+
+Compilation would fail with:
+
+> error: 'numeric_limits' is not a member of 'std'
+
+without this include because of some hardening build
+flags mandated on Fedora Linux.
+
+Fix: #25325
+
+Signed-off-by: Robert-André Mauchin <zebob.m@gmail.com>
+---
+ modules/demux/adaptive/playlist/SegmentInformation.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/modules/demux/adaptive/playlist/SegmentInformation.cpp b/modules/demux/adaptive/playlist/SegmentInformation.cpp
+index c4fe204783..aacc1d7bc1 100644
+--- a/modules/demux/adaptive/playlist/SegmentInformation.cpp
++++ b/modules/demux/adaptive/playlist/SegmentInformation.cpp
+@@ -34,6 +34,7 @@
+ 
+ #include <algorithm>
+ #include <cassert>
++#include <limits>
+ 
+ using namespace adaptive::playlist;
+ 
+-- 
+2.29.2
+
