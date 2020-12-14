@@ -1,6 +1,6 @@
-From 8783290f260292ecba5aa2e3d63cad614fe9ed81 Mon Sep 17 00:00:00 2001
+From 8e8afa27865e3781c0add1f26bc330d4d6cb92d6 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Robert-Andr=C3=A9=20Mauchin?= <zebob.m@gmail.com>
-Date: Mon, 14 Dec 2020 03:23:52 +0100
+Date: Mon, 14 Dec 2020 12:54:39 +0100
 Subject: [PATCH] Add missing include <limits> to modules/
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -12,15 +12,13 @@ Compilation would fail with:
 
 > error: 'numeric_limits' is not a member of 'std'
 
-without this include because of some hardening build
-flags mandated on Fedora Linux.
-
-Fix: #25325
+without this include with GCC 11.0.0
 
 Signed-off-by: Robert-André Mauchin <zebob.m@gmail.com>
 ---
  modules/demux/adaptive/playlist/SegmentInformation.cpp | 1 +
- 1 file changed, 1 insertion(+)
+ modules/demux/hls/playlist/Parser.cpp                  | 1 +
+ 2 files changed, 2 insertions(+)
 
 diff --git a/modules/demux/adaptive/playlist/SegmentInformation.cpp b/modules/demux/adaptive/playlist/SegmentInformation.cpp
 index c4fe204783..aacc1d7bc1 100644
@@ -34,6 +32,18 @@ index c4fe204783..aacc1d7bc1 100644
  
  using namespace adaptive::playlist;
  
+diff --git a/modules/demux/hls/playlist/Parser.cpp b/modules/demux/hls/playlist/Parser.cpp
+index e2e1aaefe4..5dc889d78f 100644
+--- a/modules/demux/hls/playlist/Parser.cpp
++++ b/modules/demux/hls/playlist/Parser.cpp
+@@ -42,6 +42,7 @@
+ #include <map>
+ #include <cctype>
+ #include <algorithm>
++#include <limits>
+ 
+ using namespace adaptive;
+ using namespace adaptive::playlist;
 -- 
 2.29.2
 
