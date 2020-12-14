@@ -77,7 +77,7 @@ Patch10: recent_srt_fix.patch
 # Add a missing include that would make the build fail:
 # https://trac.videolan.org/vlc/ticket/25325
 # Drop next release
-Patch11: 0001-Add-missing-include-limits-to-modules.patch
+Patch11: 0001-Add-missing-include-limits-to-file-using-std.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
