@@ -1,4 +1,4 @@
-#global commit0 f5ec9e0acaa5e5bc7c5e7cf09019185b0da3bd37
+%global commit0 a66f141b17e792bcc298c83496749ec93265ff14
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -50,8 +50,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.11.1
-Release:	3%{?dist}
+Version:	3.0.12
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -61,12 +61,24 @@ Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{s
 Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %endif
-Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_17.patch
+Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_20.patch
+Patch1:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_chain.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
-# Patch based on  https://code.videolan.org/videolan/vlc/commit/0e0b070c26d197e848f1548fca455bf97db471a3
-Patch7: replace_deprecated_luaL_checkint.patch
+# lua-5.1 is used by default for vlc build
+Patch7: Switch-to-Fedora-lua-5.1.patch
+
+# Backport for 3.0 notifyd without gtk3
+Patch9: notify-don-t-depend-on-any-GTK-version.patch
+# Fix build issue with recent SRT library
+# Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
+Patch10: recent_srt_fix.patch
+# Add a missing include that would make the build fail:
+# https://trac.videolan.org/vlc/ticket/25325
+# Drop next release
+Patch11: 0001-Add-missing-include-limits-to-file-using-std.patch
+
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -150,6 +162,7 @@ BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	pkgconfig(libvncclient)
+BuildRequires:	pkgconfig(libnotify)
 BuildRequires:	libupnp-devel
 BuildRequires:	libv4l-devel
 %{?_with_vaapi:BuildRequires: libva-devel}
@@ -164,7 +177,11 @@ BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
+%if 0%{?fedora} || 0%{?rhel} > 7
+BuildRequires:	lua5.1-devel, lua5.1
+%else
 BuildRequires:	lua-devel
+%endif
 BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: libmpeg2-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
@@ -329,9 +346,14 @@ sed -i -e 's/ header.channel_mapping,//' modules/codec/opus.c
 sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} > 7
 %patch7 -p1
+sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
+
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -446,7 +468,11 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 %if 0%{?el7}
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
+%ifnarch %{arm}
 make check
+%else
+make check || :
+%endif
 
 
 %ldconfig_scriptlets core
@@ -596,6 +622,32 @@ fi || :
 
 
 %changelog
+* Wed Dec 16 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12-1
+- Update to 3.0.12
+
+* Mon Dec 14 2020 Robert-André Mauchin <zebob.m@gmail.com> - 1:3.0.12-0.4
+- Rebuild for dav1d SONAME bump
+- Add patch to build with GCC 11.0.0
+
+* Fri Nov 27 2020 Sérgio Basto <sergio@serjux.com> - 1:3.0.12-0.3
+- Mass rebuild for x264-0.161
+
+* Fri Oct 30 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12-0.2
+- Backport fix for libnotify - Enable vlc notify
+
+* Fri Oct 30 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12-0.1
+- Update snapshoot
+- Switch to lua-5.1
+
+* Wed Oct 21 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-6
+- Rebuild for new libdvdread
+
+* Mon Sep 28 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-5
+- Rebuild for new protobuf
+
+* Tue Aug 18 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:3.0.11.1-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Sun Aug 02 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.11.1-3
 - Revert "Disable LTO"
 
