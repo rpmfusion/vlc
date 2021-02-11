@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.12.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -622,6 +622,9 @@ fi || :
 
 
 %changelog
+* Thu Feb 11 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12.1-6
+- Rebuilt
+
 * Thu Feb 04 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:3.0.12.1-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
