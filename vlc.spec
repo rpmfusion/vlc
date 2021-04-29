@@ -1,5 +1,5 @@
-%global commit0 170157402b9c9ee5651838499549328c6715b5fe
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+#global commit0 170157402b9c9ee5651838499549328c6715b5fe
+#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
@@ -50,15 +50,15 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.12.1
-Release:	9%{?dist}
+Version:	3.0.13
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
 Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
 %global vlc_setup vlc-3.0-%{?commit0}
 %else
-Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing/}vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_20.patch
@@ -74,10 +74,7 @@ Patch9: notify-don-t-depend-on-any-GTK-version.patch
 # Fix build issue with recent SRT library
 # Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
 Patch10: recent_srt_fix.patch
-# Add a missing include that would make the build fail:
-# https://trac.videolan.org/vlc/ticket/25325
-# Drop next release
-Patch11: 0001-Add-missing-include-limits-to-file-using-std.patch
+Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -622,6 +619,9 @@ fi || :
 
 
 %changelog
+* Thu Apr 29 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.13-1
+- Update to 3.0.13
+
 * Wed Apr 14 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.12.1-9
 - Rebuild for new x265
 
