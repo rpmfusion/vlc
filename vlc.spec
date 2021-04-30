@@ -1,5 +1,5 @@
-%global commit0 a66f141b17e792bcc298c83496749ec93265ff14
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+#global commit0 170157402b9c9ee5651838499549328c6715b5fe
+#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
@@ -50,7 +50,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.12
+Version:	3.0.13
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
@@ -58,7 +58,7 @@ URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
 %global vlc_setup vlc-3.0-%{?commit0}
 %else
-Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing}/vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
+Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing/}vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
 %endif
 Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_20.patch
@@ -74,10 +74,7 @@ Patch9: notify-don-t-depend-on-any-GTK-version.patch
 # Fix build issue with recent SRT library
 # Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
 Patch10: recent_srt_fix.patch
-# Add a missing include that would make the build fail:
-# https://trac.videolan.org/vlc/ticket/25325
-# Drop next release
-Patch11: 0001-Add-missing-include-limits-to-file-using-std.patch
+Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -622,6 +619,36 @@ fi || :
 
 
 %changelog
+* Thu Apr 29 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.13-1
+- Update to 3.0.13
+
+* Wed Apr 14 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.12.1-9
+- Rebuild for new x265
+
+* Fri Apr 02 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.12.1-8
+- rebuilt
+
+* Tue Mar 02 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.12.1-7
+- Update snapshot
+
+* Thu Feb 11 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12.1-6
+- Rebuilt
+
+* Thu Feb 04 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:3.0.12.1-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Sun Jan 24 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.12.1-4
+- Rebuild
+
+* Wed Jan 20 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.12.1-3
+- Rebuild
+
+* Thu Dec 31 2020 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.12.1-2
+- Rebuilt for new ffmpeg snapshot
+
+* Mon Dec 28 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12.1-1
+- Update to 3.0.12.1
+
 * Wed Dec 16 2020 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.12-1
 - Update to 3.0.12
 
