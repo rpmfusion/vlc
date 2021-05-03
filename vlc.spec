@@ -103,7 +103,6 @@ BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
 BuildRequires:	fribidi-devel
 BuildRequires:	gnutls-devel >= 1.0.17
-BuildRequires:	gsm-devel
 BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	game-music-emu-devel
