@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.13
-Release:	1%{?dist}
+Release:	1%{?dist}.1
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -103,7 +103,6 @@ BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
 BuildRequires:	fribidi-devel
 BuildRequires:	gnutls-devel >= 1.0.17
-BuildRequires:	gsm-devel
 BuildRequires:	hostname
 BuildRequires:	jack-audio-connection-kit-devel
 BuildRequires:	game-music-emu-devel
@@ -619,6 +618,9 @@ fi || :
 
 
 %changelog
+* Wed May 05 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.13-1.1
+- rebuilt
+
 * Thu Apr 29 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.13-1
 - Update to 3.0.13
 
