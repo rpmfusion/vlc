@@ -75,6 +75,7 @@ Patch9: notify-don-t-depend-on-any-GTK-version.patch
 # Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
 Patch10: recent_srt_fix.patch
 Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
+Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -334,6 +335,7 @@ VLC media player extras modules.
 %if 0%{?el7}
 %patch5 -p1
 %patch6 -p1
+%patch12 -p1
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
 sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
