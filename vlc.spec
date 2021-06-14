@@ -50,12 +50,12 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.14
-Release:	1%{?dist}
+Version:	3.0.15
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
-Source0: https://code.videolan.org/videolan/vlc-3.0/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
+Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
 %global vlc_setup vlc-3.0-%{?commit0}
 %else
 Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing/}vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
@@ -618,6 +618,12 @@ fi || :
 
 
 %changelog
+* Sun Jun 13 2021 Robert-André Mauchin <zebob.m@gmail.com> - 1:3.0.15-2
+- Rebuild for new aom
+
+* Sat Jun 12 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.15-1
+- Update to 3.0.15
+
 * Tue May 11 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.14-1
 - Update to 3.0.14
 
