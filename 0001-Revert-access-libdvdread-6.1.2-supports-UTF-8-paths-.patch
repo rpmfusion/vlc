@@ -1,0 +1,74 @@
+From b107d105f8489edd6deafb340c65f435ab6e1c29 Mon Sep 17 00:00:00 2001
+From: Leigh Scott <leigh123linux@gmail.com>
+Date: Mon, 14 Jun 2021 12:26:09 +0100
+Subject: [PATCH] Revert "access: libdvdread 6.1.2 supports UTF-8 paths in
+ Windows."
+
+This reverts commit 02b784c0cefe6d0d36bbc3b668a7f238c7f7b3ed.
+---
+ modules/access/dvdnav.c  | 9 ---------
+ modules/access/dvdread.c | 9 ---------
+ 2 files changed, 18 deletions(-)
+
+diff --git a/modules/access/dvdnav.c b/modules/access/dvdnav.c
+index 69abe50c8c..89fb66f11e 100644
+--- a/modules/access/dvdnav.c
++++ b/modules/access/dvdnav.c
+@@ -371,14 +371,7 @@ static int AccessDemuxOpen ( vlc_object_t *p_this )
+         goto bailout;
+ 
+     /* Open dvdnav */
+-#if DVDREAD_VERSION < DVDREAD_VERSION_CODE(6, 1, 2)
+-    /* In libdvdread prior to 6.1.2, UTF8 is not supported for windows and
+-     * requires a prior conversion.
+-     * For non win32/os2 platforms, this is just a no-op */
+     psz_path = ToLocale( psz_file );
+-#else
+-    psz_path = psz_file;
+-#endif
+ #if DVDNAV_VERSION >= 60100
+     dvdnav_logger_cb cbs;
+     cbs.pf_log = DvdNavLog;
+@@ -397,10 +390,8 @@ static int AccessDemuxOpen ( vlc_object_t *p_this )
+ 
+ bailout:
+     free( psz_file );
+-#if DVDREAD_VERSION < DVDREAD_VERSION_CODE(6, 1, 2)
+     if( psz_path )
+         LocaleFree( psz_path );
+-#endif
+     return i_ret;
+ }
+ 
+diff --git a/modules/access/dvdread.c b/modules/access/dvdread.c
+index 749cbd47e0..e75bef5986 100644
+--- a/modules/access/dvdread.c
++++ b/modules/access/dvdread.c
+@@ -212,14 +212,7 @@ static int Open( vlc_object_t *p_this )
+     }
+ 
+     /* Open dvdread */
+-#if DVDREAD_VERSION < DVDREAD_VERSION_CODE(6, 1, 2)
+-    /* In libdvdread prior to 6.1.2, UTF8 is not supported for windows and
+-     * requires a prior conversion.
+-     * For non win32/os2 platforms, this is just a no-op */
+     const char *psz_path = ToLocale( psz_file );
+-#else
+-    const char *psz_path = psz_file;
+-#endif
+ #if DVDREAD_VERSION >= DVDREAD_VERSION_CODE(6, 1, 0)
+     dvd_logger_cb cbs;
+     cbs.pf_log = DvdReadLog;
+@@ -227,9 +220,7 @@ static int Open( vlc_object_t *p_this )
+ #else
+     dvd_reader_t *p_dvdread = DVDOpen( psz_path );
+ #endif
+-#if DVDREAD_VERSION < DVDREAD_VERSION_CODE(6, 1, 2)
+     LocaleFree( psz_path );
+-#endif
+     if( p_dvdread == NULL )
+     {
+         msg_Err( p_demux, "DVDRead cannot open source: %s", psz_file );
+-- 
+2.31.1
+
