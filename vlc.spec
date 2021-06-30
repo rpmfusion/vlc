@@ -468,11 +468,7 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 %if 0%{?el7}
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
-%ifnarch %{arm} %{arm64}
-make check
-%else
 make check || :
-%endif
 
 
 %ldconfig_scriptlets core
