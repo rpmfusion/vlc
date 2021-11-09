@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.16
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -618,6 +618,9 @@ fi || :
 
 
 %changelog
+* Tue Nov 09 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.16-7
+- Rebuilt for new ffmpeg snapshot
+
 * Sat Oct 30 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.16-6
 - rebuilt
 
