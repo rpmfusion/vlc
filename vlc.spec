@@ -77,6 +77,8 @@ Patch10: recent_srt_fix.patch
 Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
 
+Patch13: ffmpeg45.patch
+
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
 BuildRequires:	fontpackages-devel
@@ -354,6 +356,7 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %if 0%{?rhel} >= 7
 %patch12 -p1
 %endif
+%patch13 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
