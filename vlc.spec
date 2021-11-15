@@ -1,5 +1,5 @@
-#global commit0 170157402b9c9ee5651838499549328c6715b5fe
-#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+%global commit0 a108715f1d0f6e7c878a5b9ba01c799f08dc78f3
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
@@ -50,13 +50,13 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.16
-Release:	7%{?dist}
+Version:	3.0.17
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
-%global vlc_setup vlc-3.0-%{?commit0}
+%global vlc_setup vlc-%{?commit0}
 %else
 Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing/}vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
@@ -623,6 +623,9 @@ fi || :
 
 
 %changelog
+* Thu Nov 11 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-1
+- Update to 3.x snapshot
+
 * Tue Nov 09 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.16-7
 - Rebuilt for new ffmpeg snapshot
 
