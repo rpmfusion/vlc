@@ -76,6 +76,8 @@ Patch9: notify-don-t-depend-on-any-GTK-version.patch
 Patch10: recent_srt_fix.patch
 Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
+# https://code.videolan.org/videolan/vlc/-/issues/25473#note_256576
+Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -353,6 +355,9 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %patch11 -p1
 %if 0%{?rhel} >= 7
 %patch12 -p1
+%endif
+%if 0%{?fedora} > 35
+%patch13 -p1
 %endif
 
 %{?_with_bootstrap:
