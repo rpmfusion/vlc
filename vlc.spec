@@ -1,4 +1,4 @@
-%global commit0 a108715f1d0f6e7c878a5b9ba01c799f08dc78f3
+%global commit0 584bf4f6414daf73adba01fd10f7b0aafdc1330d
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.17
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -76,8 +76,6 @@ Patch9: notify-don-t-depend-on-any-GTK-version.patch
 Patch10: recent_srt_fix.patch
 Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
-
-Patch13: https://code.videolan.org/videolan/vlc/-/merge_requests/895.patch#/ffmpeg45.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -356,9 +354,6 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %if 0%{?rhel} >= 7
 %patch12 -p1
 %endif
-%if 0%{?fedora} > 35
-%patch13 -p1
-%endif
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -623,6 +618,9 @@ fi || :
 
 
 %changelog
+* Sat Jan 15 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17-3
+- Update 3.x snapshot
+
 * Fri Nov 19 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-2
 - Rebuilt
 
