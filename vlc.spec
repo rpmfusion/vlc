@@ -78,6 +78,7 @@ Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
 # https://code.videolan.org/videolan/vlc/-/issues/25473#note_256576
 Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
+Patch14: https://code.videolan.org/videolan/vlc/-/merge_requests/1245.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -358,6 +359,7 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 %if 0%{?fedora} > 35
 %patch13 -p1
+%patch14 -p1
 %endif
 
 %{?_with_bootstrap:
