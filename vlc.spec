@@ -160,7 +160,7 @@ BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 # Not Yet in EL8
-%if 0%{?fedora} || 0%{?el7}
+%if ! 0%{?el8}
 BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
@@ -180,7 +180,7 @@ BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
-%if 0%{?fedora} || 0%{?rhel} > 7
+%if 0%{?fedora} || 0%{?el8}
 BuildRequires:	lua5.1-devel, lua5.1
 %else
 BuildRequires:	lua-devel
@@ -197,7 +197,7 @@ BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
 BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
-%if 0%{?fedora} > 32
+%if 0%{?fedora}
 BuildRequires:	qt5-qtbase-private-devel
 %endif
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
