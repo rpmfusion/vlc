@@ -1,4 +1,4 @@
-%global commit0 584bf4f6414daf73adba01fd10f7b0aafdc1330d
+%global commit0 bfca6804525d6d748d261e1a3cf57a59612102dc
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.17
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -78,10 +78,8 @@ Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
 # https://code.videolan.org/videolan/vlc/-/issues/25473#note_256576
 Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
-Patch14: https://code.videolan.org/videolan/vlc/-/merge_requests/1245.patch
 # https://code.videolan.org/videolan/vlc/-/merge_requests/889
-Patch15: Remove_legacy_caca.patch
-Patch16: https://code.videolan.org/videolan/vlc/-/merge_requests/1244.patch
+Patch14: Remove_legacy_caca.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -363,8 +361,6 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %if 0%{?fedora} > 35
 %patch13 -p1
 %patch14 -p1
-%patch15 -p1
-%patch16 -p1
 %endif
 
 %{?_with_bootstrap:
@@ -630,6 +626,9 @@ fi || :
 
 
 %changelog
+* Fri Feb 04 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17-6
+- rebuilt
+
 * Wed Jan 19 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-5
 - rebuilt
 
