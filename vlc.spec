@@ -1,4 +1,4 @@
-%global commit0 bfca6804525d6d748d261e1a3cf57a59612102dc
+%global commit0 758b718347094af7e7e35ec18359d32f8928766e
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -51,7 +51,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.17
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -71,10 +71,6 @@ Patch7: Switch-to-Fedora-lua-5.1.patch
 
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
-# Fix build issue with recent SRT library
-# Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
-Patch10: recent_srt_fix.patch
-Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
 # https://code.videolan.org/videolan/vlc/-/issues/25473#note_256576
 Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
@@ -353,13 +349,11 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
 %patch9 -p1
-%patch10 -p1
-%patch11 -p1
 %if 0%{?rhel} >= 7
 %patch12 -p1
 %endif
 %if 0%{?fedora} > 35
-%patch13 -p1
+#patch13 -p1
 %patch14 -p1
 %endif
 
@@ -626,6 +620,9 @@ fi || :
 
 
 %changelog
+* Tue Feb 22 2022 Nicolas Chauvet <kwizart@gmail.com>
+- Update to 3.0.17
+
 * Fri Feb 04 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17-6
 - rebuilt
 
