@@ -352,8 +352,8 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %if 0%{?rhel} >= 7
 %patch12 -p1
 %endif
+%patch13 -p1
 %if 0%{?fedora} > 35
-#patch13 -p1
 %patch14 -p1
 %endif
 
