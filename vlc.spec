@@ -1,5 +1,5 @@
-#global commit0 170157402b9c9ee5651838499549328c6715b5fe
-#global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+%global commit0 758b718347094af7e7e35ec18359d32f8928766e
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
 %global _with_bootstrap 1
@@ -50,13 +50,13 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.16
-Release:	1%{?dist}
+Version:	3.0.17
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
-%global vlc_setup vlc-3.0-%{?commit0}
+%global vlc_setup vlc-%{?commit0}
 %else
 Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing/}vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
 %global vlc_setup vlc-%{version}%{?vlc_rc}
@@ -71,11 +71,11 @@ Patch7: Switch-to-Fedora-lua-5.1.patch
 
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
-# Fix build issue with recent SRT library
-# Based on https://git.videolan.org/?p=vlc.git;a=commit;h=6e8d77431127c482196115a6eeb769daf56347b3
-Patch10: recent_srt_fix.patch
-Patch11: 0001-Revert-configure-ignore-too-new-SRT.patch
 Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
+# https://code.videolan.org/videolan/vlc/-/issues/25473#note_256576
+Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
+# https://code.videolan.org/videolan/vlc/-/merge_requests/889
+Patch14: Remove_legacy_caca.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -154,7 +154,7 @@ BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 # Not Yet in EL8
-%if 0%{?fedora} || 0%{?el7}
+%if ! 0%{?el8}
 BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
@@ -174,7 +174,7 @@ BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
-%if 0%{?fedora} || 0%{?rhel} > 7
+%if 0%{?fedora} || 0%{?el8}
 BuildRequires:	lua5.1-devel, lua5.1
 %else
 BuildRequires:	lua-devel
@@ -191,7 +191,7 @@ BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
 BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
-%if 0%{?fedora} > 32
+%if 0%{?fedora}
 BuildRequires:	qt5-qtbase-private-devel
 %endif
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
@@ -349,10 +349,12 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
 %patch9 -p1
-%patch10 -p1
-%patch11 -p1
 %if 0%{?rhel} >= 7
 %patch12 -p1
+%endif
+%patch13 -p1
+%if 0%{?fedora} > 35
+%patch14 -p1
 %endif
 
 %{?_with_bootstrap:
@@ -468,11 +470,7 @@ rm -rf  %{buildroot}%{_datadir}/kde4
 %if 0%{?el7}
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
-%ifnarch %{arm} %{arm64}
-make check
-%else
 make check || :
-%endif
 
 
 %ldconfig_scriptlets core
@@ -622,6 +620,45 @@ fi || :
 
 
 %changelog
+* Tue Feb 22 2022 Nicolas Chauvet <kwizart@gmail.com>
+- Update to 3.0.17
+
+* Fri Feb 04 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17-6
+- rebuilt
+
+* Wed Jan 19 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-5
+- rebuilt
+
+* Tue Jan 18 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-4
+- Bump
+
+* Sat Jan 15 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17-3
+- Update 3.x snapshot
+
+* Fri Nov 19 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-2
+- Rebuilt
+
+* Thu Nov 11 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-1
+- Update to 3.x snapshot
+
+* Tue Nov 09 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.16-7
+- Rebuilt for new ffmpeg snapshot
+
+* Sat Oct 30 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.16-6
+- rebuilt
+
+* Thu Aug 19 2021 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.16-5
+- Rebuilt
+
+* Tue Aug 03 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:3.0.16-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
+* Sun Jul 11 2021 Sérgio Basto <sergio@serjux.com> - 1:3.0.16-3
+- Mass rebuild for x264-0.163
+
+* Wed Jun 30 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.16-2
+- Rebuilt
+
 * Sat Jun 19 2021 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.16-1
 - Update to 3.0.16
 
