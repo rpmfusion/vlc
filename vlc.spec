@@ -1,4 +1,4 @@
-%global commit0 758b718347094af7e7e35ec18359d32f8928766e
+%global commit0 c4ab31d5f0d5d0ba298706241d5b67ae49215935
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc9
 
@@ -50,8 +50,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.17
-Release:	7%{?dist}
+Version:	3.0.17.2
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -191,7 +191,7 @@ BuildRequires:	pkgconfig(libpulse) >= 0.9.8
 BuildRequires:	pkgconfig(libsecret-1) >= 0.18
 BuildRequires:	pkgconfig(microdns) >= 0.1.2
 BuildRequires:	pkgconfig(protobuf-lite) >= 2.5
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} >= 8
 BuildRequires:	qt5-qtbase-private-devel
 %endif
 BuildRequires:	pkgconfig(Qt5Core) >= 5.5
@@ -620,7 +620,10 @@ fi || :
 
 
 %changelog
-* Tue Feb 22 2022 Nicolas Chauvet <kwizart@gmail.com>
+* Thu Mar 10 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17.2-1
+- Update to 3.0.17.2 (rfbz#6241)
+
+* Tue Feb 22 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17-7
 - Update to 3.0.17
 
 * Fri Feb 04 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17-6
