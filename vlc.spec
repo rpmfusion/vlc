@@ -123,7 +123,6 @@ BuildRequires:	pkgconfig(daaladec)
 BuildRequires:	pkgconfig(daalaenc)
 BuildRequires:	libdc1394-devel >= 2.1.0
 %{?_with_libdca:BuildRequires: libdca-devel}
-BuildRequires:	libdv-devel
 %{?_with_libdvbpsi:BuildRequires: libdvbpsi-devel}
 BuildRequires:	libdvdnav-devel
 BuildRequires:	libebml-devel
