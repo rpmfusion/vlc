@@ -136,7 +136,6 @@ BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmfx-devel
 %endif
 BuildRequires:	libmodplug-devel
-BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmpg123-devel
 BuildRequires:	libmtp-devel >= 1.0.0
