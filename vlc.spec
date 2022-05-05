@@ -29,7 +29,7 @@
 %global _with_asdcp   1
 %endif
 
-%if 0%{?fedora} || 0%{?el8}
+%if ! 0%{?el7}
 %global _with_bluray  1
 %global _with_wayland 1
 %endif
