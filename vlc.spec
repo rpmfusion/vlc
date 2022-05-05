@@ -145,7 +145,6 @@ BuildRequires:	libssh2-devel
 BuildRequires:	libsysfs-devel
 BuildRequires:	libshout-devel
 BuildRequires:	libsmbclient-devel
-BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
