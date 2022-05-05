@@ -180,7 +180,6 @@ BuildRequires:	lua5.1-devel, lua5.1
 %else
 BuildRequires:	lua-devel
 %endif
-BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: libmpeg2-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
 %{?_with_opencv:BuildRequires: pkgconfig(opencv)}
