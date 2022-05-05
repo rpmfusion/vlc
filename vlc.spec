@@ -29,6 +29,10 @@
 %global _with_asdcp   1
 %endif
 
+%if 0%{?rhel} && 0%{?rhel} >= 9
+%global _without_libdc1394 1
+%endif
+
 %if ! 0%{?el7}
 %global _with_bluray  1
 %global _with_wayland 1
@@ -121,7 +125,7 @@ BuildRequires:	pkgconfig(libchromaprint)
 %{?_with_crystalhd:BuildRequires: libcrystalhd-devel}
 BuildRequires:	pkgconfig(daaladec)
 BuildRequires:	pkgconfig(daalaenc)
-BuildRequires:	libdc1394-devel >= 2.1.0
+%{!?_without_libdc1394:BuildRequires: libdc1394-devel}
 %{?_with_libdca:BuildRequires: libdca-devel}
 %{?_with_libdvbpsi:BuildRequires: libdvbpsi-devel}
 BuildRequires:	libdvdnav-devel
