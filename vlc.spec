@@ -104,7 +104,11 @@ BuildRequires:	cdparanoia-devel
 %{?_with_dav1d:BuildRequires: libdav1d-devel}
 BuildRequires:	pkgconfig(dbus-1)
 %{?_with_faad2:BuildRequires: faad2-devel}
+%if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
+%{?_with_ffmpeg:BuildRequires: compat-ffmpeg4-devel}
+%else
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
+%endif
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
 BuildRequires:	fribidi-devel
@@ -371,14 +375,18 @@ touch src/revision.txt
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 
+%if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
+export PKG_CONFIG_PATH=%{_libdir}/compat-ffmpeg4/pkgconfig
+%endif
+
 %configure \
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
 	--disable-silent-rules			\
-        --with-default-font=%{_fontbasedir}/dejavu/DejaVuSans.ttf \
-        --with-default-font-family=DejaVuSans \
-        --with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
-        --with-default-monospace-font-family=DejaVuSansMono \
+	--with-default-font=%{_fontbasedir}/dejavu/DejaVuSans.ttf \
+	--with-default-font-family=DejaVuSans \
+	--with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
+	--with-default-monospace-font-family=DejaVuSansMono \
 	--with-kde-solid=no			\
 	--with-pic				\
 	--disable-rpath			\
