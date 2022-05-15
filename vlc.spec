@@ -156,7 +156,7 @@ BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 # Not Yet in EL8
-%if ! 0%{?el8}
+%if 0%{?fedora}
 BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
