@@ -54,7 +54,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.17.2
+Version:	3.0.17.4
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
@@ -620,6 +620,9 @@ fi || :
 
 
 %changelog
+* Sun May 15 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17.4-1
+- Update to 3.0.17.4
+
 * Thu Mar 10 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17.2-1
 - Update to 3.0.17.2 (rfbz#6241)
 
