@@ -39,6 +39,7 @@
 %endif
 
 %if 0%{?fedora}
+%global _with_lirc 1
 %ifarch x86_64 i686
 %global _with_crystalhd 1
 %endif
@@ -168,7 +169,7 @@ BuildRequires:  pkgconfig(vdpau)
 BuildRequires:	pkgconfig(vorbis)
 BuildRequires:	pkgconfig(vpx)
 BuildRequires:	pkgconfig(libxml-2.0)
-BuildRequires:	lirc-devel
+%{?_with_lirc:BuildRequires: lirc-devel }
 %{?_with_live555:BuildRequires: live555-devel >= 0-0.33}
 BuildRequires:  kernel-headers
 BuildRequires:	pkgconfig(gl)
