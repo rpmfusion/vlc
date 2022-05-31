@@ -180,7 +180,7 @@ BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
-%if 0%{?fedora} || 0%{?el8}
+%if 0%{?fedora} || 0%{?rhel} >= 8
 BuildRequires:	lua5.1-devel, lua5.1
 %else
 BuildRequires:	lua-devel
