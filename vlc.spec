@@ -81,6 +81,9 @@ Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
 Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
 # https://code.videolan.org/videolan/vlc/-/merge_requests/889
 Patch14: Remove_legacy_caca.patch
+# https://code.videolan.org/videolan/vlc/-/commit/2202c892c8dc1381b596c53c2ebd3ca680061f95
+# https://code.videolan.org/videolan/vlc/-/commit/d38ddd7270ffaea705981b6a48086778850d3c96
+Patch15: fix-dav1d-1.0.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -361,6 +364,9 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %if 0%{?fedora} > 35 || 0%{?rhel} >= 9
 %patch14 -p1
 %endif
+%if 0%{?fedora} > 36
+%patch15 -p1
+%endif
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -629,7 +635,7 @@ fi || :
 
 
 %changelog
-* Thu Jun 24 2022 Robert-André Mauchin <zebob.m@gmail.com> - 1:3.0.17.4-4
+* Fri Jun 24 2022 Robert-André Mauchin <zebob.m@gmail.com> - 1:3.0.17.4-4
 - Rebuilt for new AOM and dav1d
 
 * Fri Jun 24 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17.4-3
