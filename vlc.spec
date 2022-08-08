@@ -56,7 +56,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.17.4
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 %if 0%{?commit0:1}
@@ -635,6 +635,10 @@ fi || :
 
 
 %changelog
+* Mon Aug 08 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 1:3.0.17.4-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
+  5.1
+
 * Fri Jul 22 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17.4-7
 - Rebuild for new ffmpeg
 
