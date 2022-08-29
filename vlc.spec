@@ -1,6 +1,7 @@
-%global commit0 c650ce1a4e352cc04192229a8878b8b6c312527d
+%global commit0 675232e5932e5f205f03a485f1b56c7ae4f1ca6d
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-#global vlc_rc		-rc9
+%global vlc_rc		-rc
+%global vlc_setup vlc-%{?commit0}
 
 %global _with_bootstrap 1
 
@@ -55,19 +56,11 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.17.4
-Release:	8%{?dist}
+Version:	3.0.18
+Release:	0.1.rc%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
-%if 0%{?commit0:1}
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
-%global vlc_setup vlc-%{?commit0}
-%else
-Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing/}vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
-%global vlc_setup vlc-%{version}%{?vlc_rc}
-%endif
-Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_20.patch
-Patch1:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_chain.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
@@ -76,14 +69,6 @@ Patch7: Switch-to-Fedora-lua-5.1.patch
 
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
-Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
-# https://code.videolan.org/videolan/vlc/-/issues/25473#note_256576
-Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
-# https://code.videolan.org/videolan/vlc/-/merge_requests/889
-Patch14: Remove_legacy_caca.patch
-# https://code.videolan.org/videolan/vlc/-/commit/2202c892c8dc1381b596c53c2ebd3ca680061f95
-# https://code.videolan.org/videolan/vlc/-/commit/d38ddd7270ffaea705981b6a48086778850d3c96
-Patch15: fix-dav1d-1.0.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -314,10 +299,6 @@ Summary:	VLC media player core
 Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
-Requires: libmicrodns%{?_isa} > 0.1.2-1
-%if 0%{?fc31}
-Requires: srt-libs%{?_isa} > 1.4.1-3
-%endif
 
 %description core
 VLC media player core components
@@ -336,9 +317,6 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{vlc_setup}
-%{?_with_rpi:
-%patch0 -p1
-}
 %patch3 -p1
 %if 0%{?el7}
 %patch5 -p1
@@ -357,16 +335,6 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
 %patch9 -p1
-%if 0%{?rhel} >= 7
-%patch12 -p1
-%endif
-%patch13 -p1
-%if 0%{?fedora} > 35 || 0%{?rhel} >= 9
-%patch14 -p1
-%endif
-%if 0%{?fedora} > 36
-%patch15 -p1
-%endif
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -635,6 +603,11 @@ fi || :
 
 
 %changelog
+* Mon Aug 29 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-0.1.rc
+- Update to 3.0.18-rc
+- Drop mmal downstream (rpi) patches
+- Drop merged patches
+
 * Mon Aug 08 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 1:3.0.17.4-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
   5.1
