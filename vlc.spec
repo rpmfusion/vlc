@@ -57,7 +57,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.18
-Release:	0.2.rc%{?dist}
+Release:	0.1.rc%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -299,7 +299,6 @@ Summary:	VLC media player core
 Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
-Requires:   ffmpeg-libs%{?_isa}
 
 %description core
 VLC media player core components
@@ -604,9 +603,6 @@ fi || :
 
 
 %changelog
-* Sun Sep 04 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.18-0.2.rc
-- Add requires ffmpeg-libs
-
 * Mon Aug 29 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-0.1.rc
 - Update to 3.0.18-rc
 - Drop mmal downstream (rpi) patches
