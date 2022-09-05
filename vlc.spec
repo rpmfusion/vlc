@@ -349,10 +349,6 @@ touch src/revision.txt
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 
-%if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
-export PKG_CONFIG_PATH=%{_libdir}/compat-ffmpeg4/pkgconfig
-%endif
-
 %configure \
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
