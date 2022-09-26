@@ -57,7 +57,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.18
-Release:	0.1.rc%{?dist}
+Release:	0.2.rc%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -599,6 +599,9 @@ fi || :
 
 
 %changelog
+* Mon Sep 26 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.18-0.2.rc
+- Rebuild for new flac
+
 * Mon Aug 29 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-0.1.rc
 - Update to 3.0.18-rc
 - Drop mmal downstream (rpi) patches
