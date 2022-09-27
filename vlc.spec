@@ -27,7 +27,7 @@
 %global _with_dav1d   1
 %global _with_aom     1
 %ifarch x86_64 ppc64le aarch64
-%if ! 0%{?fedora} >= 37
+%if ! (0%{?fedora} >= 37)
 %global _with_asdcp   1
 %endif
 %endif
