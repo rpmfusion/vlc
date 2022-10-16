@@ -1,6 +1,7 @@
-%global commit0 c4ab31d5f0d5d0ba298706241d5b67ae49215935
+%global commit0 e9eceaed4d838dbd84638bfb2e4bdd08294163b1
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-#global vlc_rc		-rc9
+#global vlc_rc		-rc2
+%global vlc_setup vlc-%{?commit0}
 
 %global _with_bootstrap 1
 
@@ -26,15 +27,22 @@
 %global _with_dav1d   1
 %global _with_aom     1
 %ifarch x86_64 ppc64le aarch64
+%if ! (0%{?fedora} >= 37)
 %global _with_asdcp   1
 %endif
+%endif
 
-%if 0%{?fedora} || 0%{?el8}
+%if 0%{?rhel} && 0%{?rhel} >= 9
+%global _without_libdc1394 1
+%endif
+
+%if ! 0%{?el7}
 %global _with_bluray  1
 %global _with_wayland 1
 %endif
 
 %if 0%{?fedora}
+%global _with_lirc 1
 %ifarch x86_64 i686
 %global _with_crystalhd 1
 %endif
@@ -50,19 +58,11 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.17.2
+Version:	3.0.18
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
-%if 0%{?commit0:1}
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
-%global vlc_setup vlc-%{?commit0}
-%else
-Source0: https://download.videolan.org/pub/videolan/%{?vlc_rc:testing/}vlc/%{version}%{?vlc_rc}/vlc-%{version}%{?vlc_rc}.tar.xz
-%global vlc_setup vlc-%{version}%{?vlc_rc}
-%endif
-Patch0:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_20.patch
-Patch1:	https://github.com/RPi-Distro/vlc/raw/buster-rpt/debian/patches/mmal_chain.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
@@ -71,11 +71,6 @@ Patch7: Switch-to-Fedora-lua-5.1.patch
 
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
-Patch12: 0001-Revert-access-libdvdread-6.1.2-supports-UTF-8-paths-.patch
-# https://code.videolan.org/videolan/vlc/-/issues/25473#note_256576
-Patch13: 0001-Get-addr-by-ref.-from-getConnectionEndpointAddress.patch
-# https://code.videolan.org/videolan/vlc/-/merge_requests/889
-Patch14: Remove_legacy_caca.patch
 
 BuildRequires:	desktop-file-utils
 BuildRequires:	libappstream-glib
@@ -99,7 +94,11 @@ BuildRequires:	cdparanoia-devel
 %{?_with_dav1d:BuildRequires: libdav1d-devel}
 BuildRequires:	pkgconfig(dbus-1)
 %{?_with_faad2:BuildRequires: faad2-devel}
+%if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
+%{?_with_ffmpeg:BuildRequires: compat-ffmpeg4-devel}
+%else
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
+%endif
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
 BuildRequires:	fribidi-devel
@@ -121,9 +120,8 @@ BuildRequires:	pkgconfig(libchromaprint)
 %{?_with_crystalhd:BuildRequires: libcrystalhd-devel}
 BuildRequires:	pkgconfig(daaladec)
 BuildRequires:	pkgconfig(daalaenc)
-BuildRequires:	libdc1394-devel >= 2.1.0
+%{!?_without_libdc1394:BuildRequires: libdc1394-devel}
 %{?_with_libdca:BuildRequires: libdca-devel}
-BuildRequires:	libdv-devel
 %{?_with_libdvbpsi:BuildRequires: libdvbpsi-devel}
 BuildRequires:	libdvdnav-devel
 BuildRequires:	libebml-devel
@@ -136,7 +134,6 @@ BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmfx-devel
 %endif
 BuildRequires:	libmodplug-devel
-BuildRequires:	libmp4v2-devel
 BuildRequires:	libmpcdec-devel
 BuildRequires:	libmpg123-devel
 BuildRequires:	libmtp-devel >= 1.0.0
@@ -147,14 +144,13 @@ BuildRequires:	libssh2-devel
 BuildRequires:	libsysfs-devel
 BuildRequires:	libshout-devel
 BuildRequires:	libsmbclient-devel
-BuildRequires:	libtar-devel
 BuildRequires:	libtheora-devel
 BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
 # Not Yet in EL8
-%if ! 0%{?el8}
+%if 0%{?fedora}
 BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
@@ -167,19 +163,18 @@ BuildRequires:  pkgconfig(vdpau)
 BuildRequires:	pkgconfig(vorbis)
 BuildRequires:	pkgconfig(vpx)
 BuildRequires:	pkgconfig(libxml-2.0)
-BuildRequires:	lirc-devel
+%{?_with_lirc:BuildRequires: lirc-devel }
 %{?_with_live555:BuildRequires: live555-devel >= 0-0.33}
 BuildRequires:  kernel-headers
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(glu)
 BuildRequires:	libsamplerate-devel
 BuildRequires:	libshout-devel
-%if 0%{?fedora} || 0%{?el8}
+%if 0%{?fedora} || 0%{?rhel} >= 8
 BuildRequires:	lua5.1-devel, lua5.1
 %else
 BuildRequires:	lua-devel
 %endif
-BuildRequires:	minizip-devel
 %{?_with_libmpeg2:BuildRequires: libmpeg2-devel >= 0.3.2}
 BuildRequires:	ncurses-devel
 %{?_with_opencv:BuildRequires: pkgconfig(opencv)}
@@ -306,10 +301,6 @@ Summary:	VLC media player core
 Provides:	vlc-nox = %{epoch}:%{version}-%{release}
 %{?live555_version:Requires: live555%{?_isa} = %{live555_version}}
 %{?lua_version:Requires: lua(abi) = %{lua_version}}
-Requires: libmicrodns%{?_isa} > 0.1.2-1
-%if 0%{?fc31}
-Requires: srt-libs%{?_isa} > 1.4.1-3
-%endif
 
 %description core
 VLC media player core components
@@ -328,9 +319,6 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{vlc_setup}
-%{?_with_rpi:
-%patch0 -p1
-}
 %patch3 -p1
 %if 0%{?el7}
 %patch5 -p1
@@ -349,13 +337,6 @@ sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
 %patch9 -p1
-%if 0%{?rhel} >= 7
-%patch12 -p1
-%endif
-%patch13 -p1
-%if 0%{?fedora} > 35
-%patch14 -p1
-%endif
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -374,10 +355,10 @@ touch src/revision.txt
 	--disable-dependency-tracking		\
 	--disable-optimizations			\
 	--disable-silent-rules			\
-        --with-default-font=%{_fontbasedir}/dejavu/DejaVuSans.ttf \
-        --with-default-font-family=DejaVuSans \
-        --with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
-        --with-default-monospace-font-family=DejaVuSansMono \
+	--with-default-font=%{_fontbasedir}/dejavu/DejaVuSans.ttf \
+	--with-default-font-family=DejaVuSans \
+	--with-default-monospace-font=%{_fontbasedir}/dejavu/DejaVuSansMono.ttf \
+	--with-default-monospace-font-family=DejaVuSansMono \
 	--with-kde-solid=no			\
 	--with-pic				\
 	--disable-rpath			\
@@ -620,6 +601,45 @@ fi || :
 
 
 %changelog
+* Sun Oct 16 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-1
+- Update to 3.0.18
+
+* Fri Sep 30 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-0.3.rc
+- Update to 3.0.18-rc2
+
+* Mon Sep 26 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.18-0.2.rc
+- Rebuild for new flac
+
+* Mon Aug 29 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-0.1.rc
+- Update to 3.0.18-rc
+- Drop mmal downstream (rpi) patches
+- Drop merged patches
+
+* Mon Aug 08 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 1:3.0.17.4-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
+  5.1
+
+* Fri Jul 22 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17.4-7
+- Rebuild for new ffmpeg
+
+* Fri Jul 15 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17.4-6
+- rebuilt
+
+* Tue Jul 05 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17.4-5
+- rebuilt
+
+* Fri Jun 24 2022 Robert-André Mauchin <zebob.m@gmail.com> - 1:3.0.17.4-4
+- Rebuilt for new AOM and dav1d
+
+* Fri Jun 24 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17.4-3
+- Rebuilt
+
+* Sun Jun 12 2022 Sérgio Basto <sergio@serjux.com> - 1:3.0.17.4-2
+- Mass rebuild for x264-0.164
+
+* Sun May 15 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.17.4-1
+- Update to 3.0.17.4
+
 * Thu Mar 10 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.17.2-1
 - Update to 3.0.17.2 (rfbz#6241)
 
