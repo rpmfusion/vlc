@@ -1,4 +1,4 @@
-%global commit0 e9eceaed4d838dbd84638bfb2e4bdd08294163b1
+%global commit0 6183d1e1530e5fee926a4fbbae8fe8628a2bcd57
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc2
 %global vlc_setup vlc-%{?commit0}
@@ -59,7 +59,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.18
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -601,6 +601,9 @@ fi || :
 
 
 %changelog
+* Fri Dec 23 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-3
+- Update to current snapshot
+
 * Sun Nov 06 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.18-2
 - Rebuild for live555
 
