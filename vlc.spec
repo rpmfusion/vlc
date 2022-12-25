@@ -68,7 +68,8 @@ Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # lua-5.1 is used by default for vlc build
 Patch7: Switch-to-Fedora-lua-5.1.patch
-
+# https://build.opensuse.org/package/view_file/openSUSE:Factory/vlc/vlc-libplacebo-5.patch?expand=1
+Patch8: vlc-libplacebo-5.patch
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
 
