@@ -336,6 +336,7 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 %patch7 -p1
 sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
+%patch8 -p1
 
 %patch9 -p1
 
