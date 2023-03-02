@@ -59,7 +59,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.18
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -99,6 +99,7 @@ BuildRequires:	pkgconfig(dbus-1)
 %{?_with_ffmpeg:BuildRequires: compat-ffmpeg4-devel}
 %else
 %{?_with_ffmpeg:BuildRequires: ffmpeg-devel >= 0.4.9-0}
+BuildRequires:	pkgconfig(libchromaprint)
 %endif
 BuildRequires:	flac-devel
 %{?_with_fluidsynth:BuildRequires: fluidsynth-devel}
@@ -117,7 +118,6 @@ BuildRequires:	libass-devel >= 0.9.7
 BuildRequires:	libcaca-devel
 BuildRequires:	libcddb-devel
 BuildRequires:	libcdio-devel >= 0.77-3
-BuildRequires:	pkgconfig(libchromaprint)
 %{?_with_crystalhd:BuildRequires: libcrystalhd-devel}
 BuildRequires:	pkgconfig(daaladec)
 BuildRequires:	pkgconfig(daalaenc)
@@ -603,6 +603,9 @@ fi || :
 
 
 %changelog
+* Thu Mar 02 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.18-5
+- Drop chromaprint support due to it's ffmpeg requires
+
 * Sun Dec 25 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-4
 - Add libplacebo-5
 
