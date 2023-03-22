@@ -1,4 +1,4 @@
-%global commit0 6183d1e1530e5fee926a4fbbae8fe8628a2bcd57
+%global commit0 3e483547037e49f8ef828f2f0455593400968cf4
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc2
 %global vlc_setup vlc-%{?commit0}
@@ -58,8 +58,8 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.18
-Release:	4%{?dist}
+Version:	3.0.19
+Release:	0.1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -68,8 +68,6 @@ Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # lua-5.1 is used by default for vlc build
 Patch7: Switch-to-Fedora-lua-5.1.patch
-# https://build.opensuse.org/package/view_file/openSUSE:Factory/vlc/vlc-libplacebo-5.patch?expand=1
-Patch8: vlc-libplacebo-5.patch
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
 
@@ -336,7 +334,6 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 %patch7 -p1
 sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
-%patch8 -p1
 
 %patch9 -p1
 
@@ -603,6 +600,9 @@ fi || :
 
 
 %changelog
+* Wed Mar 22 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.2
+- Update snapshot
+
 * Sun Dec 25 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-4
 - Add libplacebo-5
 
