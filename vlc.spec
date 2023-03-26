@@ -318,10 +318,10 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{vlc_setup}
-%patch3 -p1
+%patch -P3 -p1
 %if 0%{?el7}
-%patch5 -p1
-%patch6 -p1
+%patch -P5 -p1
+%patch -P6 -p1
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
 sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
@@ -331,11 +331,11 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 %if 0%{?fedora} || 0%{?rhel} > 7
-%patch7 -p1
+%patch -P7 -p1
 sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
-%patch9 -p1
+%patch -P9 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
