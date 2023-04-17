@@ -93,6 +93,8 @@ BuildRequires:	cdparanoia-devel
 %{?_with_dav1d:BuildRequires: libdav1d-devel}
 BuildRequires:	pkgconfig(dbus-1)
 %{?_with_faad2:BuildRequires: faad2-devel}
+# vlc-3 works with ffmpeg <= 4 for vaapi support
+#https://code.videolan.org/videolan/vlc/-/issues/26772
 %if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
 %{?_with_ffmpeg:BuildRequires: compat-ffmpeg4-devel}
 %else
