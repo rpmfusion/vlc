@@ -1,4 +1,4 @@
-%global commit0 df6ab0815338f6fbfda971e95cd6e3a9c626f91c
+%global commit0 26fb05e95724bd19f9a144c51bc11f79c609f3bc
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc2
 %global vlc_setup vlc-%{?commit0}
