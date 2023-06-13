@@ -1,4 +1,4 @@
-%global commit0 3e483547037e49f8ef828f2f0455593400968cf4
+%global commit0 df6ab0815338f6fbfda971e95cd6e3a9c626f91c
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc2
 %global vlc_setup vlc-%{?commit0}
@@ -59,7 +59,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.19
-Release:	0.3%{?dist}
+Release:	0.4%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -602,6 +602,9 @@ fi || :
 
 
 %changelog
+* Tue Jun 13 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.4
+- Update snapshot
+
 * Mon Apr 10 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.19-0.3.1
 - Rebuild for live555
 
