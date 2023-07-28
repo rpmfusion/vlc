@@ -609,6 +609,7 @@ fi || :
 %changelog
 * Fri Jul 28 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.5
 - Update snapshot
+- Use onevpl for f38+ and el9+
 
 * Tue Jun 13 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.4
 - Update snapshot
