@@ -605,6 +605,9 @@ fi || :
 
 
 %changelog
+* Fri Jul 28 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.6
+- Drop onevpl for now (see rfbz#6711)
+
 * Fri Jul 28 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.5
 - Update snapshot
 - Use onevpl for f38+ and el9+
