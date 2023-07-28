@@ -150,8 +150,9 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
-# Not Yet in EL8
-%if 0%{?fedora}
+# Not Yet in EL - libplacebo-6 incompatible
+# https://code.videolan.org/videolan/vlc/-/merge_requests/3950
+%if 0%{?fedora} && 0%{?fedora} < 39
 BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
