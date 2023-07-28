@@ -1,0 +1,45 @@
+From 982f44d09bb61490194baf371d52c12016e0c5c9 Mon Sep 17 00:00:00 2001
+From: Nicolas Chauvet <kwizart@gmail.com>
+Date: Fri, 28 Jul 2023 12:25:44 +0200
+Subject: [PATCH] po: Fixup invalid format string
+
+Will fix the following errors
+
+oc.po:5301: 'msgstr' is not a valid C format string, unlike 'msgid'. Reason: In the directive number 1, the argument size specifier is invalid.
+oc.po:5306: 'msgstr' is not a valid C format string, unlike 'msgid'. Reason: In the directive number 1, the argument size specifier is invalid.
+oc.po:5312: 'msgstr' is not a valid C format string, unlike 'msgid'. Reason: In the directive number 1, the argument size specifier is invalid.
+
+Signed-off-by: Nicolas Chauvet <kwizart@gmail.com>
+---
+ po/oc.po | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/po/oc.po b/po/oc.po
+index 667696cfe785..ddb1677d8a53 100644
+--- a/po/oc.po
++++ b/po/oc.po
+@@ -5298,18 +5298,18 @@ msgstr "Comanda+"
+ #: src/misc/update.c:482
+ #, c-format
+ msgid "%.1f GiB"
+-msgstr "%.lf Gio"
++msgstr "%.1f Gio"
+ 
+ #: src/misc/update.c:484
+ #, c-format
+ msgid "%.1f MiB"
+-msgstr "%.lf Mio"
++msgstr "%.1f Mio"
+ 
+ #: src/misc/update.c:486 modules/gui/macosx/VLCPlaylistInfo.m:138
+ #: modules/gui/macosx/VLCPlaylistInfo.m:140
+ #, c-format
+ msgid "%.1f KiB"
+-msgstr "%.lf Kio"
++msgstr "%.1f Kio"
+ 
+ #: src/misc/update.c:488
+ #, c-format
+-- 
+2.41.0
+
