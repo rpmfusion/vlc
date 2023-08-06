@@ -59,7 +59,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.19
-Release:	0.6%{?dist}
+Release:	0.7%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -605,6 +605,9 @@ fi || :
 
 
 %changelog
+* Sun Aug 06 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.19-0.7
+- rebuilt
+
 * Fri Jul 28 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.6
 - Drop onevpl for now (see rfbz#6711)
 
