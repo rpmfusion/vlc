@@ -63,7 +63,6 @@ Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
-Patch2: 0001-po-Fixup-invalid-format-string.patch
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
@@ -322,7 +321,6 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{vlc_setup}
-%patch -P2 -p1
 %patch -P3 -p1
 %if 0%{?el7}
 %patch -P5 -p1
