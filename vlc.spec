@@ -1,4 +1,4 @@
-%global commit0 e9eceaed4d838dbd84638bfb2e4bdd08294163b1
+%global commit0 32b50de2a28418ca9e843e91383dd09b4cd1c529
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc2
 %global vlc_setup vlc-%{?commit0}
@@ -6,26 +6,26 @@
 %global _with_bootstrap 1
 
 %if 0%{?!_without_freeworld:1}
-%global _with_faad2 1
-%global _with_ffmpeg 1
-%global _with_libdca 1
 %global _with_x264 1
 %global _with_x265 1
-%global _with_xvidcore 1
 %global _with_live555 1
-%global _with_vaapi 1
 %endif
 
 %global _with_a52dec 1
+%global _with_aom     1
+%global _with_dav1d   1
+%global _with_faad2 1
+%global _with_ffmpeg 1
+%global _with_fluidsynth 1
+%global _with_freerdp 1
+%global _with_libdca 1
 %global _with_libdvbpsi 1
 %global _with_libmad 1
 %global _with_libmpeg2 1
-%global _with_twolame 1
-%global _with_fluidsynth 1
 %global _with_schroedinger 1
-%global _with_freerdp 1
-%global _with_dav1d   1
-%global _with_aom     1
+%global _with_twolame 1
+%global _with_vaapi 1
+%global _with_xvidcore 1
 %ifarch x86_64 ppc64le aarch64
 %if ! (0%{?fedora} >= 37)
 %global _with_asdcp   1
@@ -58,7 +58,7 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.18
+Version:	3.0.19
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
@@ -68,7 +68,6 @@ Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # lua-5.1 is used by default for vlc build
 Patch7: Switch-to-Fedora-lua-5.1.patch
-
 # Backport for 3.0 notifyd without gtk3
 Patch9: notify-don-t-depend-on-any-GTK-version.patch
 
@@ -94,6 +93,8 @@ BuildRequires:	cdparanoia-devel
 %{?_with_dav1d:BuildRequires: libdav1d-devel}
 BuildRequires:	pkgconfig(dbus-1)
 %{?_with_faad2:BuildRequires: faad2-devel}
+# vlc-3 works with ffmpeg <= 4 for vaapi support
+#https://code.videolan.org/videolan/vlc/-/issues/26772
 %if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
 %{?_with_ffmpeg:BuildRequires: compat-ffmpeg4-devel}
 %else
@@ -149,8 +150,9 @@ BuildRequires:	libtiger-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	pkgconfig(libidn)
 BuildRequires:	pkgconfig(libjpeg)
-# Not Yet in EL8
-%if 0%{?fedora}
+# Not Yet in EL - libplacebo-6 incompatible
+# https://code.videolan.org/videolan/vlc/-/merge_requests/3950
+%if 0%{?fedora} && 0%{?fedora} < 39
 BuildRequires:	pkgconfig(libplacebo)
 %endif
 BuildRequires:	pkgconfig(libudev)
@@ -319,10 +321,10 @@ VLC media player extras modules.
 
 %prep
 %setup -q -n %{vlc_setup}
-%patch3 -p1
+%patch -P3 -p1
 %if 0%{?el7}
-%patch5 -p1
-%patch6 -p1
+%patch -P5 -p1
+%patch -P6 -p1
 # Lower opus requirement - rfbz#5585
 sed -i -e 's/opus >= 1.0.3/opus >= 1.0.2/' configure.ac
 sed -i -e 's/opus_multistream_surround_encoder_create/opus_multistream_encoder_create/g' modules/codec/opus.c
@@ -332,11 +334,11 @@ sed -i -e 's/taglib >= 1.9/taglib >= 1.8/' configure.ac
 . /opt/rh/devtoolset-%{dts_ver}/enable
 %endif
 %if 0%{?fedora} || 0%{?rhel} > 7
-%patch7 -p1
+%patch -P7 -p1
 sed -i -e 's/luac/luac-5.1/g' configure.ac
 %endif
 
-%patch9 -p1
+%patch -P9 -p1
 
 %{?_with_bootstrap:
 rm aclocal.m4 m4/lib*.m4 m4/lt*.m4 || :
@@ -601,6 +603,43 @@ fi || :
 
 
 %changelog
+* Thu Oct 12 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-1
+- Update to 3.0.19
+
+* Sun Aug 06 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.19-0.7
+- rebuilt
+
+* Fri Jul 28 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.6
+- Drop onevpl for now (see rfbz#6711)
+
+* Fri Jul 28 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.5
+- Update snapshot
+- Use onevpl for f38+ and el9+
+
+* Tue Jun 13 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.4
+- Update snapshot
+
+* Mon Apr 10 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.19-0.3.1
+- Rebuild for live555
+
+* Sun Mar 26 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.19-0.2.1
+- rebuilt
+
+* Thu Mar 23 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.1.1
+- rebuilt
+
+* Wed Mar 22 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-0.2
+- Update snapshot
+
+* Sun Dec 25 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-4
+- Add libplacebo-5
+
+* Fri Dec 23 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-3
+- Update to current snapshot
+
+* Sun Nov 06 2022 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.18-2
+- Rebuild for live555
+
 * Sun Oct 16 2022 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.18-1
 - Update to 3.0.18
 
