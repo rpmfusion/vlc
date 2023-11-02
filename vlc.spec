@@ -1,4 +1,4 @@
-%global commit0 32b50de2a28418ca9e843e91383dd09b4cd1c529
+%global commit0 6f0d0ab126b1bed52897598867d0e19ca2cc6202
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 #global vlc_rc		-rc2
 %global vlc_setup vlc-%{?commit0}
@@ -58,12 +58,13 @@
 Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
-Version:	3.0.19
+Version:	3.0.20
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
 Patch3:	0001-Use-SYSTEM-wide-ciphers-for-gnutls.patch
+Patch4:	Revert-taglib-wav-fix-RIFF-INFO-tags-parsing.patch
 Patch5:	Lower-libgcrypt-to-1.5.3.patch
 Patch6:	Restore-support-for-thread-callbacks-for-older-gcryp.patch
 # lua-5.1 is used by default for vlc build
@@ -323,6 +324,7 @@ VLC media player extras modules.
 %setup -q -n %{vlc_setup}
 %patch -P3 -p1
 %if 0%{?el7}
+%patch -P4 -p1
 %patch -P5 -p1
 %patch -P6 -p1
 # Lower opus requirement - rfbz#5585
@@ -603,6 +605,12 @@ fi || :
 
 
 %changelog
+* Thu Nov 02 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.20-1
+- Update to 3.0.20
+
+* Thu Oct 12 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-1.1
+- Fix build with older taglib in el7
+
 * Thu Oct 12 2023 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.19-1
 - Update to 3.0.19
 
