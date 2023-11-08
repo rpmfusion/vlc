@@ -59,7 +59,7 @@ Summary:	The cross-platform open-source multimedia framework, player and server
 Epoch:		1
 Name:		vlc
 Version:	3.0.20
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.videolan.org
 Source0: https://code.videolan.org/videolan/vlc/-/archive/%{commit0}/vlc-%{shortcommit0}.tar.gz
@@ -605,6 +605,9 @@ fi || :
 
 
 %changelog
+* Wed Nov 08 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.20-2
+- Rebuild for new faad2 version
+
 * Thu Nov 02 2023 Leigh Scott <leigh123linux@gmail.com> - 1:3.0.20-1
 - Update to 3.0.20
 
