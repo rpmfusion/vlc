@@ -505,7 +505,7 @@ fi || :
 %files
 %doc AUTHORS NEWS README THANKS
 %license COPYING
-%{_datadir}/metainfo/vlc.appdata.xml
+%{_datadir}/metainfo/*vlc.appdata.xml
 %{_datadir}/applications/*%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/vlc*.png
 %{_datadir}/icons/hicolor/*/apps/vlc*.xpm
