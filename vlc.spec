@@ -136,7 +136,7 @@ BuildRequires:	libmatroska-devel >= 0.7.6
 BuildRequires:	libmfx-devel
 %endif
 BuildRequires:	libmodplug-devel
-BuildRequires:	libmpcdec-devel
+#BuildRequires:	libmpcdec-devel
 BuildRequires:	libmpg123-devel
 BuildRequires:	libmtp-devel >= 1.0.0
 %{?_with_projectm:BuildRequires: libprojectM-devel}
@@ -607,6 +607,7 @@ fi || :
 %changelog
 * Thu Sep 24 2026 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.24-1
 - Update to 3.0.24
+- Disable libmpcdec
 
 * Mon Jun 22 2026 Nicolas Chauvet <kwizart@gmail.com> - 1:3.0.23-1
 - Update to 3.0.23-2
